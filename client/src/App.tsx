@@ -4,13 +4,28 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { Web3Provider } from "./contexts/Web3Context";
 import Home from "./pages/Home";
+import AdminDashboard from "./pages/AdminDashboard";
+import Performers from "./pages/Performers";
+import PerformerProfile from "./pages/PerformerProfile";
+import MyNFTs from "./pages/MyNFTs";
+import Tournaments from "./pages/Tournaments";
+import TournamentLeaderboard from "./pages/TournamentLeaderboard";
+import Dashboard from "./pages/Dashboard";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/performers"} component={Performers} />
+      <Route path={"/performers/:id"} component={PerformerProfile} />
+      <Route path={"/my-nfts"} component={MyNFTs} />
+      <Route path={"/tournaments"} component={Tournaments} />
+      <Route path={"/tournaments/:id"} component={TournamentLeaderboard} />
+      <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -27,13 +42,14 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider
-        defaultTheme="light"
-        // switchable
+        defaultTheme="dark"
       >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <Web3Provider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </Web3Provider>
       </ThemeProvider>
     </ErrorBoundary>
   );

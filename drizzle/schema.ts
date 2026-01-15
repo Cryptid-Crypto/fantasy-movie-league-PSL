@@ -1,22 +1,16 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, unique } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  walletAddress: varchar("walletAddress", { length: 42 }), // Ethereum address
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -25,4 +19,136 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Performers (actors/actresses in the platform)
+ */
+export const performers = mysqlTable("performers", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  bio: text("bio"),
+  imageUrl: text("imageUrl"),
+  nftContractAddress: varchar("nftContractAddress", { length: 42 }), // Polygon contract address
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Performer = typeof performers.$inferSelect;
+export type InsertPerformer = typeof performers.$inferInsert;
+
+/**
+ * Movies in the platform
+ */
+export const movies = mysqlTable("movies", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 500 }).notNull(),
+  releaseDate: timestamp("releaseDate"),
+  coverImageUrl: text("coverImageUrl"),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Movie = typeof movies.$inferSelect;
+export type InsertMovie = typeof movies.$inferInsert;
+
+/**
+ * Scenes within movies
+ */
+export const scenes = mysqlTable("scenes", {
+  id: int("id").autoincrement().primaryKey(),
+  movieId: int("movieId").notNull().references(() => movies.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 500 }),
+  sceneNumber: int("sceneNumber"),
+  duration: int("duration"), // Duration in seconds
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Scene = typeof scenes.$inferSelect;
+export type InsertScene = typeof scenes.$inferInsert;
+
+/**
+ * Action types with point values (e.g., "facial" = 10 points)
+ */
+export const actions = mysqlTable("actions", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  points: int("points").notNull().default(0),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Action = typeof actions.$inferSelect;
+export type InsertAction = typeof actions.$inferInsert;
+
+/**
+ * Junction table linking scenes, performers, and actions
+ * Tracks which performer did which action in which scene
+ */
+export const scenePerformerActions = mysqlTable("scenePerformerActions", {
+  id: int("id").autoincrement().primaryKey(),
+  sceneId: int("sceneId").notNull().references(() => scenes.id, { onDelete: "cascade" }),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  actionId: int("actionId").notNull().references(() => actions.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ScenePerformerAction = typeof scenePerformerActions.$inferSelect;
+export type InsertScenePerformerAction = typeof scenePerformerActions.$inferInsert;
+
+/**
+ * Tournaments
+ */
+export const tournaments = mysqlTable("tournaments", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 500 }).notNull(),
+  description: text("description"),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
+  requiredNftContractAddress: varchar("requiredNftContractAddress", { length: 42 }), // Required NFT to enter
+  entryFee: decimal("entryFee", { precision: 18, scale: 8 }).default("0"), // In MATIC or other token
+  status: mysqlEnum("status", ["upcoming", "active", "completed"]).default("upcoming").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Tournament = typeof tournaments.$inferSelect;
+export type InsertTournament = typeof tournaments.$inferInsert;
+
+/**
+ * Tournament entries (users who joined tournaments)
+ */
+export const tournamentEntries = mysqlTable("tournamentEntries", {
+  id: int("id").autoincrement().primaryKey(),
+  tournamentId: int("tournamentId").notNull().references(() => tournaments.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }), // The performer NFT they're using
+  nftTokenId: varchar("nftTokenId", { length: 78 }).notNull(), // The specific NFT token ID
+  totalScore: int("totalScore").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  uniqueEntry: unique().on(table.tournamentId, table.userId),
+}));
+
+export type TournamentEntry = typeof tournamentEntries.$inferSelect;
+export type InsertTournamentEntry = typeof tournamentEntries.$inferInsert;
+
+/**
+ * User NFT inventory cache (to avoid constant blockchain queries)
+ */
+export const userNftInventory = mysqlTable("userNftInventory", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  contractAddress: varchar("contractAddress", { length: 42 }).notNull(),
+  tokenId: varchar("tokenId", { length: 78 }).notNull(),
+  lastSyncedAt: timestamp("lastSyncedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  uniqueNft: unique().on(table.userId, table.contractAddress, table.tokenId),
+}));
+
+export type UserNftInventory = typeof userNftInventory.$inferSelect;
+export type InsertUserNftInventory = typeof userNftInventory.$inferInsert;
