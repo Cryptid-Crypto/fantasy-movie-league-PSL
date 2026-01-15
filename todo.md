@@ -56,3 +56,16 @@
 - [x] Update primary color to blue
 - [x] Update accent color to red
 - [x] Maintain clean, high-end aesthetic with new colors
+
+## Remove Gradients
+- [x] Remove all gradient effects from text and backgrounds
+- [x] Replace gradient text with solid color text
+- [x] Keep all colors solid throughout the platform
+
+## Sample Data Population
+- [x] Create seed script to populate database with sample data
+- [x] Add 10-15 sample porn stars with profiles
+- [x] Add 5-10 sample movies with release dates
+- [x] Add scenes with performer actions and points
+- [x] Create 2-3 sample tournaments (active, upcoming, completed)
+- [x] Add action types with point values

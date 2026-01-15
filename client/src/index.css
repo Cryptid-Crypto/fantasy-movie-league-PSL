@@ -191,13 +191,7 @@
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
   }
 
-  /* Blue and red gradient for premium feel */
-  .text-gradient-gold {
-    background: linear-gradient(135deg, oklch(0.60 0.22 250) 0%, oklch(0.55 0.25 25) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+
 
   /* Refined scrollbar for dark theme */
   ::-webkit-scrollbar {

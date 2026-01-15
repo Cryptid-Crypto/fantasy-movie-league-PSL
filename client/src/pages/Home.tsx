@@ -55,7 +55,7 @@ export default function Home() {
           <div className="space-y-4">
             <h1 className="text-6xl font-bold leading-tight">
               Compete with{" "}
-              <span className="text-gradient-gold">
+              <span className="text-primary">
                 Porn Star NFTs
               </span>
             </h1>
