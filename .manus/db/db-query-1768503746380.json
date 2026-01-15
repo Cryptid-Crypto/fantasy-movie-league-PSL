@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM scenePerformerActions;\nDELETE FROM tournamentEntries;\nDELETE FROM tournaments;\nDELETE FROM scenes;\nDELETE FROM moviePerformers;\nDELETE FROM movies;\nDELETE FROM performers;\nDELETE FROM actions;\nDELETE FROM userNftInventory;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute DELETE FROM scenePerformerActions;\nDELETE FROM tournamentEntries;\nDELETE FROM tournaments;\nDELETE FROM scenes;\nDELETE FROM moviePerformers;\nDELETE FROM movies;\nDELETE FROM performers;\nDELETE FROM actions;\nDELETE FROM userNftInventory;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 152
+}

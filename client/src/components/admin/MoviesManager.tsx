@@ -21,14 +21,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Film, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Film, Eye, User } from "lucide-react";
 import { toast } from "sonner";
 import { SceneManager } from "./SceneManager";
+import { MoviePerformersManager } from "./MoviePerformersManager";
 
 export function MoviesManager() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<any>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'performers' | 'scenes' | null>(null);
   
   const utils = trpc.useUtils();
   const { data: movies, isLoading } = trpc.admin.movies.list.useQuery();
@@ -94,12 +96,29 @@ export function MoviesManager() {
     return <div className="text-center py-8">Loading movies...</div>;
   }
 
-  if (selectedMovieId) {
+  if (selectedMovieId && viewMode === 'performers') {
+    const movie = movies?.find(m => m.id === selectedMovieId);
+    return (
+      <MoviePerformersManager
+        movieId={selectedMovieId}
+        movieTitle={movie?.title || 'Movie'}
+        onBack={() => {
+          setSelectedMovieId(null);
+          setViewMode(null);
+        }}
+      />
+    );
+  }
+
+  if (selectedMovieId && viewMode === 'scenes') {
     return (
       <div>
         <Button
           variant="ghost"
-          onClick={() => setSelectedMovieId(null)}
+          onClick={() => {
+            setSelectedMovieId(null);
+            setViewMode(null);
+          }}
           className="mb-4"
         >
           ← Back to Movies
@@ -217,12 +236,28 @@ export function MoviesManager() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedMovieId(movie.id)}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMovieId(movie.id);
+                        setViewMode('performers');
+                      }}
+                      title="Manage performers"
+                    >
+                      <User className="h-4 w-4 mr-1" />
+                      Performers
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMovieId(movie.id);
+                        setViewMode('scenes');
+                      }}
                       title="Manage scenes"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-4 w-4 mr-1" />
+                      Scenes
                     </Button>
                     <Dialog
                       open={editingMovie?.id === movie.id}

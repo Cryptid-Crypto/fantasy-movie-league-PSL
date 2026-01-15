@@ -69,3 +69,11 @@
 - [x] Add scenes with performer actions and points
 - [x] Create 2-3 sample tournaments (active, upcoming, completed)
 - [x] Add action types with point values
+
+## Movie-Performer Workflow Improvement
+- [x] Add movie_performers junction table to link performers to movies
+- [x] Update admin movie manager to add/remove performers from movies
+- [x] Update scene manager to only show performers from the selected movie
+- [x] Allow multiple actions per performer per scene
+- [x] Update database schema and migrations
+- [x] Update seed script to include movie-performer relationships

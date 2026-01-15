@@ -15,6 +15,13 @@
       "when": 1768500722029,
       "tag": "0001_violet_joystick",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768503568609,
+      "tag": "0002_tan_swordsman",
+      "breakpoints": true
     }
   ]
 }

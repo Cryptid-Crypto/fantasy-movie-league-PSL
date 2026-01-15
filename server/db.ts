@@ -7,6 +7,8 @@ import {
   InsertPerformer,
   movies,
   InsertMovie,
+  moviePerformers,
+  InsertMoviePerformer,
   scenes,
   InsertScene,
   actions,
@@ -191,6 +193,71 @@ export async function deleteMovie(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(movies).where(eq(movies.id, id));
+}
+
+// ============ MOVIE-PERFORMER FUNCTIONS ============
+
+export async function addPerformerToMovie(movieId: number, performerId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result: any = await db.insert(moviePerformers).values({ movieId, performerId });
+  return Number(result.insertId);
+}
+
+export async function removePerformerFromMovie(movieId: number, performerId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(moviePerformers).where(
+    and(
+      eq(moviePerformers.movieId, movieId),
+      eq(moviePerformers.performerId, performerId)
+    )
+  );
+}
+
+export async function getPerformersByMovieId(movieId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select({
+      id: performers.id,
+      name: performers.name,
+      bio: performers.bio,
+      imageUrl: performers.imageUrl,
+      nftContractAddress: performers.nftContractAddress,
+      createdAt: performers.createdAt,
+      updatedAt: performers.updatedAt,
+    })
+    .from(moviePerformers)
+    .innerJoin(performers, eq(moviePerformers.performerId, performers.id))
+    .where(eq(moviePerformers.movieId, movieId));
+  
+  return result;
+}
+
+export async function getMoviesByPerformerId(performerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select({
+      id: movies.id,
+      title: movies.title,
+      releaseDate: movies.releaseDate,
+      coverImageUrl: movies.coverImageUrl,
+      description: movies.description,
+      createdAt: movies.createdAt,
+      updatedAt: movies.updatedAt,
+    })
+    .from(moviePerformers)
+    .innerJoin(movies, eq(moviePerformers.movieId, movies.id))
+    .where(eq(moviePerformers.performerId, performerId))
+    .orderBy(desc(movies.releaseDate));
+  
+  return result;
 }
 
 // ============ SCENE FUNCTIONS ============

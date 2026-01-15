@@ -21,6 +21,7 @@ try {
   await connection.query('DELETE FROM tournament_entries');
   await connection.query('DELETE FROM tournaments');
   await connection.query('DELETE FROM scenes');
+  await connection.query('DELETE FROM movie_performers');
   await connection.query('DELETE FROM movies');
   await connection.query('DELETE FROM performers');
   await connection.query('DELETE FROM actions');
@@ -172,6 +173,29 @@ for (const movie of movies) {
 }
 console.log(`✅ Created ${movieResults.length} movies\n`);
 
+// Insert Movie-Performer Relationships
+console.log('Creating movie-performer relationships...');
+const moviePerformerData = [];
+for (const movie of movieResults) {
+  // Assign 3-5 random performers to each movie
+  const numPerformers = Math.floor(Math.random() * 3) + 3;
+  const selectedPerformers = performerResults
+    .sort(() => 0.5 - Math.random())
+    .slice(0, numPerformers);
+  
+  for (const performer of selectedPerformers) {
+    moviePerformerData.push({
+      movieId: movie.id,
+      performerId: performer.id,
+    });
+  }
+}
+
+for (const mp of moviePerformerData) {
+  await db.insert(schema.moviePerformers).values(mp);
+}
+console.log(`✅ Created ${moviePerformerData.length} movie-performer relationships\n`);
+
 // Insert Scenes
 console.log('Creating scenes...');
 const sceneData = [];
@@ -200,8 +224,23 @@ console.log(`✅ Created ${sceneResults.length} scenes\n`);
 console.log('Creating scene performer actions...');
 const actionData = [];
 for (const scene of sceneResults) {
-  const numPerformers = Math.floor(Math.random() * 2) + 1; // 1-2 performers per scene
-  const selectedPerformers = performerResults
+  // Get the movie for this scene
+  const movie = movieResults.find(m => m.id === scene.movieId);
+  if (!movie) continue;
+  
+  // Get performers assigned to this movie
+  const moviePerformersForScene = moviePerformerData
+    .filter(mp => mp.movieId === movie.id)
+    .map(mp => performerResults.find(p => p.id === mp.performerId))
+    .filter(Boolean);
+  
+  if (moviePerformersForScene.length === 0) continue;
+  
+  const numPerformers = Math.min(
+    Math.floor(Math.random() * 2) + 1,
+    moviePerformersForScene.length
+  ); // 1-2 performers per scene from movie's cast
+  const selectedPerformers = moviePerformersForScene
     .sort(() => 0.5 - Math.random())
     .slice(0, numPerformers);
   
@@ -270,6 +309,7 @@ console.log('Summary:');
 console.log(`  - ${actionResults.length} action types`);
 console.log(`  - ${performerResults.length} performers`);
 console.log(`  - ${movieResults.length} movies`);
+console.log(`  - ${moviePerformerData.length} movie-performer relationships`);
 console.log(`  - ${sceneResults.length} scenes`);
 console.log(`  - ${actionData.length} performer actions`);
 console.log(`  - ${tournamentResults.length} tournaments`);

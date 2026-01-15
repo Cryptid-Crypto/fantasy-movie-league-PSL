@@ -111,6 +111,23 @@ export const appRouter = router({
           await db.deleteMovie(input.id);
           return { success: true };
         }),
+      addPerformer: adminProcedure
+        .input(z.object({ movieId: z.number(), performerId: z.number() }))
+        .mutation(async ({ input }) => {
+          const id = await db.addPerformerToMovie(input.movieId, input.performerId);
+          return { id };
+        }),
+      removePerformer: adminProcedure
+        .input(z.object({ movieId: z.number(), performerId: z.number() }))
+        .mutation(async ({ input }) => {
+          await db.removePerformerFromMovie(input.movieId, input.performerId);
+          return { success: true };
+        }),
+      getPerformers: adminProcedure
+        .input(z.object({ movieId: z.number() }))
+        .query(async ({ input }) => {
+          return db.getPerformersByMovieId(input.movieId);
+        }),
     }),
 
     // Scene management

@@ -52,6 +52,20 @@ export type Movie = typeof movies.$inferSelect;
 export type InsertMovie = typeof movies.$inferInsert;
 
 /**
+ * Junction table linking movies and performers
+ * Tracks which performers appear in which movies
+ */
+export const moviePerformers = mysqlTable("moviePerformers", {
+  id: int("id").autoincrement().primaryKey(),
+  movieId: int("movieId").notNull().references(() => movies.id, { onDelete: "cascade" }),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MoviePerformer = typeof moviePerformers.$inferSelect;
+export type InsertMoviePerformer = typeof moviePerformers.$inferInsert;
+
+/**
  * Scenes within movies
  */
 export const scenes = mysqlTable("scenes", {

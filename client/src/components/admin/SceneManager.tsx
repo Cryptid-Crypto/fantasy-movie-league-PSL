@@ -39,7 +39,7 @@ export function SceneManager({ movieId }: { movieId: number }) {
   const utils = trpc.useUtils();
   const { data: movie } = trpc.admin.movies.getById.useQuery({ id: movieId });
   const { data: scenes, isLoading: scenesLoading } = trpc.admin.scenes.listByMovie.useQuery({ movieId });
-  const { data: performers } = trpc.admin.performers.list.useQuery();
+  const { data: performers } = trpc.admin.movies.getPerformers.useQuery({ movieId });
   const { data: actions } = trpc.admin.actions.list.useQuery();
   const { data: sceneActions } = trpc.admin.sceneActions.list.useQuery(
     { sceneId: selectedSceneId! },

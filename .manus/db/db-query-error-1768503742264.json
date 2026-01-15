@@ -1,0 +1,8 @@
+{
+  "query": "DELETE FROM scene_performer_actions;\nDELETE FROM tournament_entries;\nDELETE FROM tournaments;\nDELETE FROM scenes;\nDELETE FROM movie_performers;\nDELETE FROM movies;\nDELETE FROM performers;\nDELETE FROM actions;\nDELETE FROM user_nft_inventory;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute DELETE FROM scene_performer_actions;\nDELETE FROM tournament_entries;\nDELETE FROM tournaments;\nDELETE FROM scenes;\nDELETE FROM movie_performers;\nDELETE FROM movies;\nDELETE FROM performers;\nDELETE FROM actions;\nDELETE FROM user_nft_inventory;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'dwunvucqdxwx7y3rw9hj6z.scene_performer_actions' doesn't exist"
+  ]
+}
