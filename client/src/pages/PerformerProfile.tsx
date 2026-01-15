@@ -63,7 +63,7 @@ export default function PerformerProfile() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Profile Card */}
           <div className="lg:col-span-1">
-            <Card className="overflow-hidden glow">
+            <Card className="overflow-hidden card-elevated">
               <div className="aspect-[3/4] relative bg-muted">
                 {performer.imageUrl ? (
                   <img

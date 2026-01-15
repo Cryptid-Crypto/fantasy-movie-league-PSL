@@ -123,7 +123,7 @@ export default function Tournaments() {
               const isActive = now >= new Date(tournament.startDate) && now <= new Date(tournament.endDate);
 
               return (
-                <Card key={tournament.id} className="flex flex-col hover:glow transition-all">
+                <Card key={tournament.id} className="flex flex-col hover-lift transition-all">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
                       <Trophy className="h-8 w-8 text-primary" />

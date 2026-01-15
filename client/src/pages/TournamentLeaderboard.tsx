@@ -89,7 +89,7 @@ export default function TournamentLeaderboard() {
 
       <div className="container py-8 space-y-6">
         {/* Tournament Info */}
-        <Card className="glow">
+        <Card className="card-elevated">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">

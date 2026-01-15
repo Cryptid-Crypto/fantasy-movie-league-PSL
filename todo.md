@@ -39,3 +39,14 @@
 - [ ] Integration tests for tournament flow
 - [ ] UI/UX polish and responsive design
 - [x] Documentation for deployment
+
+## Branding Update
+- [x] Rename platform from "Fantasy Movie League" to "Porn Star League"
+- [x] Integrate PornStarLeagueLogoTB.png logo across all pages
+- [x] Update all text references to use new branding
+
+## Design Update
+- [x] Replace cyberpunk theme with clean, high-end luxury aesthetic
+- [x] Update color palette to sophisticated, premium colors (charcoal & gold)
+- [x] Refine typography and spacing for minimalist look
+- [x] Remove neon effects and glow animations

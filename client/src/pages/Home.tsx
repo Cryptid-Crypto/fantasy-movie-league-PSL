@@ -15,9 +15,9 @@ export default function Home() {
         <div className="container py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Trophy className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Fantasy Movie League
+              <img src="/logo.png" alt="Porn Star League" className="h-8 w-8" />
+              <span className="text-2xl font-bold text-foreground">
+                Porn Star League
               </span>
             </div>
             <div className="flex items-center gap-4">
@@ -55,12 +55,12 @@ export default function Home() {
           <div className="space-y-4">
             <h1 className="text-6xl font-bold leading-tight">
               Compete with{" "}
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                Performer NFTs
+              <span className="text-gradient-gold">
+                Porn Star NFTs
               </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The first Web3 fantasy tournament platform where your Performer NFTs compete based on
+              The first Web3 fantasy tournament platform where your Porn Star NFTs compete based on
               real scene performance data on Polygon Network.
             </p>
           </div>
@@ -109,7 +109,7 @@ export default function Home() {
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="glow hover:scale-105 transition-transform">
+          <Card className="card-elevated hover-lift">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                 <Wallet className="h-8 w-8 text-primary" />
@@ -121,7 +121,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="glow hover:scale-105 transition-transform">
+          <Card className="card-elevated hover-lift">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
                 <Trophy className="h-8 w-8 text-accent" />
@@ -133,7 +133,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="glow hover:scale-105 transition-transform">
+          <Card className="card-elevated hover-lift">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                 <Zap className="h-8 w-8 text-primary" />
@@ -145,7 +145,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="glow hover:scale-105 transition-transform">
+          <Card className="card-elevated hover-lift">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
                 <Crown className="h-8 w-8 text-accent" />
@@ -161,7 +161,7 @@ export default function Home() {
 
       {/* Stats Section */}
       <section className="container py-20">
-        <Card className="glow">
+        <Card className="card-elevated">
           <CardContent className="p-12">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
@@ -186,7 +186,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="container py-20">
-        <Card className="glow bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
+        <Card className="card-elevated bg-card border-primary/20">
           <CardContent className="p-12 text-center space-y-6">
             <h2 className="text-4xl font-bold">Ready to Compete?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -214,7 +214,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Trophy className="h-6 w-6 text-primary" />
-              <span className="font-semibold">Fantasy Movie League</span>
+              <span className="font-semibold">Porn Star League</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Built on Polygon Network © 2024

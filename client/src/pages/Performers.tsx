@@ -25,8 +25,8 @@ export default function Performers() {
               Back
             </Button>
           </Link>
-          <h1 className="text-4xl font-bold mb-2">Performers</h1>
-          <p className="text-muted-foreground">Browse all registered performers</p>
+          <h1 className="text-4xl font-bold mb-2">Porn Stars</h1>
+          <p className="text-muted-foreground">Browse all registered porn stars</p>
         </div>
       </div>
 
@@ -36,7 +36,7 @@ export default function Performers() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search performers..."
+              placeholder="Search porn stars..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -47,13 +47,13 @@ export default function Performers() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading performers...</p>
+            <p className="text-muted-foreground">Loading porn stars...</p>
           </div>
         ) : filteredPerformers && filteredPerformers.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {filteredPerformers.map((performer) => (
               <Link key={performer.id} href={`/performers/${performer.id}`}>
-                <Card className="overflow-hidden hover:glow transition-all cursor-pointer group">
+                <Card className="overflow-hidden card-elevated hover-lift cursor-pointer group">
                   <div className="aspect-[3/4] relative bg-muted">
                     {performer.imageUrl ? (
                       <img
@@ -84,7 +84,7 @@ export default function Performers() {
         ) : (
           <div className="text-center py-12 text-muted-foreground">
             <User className="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <p className="text-xl mb-2">No performers found</p>
+            <p className="text-xl mb-2">No porn stars found</p>
             {searchQuery && (
               <p className="text-sm">Try adjusting your search</p>
             )}

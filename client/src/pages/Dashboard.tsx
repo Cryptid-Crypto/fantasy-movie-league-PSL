@@ -87,17 +87,17 @@ export default function Dashboard() {
       <div className="container py-8 space-y-6">
         {/* Stats Overview */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="glow">
+          <Card className="card-elevated">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                NFT Collection
+                Porn Star NFTs
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-3xl font-bold">{nfts?.length || 0}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Performer NFTs</p>
+                  <p className="text-xs text-muted-foreground mt-1">Porn Star NFTs</p>
                 </div>
                 <Wallet className="h-8 w-8 text-primary" />
               </div>
@@ -109,7 +109,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glow">
+          <Card className="card-elevated">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Active Tournaments
@@ -131,7 +131,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glow">
+          <Card className="card-elevated">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Wallet Status
@@ -170,10 +170,10 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Your NFT Collection</CardTitle>
-                <CardDescription>Performer NFTs you own on Polygon</CardDescription>
-              </div>
+            <div>
+              <CardTitle>Your NFT Collection</CardTitle>
+              <CardDescription>Porn Star NFTs you own on Polygon</CardDescription>
+            </div>
               <Link href="/my-nfts">
                 <Button variant="outline" size="sm" className="gap-2">
                   View All
