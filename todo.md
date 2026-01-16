@@ -111,3 +111,12 @@
 - [x] Display performer type badge on performer profile pages
 - [ ] Add performer type filter to Performers list page
 - [x] Update seed script to include performer types for sample data
+
+## Tournament Roster Requirements
+- [x] Add tournamentRosterRequirements table to database schema
+- [x] Create UI for admins to define roster requirements when creating tournaments
+- [x] Allow specifying number of performers needed per type (Legend, Anal Queen, etc.) or "Any Type"
+- [ ] Update tournament entry validation to check if user's selected performers meet requirements
+- [ ] Display roster requirements on tournament cards and detail pages
+- [ ] Show user's progress toward meeting requirements in entry UI
+- [x] Update seed script to include roster requirements for sample tournaments

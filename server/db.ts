@@ -17,6 +17,8 @@ import {
   InsertScenePerformerAction,
   tournaments,
   InsertTournament,
+  tournamentRosterRequirements,
+  InsertTournamentRosterRequirement,
   tournamentEntries,
   InsertTournamentEntry,
   userNftInventory,
@@ -436,6 +438,35 @@ export async function updateTournament(id: number, data: Partial<InsertTournamen
   if (!db) throw new Error("Database not available");
   
   await db.update(tournaments).set(data).where(eq(tournaments.id, id));
+}
+
+// ============ TOURNAMENT ROSTER REQUIREMENTS FUNCTIONS ============
+
+export async function createTournamentRosterRequirement(requirement: InsertTournamentRosterRequirement) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tournamentRosterRequirements).values(requirement);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
+}
+
+export async function getTournamentRosterRequirements(tournamentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select()
+    .from(tournamentRosterRequirements)
+    .where(eq(tournamentRosterRequirements.tournamentId, tournamentId));
+}
+
+export async function deleteTournamentRosterRequirements(tournamentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(tournamentRosterRequirements).where(eq(tournamentRosterRequirements.tournamentId, tournamentId));
 }
 
 // ============ TOURNAMENT ENTRY FUNCTIONS ============

@@ -141,6 +141,20 @@ export type Tournament = typeof tournaments.$inferSelect;
 export type InsertTournament = typeof tournaments.$inferInsert;
 
 /**
+ * Tournament roster requirements (defines what performer types are needed to enter)
+ */
+export const tournamentRosterRequirements = mysqlTable("tournamentRosterRequirements", {
+  id: int("id").autoincrement().primaryKey(),
+  tournamentId: int("tournamentId").notNull().references(() => tournaments.id, { onDelete: "cascade" }),
+  performerType: varchar("performerType", { length: 50 }), // null means "Any Type"
+  requiredCount: int("requiredCount").notNull(), // How many performers of this type are required
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TournamentRosterRequirement = typeof tournamentRosterRequirements.$inferSelect;
+export type InsertTournamentRosterRequirement = typeof tournamentRosterRequirements.$inferInsert;
+
+/**
  * Tournament entries (users who joined tournaments)
  */
 export const tournamentEntries = mysqlTable("tournamentEntries", {

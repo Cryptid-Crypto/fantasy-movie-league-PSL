@@ -247,9 +247,26 @@ export const appRouter = router({
           endDate: z.date(),
           requiredNftContractAddress: z.string().optional(),
           entryFee: z.string().optional(),
+          rosterRequirements: z.array(z.object({
+            performerType: z.string().nullable(), // null means "Any Type"
+            requiredCount: z.number(),
+          })).optional(),
         }))
         .mutation(async ({ input }) => {
-          const id = await db.createTournament(input);
+          const { rosterRequirements, ...tournamentData } = input;
+          const id = await db.createTournament(tournamentData);
+          
+          // Create roster requirements if provided
+          if (rosterRequirements && rosterRequirements.length > 0) {
+            for (const req of rosterRequirements) {
+              await db.createTournamentRosterRequirement({
+                tournamentId: id,
+                performerType: req.performerType,
+                requiredCount: req.requiredCount,
+              });
+            }
+          }
+          
           return { id };
         }),
       update: adminProcedure
@@ -313,6 +330,11 @@ export const appRouter = router({
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Tournament not found' });
         }
         return tournament;
+      }),
+    getRosterRequirements: publicProcedure
+      .input(z.object({ tournamentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getTournamentRosterRequirements(input.tournamentId);
       }),
     getLeaderboard: publicProcedure
       .input(z.object({ tournamentId: z.number() }))

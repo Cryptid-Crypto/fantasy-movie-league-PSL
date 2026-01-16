@@ -19,6 +19,7 @@ console.log('Clearing existing data...');
 try {
   await connection.query('DELETE FROM scene_performer_actions');
   await connection.query('DELETE FROM tournament_entries');
+  await connection.query('DELETE FROM tournament_roster_requirements');
   await connection.query('DELETE FROM tournaments');
   await connection.query('DELETE FROM scenes');
   await connection.query('DELETE FROM movie_performers');
@@ -311,6 +312,30 @@ for (const tournament of tournaments) {
   tournamentResults.push({ ...tournament, id: Number(result[0].insertId) });
 }
 console.log(`✅ Created ${tournamentResults.length} tournaments\n`);
+
+// Insert Tournament Roster Requirements
+console.log('Creating tournament roster requirements...');
+const rosterRequirements = [
+  // January Championship: 2 Legends, 1 Anal Queen, 2 Any Type
+  { tournamentId: tournamentResults[0].id, performerType: 'Legend', requiredCount: 2 },
+  { tournamentId: tournamentResults[0].id, performerType: 'Anal Queen', requiredCount: 1 },
+  { tournamentId: tournamentResults[0].id, performerType: null, requiredCount: 2 }, // Any Type
+  
+  // Spring Showdown: 1 Super Slut, 1 Extreme, 3 Any Type
+  { tournamentId: tournamentResults[1].id, performerType: 'Super Slut', requiredCount: 1 },
+  { tournamentId: tournamentResults[1].id, performerType: 'Extreme', requiredCount: 1 },
+  { tournamentId: tournamentResults[1].id, performerType: null, requiredCount: 3 },
+  
+  // Summer Heat Challenge: 1 Hall of Fame, 2 Rising Star, 2 Any Type
+  { tournamentId: tournamentResults[2].id, performerType: 'Hall of Fame', requiredCount: 1 },
+  { tournamentId: tournamentResults[2].id, performerType: 'Rising Star', requiredCount: 2 },
+  { tournamentId: tournamentResults[2].id, performerType: null, requiredCount: 2 },
+];
+
+for (const requirement of rosterRequirements) {
+  await db.insert(schema.tournamentRosterRequirements).values(requirement);
+}
+console.log(`✅ Created ${rosterRequirements.length} roster requirements\n`);
 
 await connection.end();
 
