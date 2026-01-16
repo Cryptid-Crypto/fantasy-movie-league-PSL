@@ -48,7 +48,11 @@ export const appRouter = router({
         }))
         .mutation(async ({ input }) => {
           const id = await db.createPerformer(input);
-          return { id };
+          const performer = await db.getPerformerById(id);
+          if (!performer) {
+            throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create performer' });
+          }
+          return performer;
         }),
       update: adminProcedure
         .input(z.object({

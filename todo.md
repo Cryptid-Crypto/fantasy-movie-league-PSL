@@ -82,3 +82,13 @@
 - [x] Fix login redirect issue - users not being redirected to login when accessing protected pages
 - [x] Ensure admin dashboard is accessible after login
 - [x] Test complete authentication flow
+
+## Login UI Improvement
+- [ ] Add prominent "Sign In" button to homepage navigation when not logged in
+- [ ] Ensure login button is visible and accessible from all pages
+
+## Performer Autocomplete Feature
+- [x] Replace performer dropdown with autocomplete/combobox in MoviePerformersManager
+- [x] Show matching performers as user types
+- [x] Add "Create new performer" option when no matches found
+- [x] Implement inline performer creation dialog
