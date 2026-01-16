@@ -77,3 +77,8 @@
 - [x] Allow multiple actions per performer per scene
 - [x] Update database schema and migrations
 - [x] Update seed script to include movie-performer relationships
+
+## Authentication Fix
+- [x] Fix login redirect issue - users not being redirected to login when accessing protected pages
+- [x] Ensure admin dashboard is accessible after login
+- [x] Test complete authentication flow

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Users, Zap, Trophy } from "lucide-react";
 import { useLocation } from "wouter";
+import { getLoginUrl } from "@/const";
 import { MoviesManager } from "@/components/admin/MoviesManager";
 import { PerformersManager } from "@/components/admin/PerformersManager";
 import { ActionsManager } from "@/components/admin/ActionsManager";
@@ -25,7 +26,14 @@ export default function AdminDashboard() {
 
   const [, setLocation] = useLocation();
 
-  if (!user || user.role !== 'admin') {
+  if (!user) {
+    // Not logged in - redirect to login
+    window.location.href = getLoginUrl();
+    return null;
+  }
+
+  if (user.role !== 'admin') {
+    // Logged in but not admin - redirect to home
     setLocation('/');
     return null;
   }
