@@ -123,8 +123,17 @@ export async function createPerformer(performer: InsertPerformer) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(performers).values(performer);
-  return Number(result.insertId);
+  const result = await db.insert(performers).values(performer);
+  
+  // Extract insertId from the result array
+  const insertId = result[0]?.insertId;
+  
+  if (!insertId) {
+    throw new Error("Failed to get insert ID from database");
+  }
+  
+  const id = typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
+  return id;
 }
 
 export async function getPerformerById(id: number) {

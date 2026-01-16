@@ -41,7 +41,7 @@ export const appRouter = router({
       }),
       create: adminProcedure
         .input(z.object({
-          name: z.string(),
+          name: z.string().min(1, "Performer name is required"),
           bio: z.string().optional(),
           imageUrl: z.string().optional(),
           nftContractAddress: z.string().optional(),

@@ -92,3 +92,8 @@
 - [x] Show matching performers as user types
 - [x] Add "Create new performer" option when no matches found
 - [x] Implement inline performer creation dialog
+
+## Performer Creation Error Fix
+- [x] Debug and fix error when creating new performer
+- [x] Check database schema and mutation logic
+- [x] Test performer creation flow end-to-end
