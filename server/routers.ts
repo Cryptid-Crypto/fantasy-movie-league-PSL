@@ -330,7 +330,7 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already entered this tournament' });
         }
         
-        const id = await db.createTournamentEntry({
+        const id = await db.enterTournament({
           ...input,
           userId: ctx.user.id,
           totalScore: 0,

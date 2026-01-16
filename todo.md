@@ -97,3 +97,8 @@
 - [x] Debug and fix error when creating new performer
 - [x] Check database schema and mutation logic
 - [x] Test performer creation flow end-to-end
+
+## Performer Addition Error Fix
+- [x] Debug error when adding performer to movie through MoviePerformersManager
+- [x] Check if issue is in frontend component or backend mutation
+- [x] Verify the add performer to movie mutation is working correctly

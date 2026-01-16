@@ -171,8 +171,10 @@ export async function createMovie(movie: InsertMovie) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(movies).values(movie);
-  return Number(result.insertId);
+  const result = await db.insert(movies).values(movie);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getMovieById(id: number) {
@@ -210,8 +212,17 @@ export async function addPerformerToMovie(movieId: number, performerId: number) 
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(moviePerformers).values({ movieId, performerId });
-  return Number(result.insertId);
+  const result = await db.insert(moviePerformers).values({ movieId, performerId });
+  
+  // Extract insertId from the result array
+  const insertId = result[0]?.insertId;
+  
+  if (!insertId) {
+    throw new Error("Failed to get insert ID from database");
+  }
+  
+  const id = typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
+  return id;
 }
 
 export async function removePerformerFromMovie(movieId: number, performerId: number) {
@@ -275,8 +286,10 @@ export async function createScene(scene: InsertScene) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(scenes).values(scene);
-  return Number(result.insertId);
+  const result = await db.insert(scenes).values(scene);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getScenesByMovieId(movieId: number) {
@@ -306,8 +319,10 @@ export async function createAction(action: InsertAction) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(actions).values(action);
-  return Number(result.insertId);
+  const result = await db.insert(actions).values(action);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getAllActions() {
@@ -337,8 +352,10 @@ export async function logScenePerformerAction(data: InsertScenePerformerAction) 
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(scenePerformerActions).values(data);
-  return Number(result.insertId);
+  const result = await db.insert(scenePerformerActions).values(data);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getScenePerformerActions(sceneId: number) {
@@ -376,8 +393,10 @@ export async function createTournament(tournament: InsertTournament) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(tournaments).values(tournament);
-  return Number(result.insertId);
+  const result = await db.insert(tournaments).values(tournament);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getTournamentById(id: number) {
@@ -421,12 +440,14 @@ export async function updateTournament(id: number, data: Partial<InsertTournamen
 
 // ============ TOURNAMENT ENTRY FUNCTIONS ============
 
-export async function createTournamentEntry(entry: InsertTournamentEntry) {
+export async function enterTournament(entry: InsertTournamentEntry) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result: any = await db.insert(tournamentEntries).values(entry);
-  return Number(result.insertId);
+  const result = await db.insert(tournamentEntries).values(entry);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getTournamentEntries(tournamentId: number) {
