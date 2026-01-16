@@ -80,17 +80,24 @@ export default function PerformerProfile() {
               <CardContent className="p-6 space-y-4">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{performer.name}</h1>
-                  {performer.nftContractAddress && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Badge variant="outline" className="font-mono text-xs">
-                        NFT Contract
+                  <div className="flex flex-wrap items-center gap-2">
+                    {performer.performerType && (
+                      <Badge className="bg-primary/10 text-primary border-primary/20">
+                        {performer.performerType}
                       </Badge>
-                      <span className="text-accent font-mono text-xs">
-                        {performer.nftContractAddress.slice(0, 6)}...
-                        {performer.nftContractAddress.slice(-4)}
-                      </span>
-                    </div>
-                  )}
+                    )}
+                    {performer.nftContractAddress && (
+                      <>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          NFT Contract
+                        </Badge>
+                        <span className="text-accent font-mono text-xs">
+                          {performer.nftContractAddress.slice(0, 6)}...
+                          {performer.nftContractAddress.slice(-4)}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
                 {performer.bio && (
                   <div>

@@ -1,0 +1,1 @@
+ALTER TABLE `performers` ADD `performerType` enum('Legend','Anal Queen','Super Slut','Extreme','Girl Next Door','Rising Star','Hall of Fame','Specialist');

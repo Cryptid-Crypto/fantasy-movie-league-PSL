@@ -5,6 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -24,9 +31,24 @@ import {
 import { Plus, Pencil, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
 
+const PERFORMER_TYPES = [
+  "Legend",
+  "Anal Queen",
+  "Super Slut",
+  "Extreme",
+  "Girl Next Door",
+  "Rising Star",
+  "Hall of Fame",
+  "Specialist",
+] as const;
+
+type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist";
+
 export function PerformersManager() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingPerformer, setEditingPerformer] = useState<any>(null);
+  const [performerType, setPerformerType] = useState<PerformerType | "">("");
+  const [editPerformerType, setEditPerformerType] = useState<PerformerType | "">("");
   
   const utils = trpc.useUtils();
   const { data: performers, isLoading } = trpc.admin.performers.list.useQuery();
@@ -71,6 +93,7 @@ export function PerformersManager() {
       bio: formData.get("bio") as string || undefined,
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
+      performerType: performerType || undefined as PerformerType | undefined,
     });
   };
 
@@ -83,6 +106,7 @@ export function PerformersManager() {
       bio: formData.get("bio") as string || undefined,
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
+      performerType: editPerformerType || undefined as PerformerType | undefined,
     });
   };
 
@@ -140,6 +164,21 @@ export function PerformersManager() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="performerType">Performer Type</Label>
+                  <Select value={performerType} onValueChange={(value) => setPerformerType(value as PerformerType)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PERFORMER_TYPES.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="nftContractAddress">NFT Contract Address (Polygon)</Label>
                   <Input
                     id="nftContractAddress"
@@ -163,6 +202,7 @@ export function PerformersManager() {
           <TableHeader>
             <TableRow>
               <TableHead>Performer</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>NFT Contract</TableHead>
               <TableHead>Bio</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -187,6 +227,15 @@ export function PerformersManager() {
                     <span className="font-medium">{performer.name}</span>
                   </div>
                 </TableCell>
+                <TableCell>
+                  {performer.performerType ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      {performer.performerType}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">—</span>
+                  )}
+                </TableCell>
                 <TableCell className="font-mono text-xs">
                   {performer.nftContractAddress ? (
                     <span className="text-accent">
@@ -210,7 +259,10 @@ export function PerformersManager() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setEditingPerformer(performer)}
+                          onClick={() => {
+                            setEditingPerformer(performer);
+                            setEditPerformerType(performer.performerType || "");
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -247,6 +299,21 @@ export function PerformersManager() {
                                 type="url"
                                 defaultValue={performer.imageUrl || ""}
                               />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-performerType">Performer Type</Label>
+                              <Select value={editPerformerType} onValueChange={(value) => setEditPerformerType(value as PerformerType)}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type (optional)" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {PERFORMER_TYPES.map((type) => (
+                                    <SelectItem key={type} value={type}>
+                                      {type}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="edit-nftContractAddress">NFT Contract Address</Label>

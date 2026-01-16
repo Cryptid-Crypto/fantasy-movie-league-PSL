@@ -28,6 +28,16 @@ export const performers = mysqlTable("performers", {
   bio: text("bio"),
   imageUrl: text("imageUrl"),
   nftContractAddress: varchar("nftContractAddress", { length: 42 }), // Polygon contract address
+  performerType: mysqlEnum("performerType", [
+    "Legend",
+    "Anal Queen",
+    "Super Slut",
+    "Extreme",
+    "Girl Next Door",
+    "Rising Star",
+    "Hall of Fame",
+    "Specialist",
+  ]),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

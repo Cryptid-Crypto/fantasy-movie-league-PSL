@@ -26,10 +26,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, User, ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const PERFORMER_TYPES = [
+  "Legend",
+  "Anal Queen",
+  "Super Slut",
+  "Extreme",
+  "Girl Next Door",
+  "Rising Star",
+  "Hall of Fame",
+  "Specialist",
+] as const;
+
+type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist";
 
 interface MoviePerformersManagerProps {
   movieId: number;
@@ -48,6 +68,7 @@ export function MoviePerformersManager({ movieId, movieTitle, onBack }: MoviePer
   const [newPerformerName, setNewPerformerName] = useState("");
   const [newPerformerBio, setNewPerformerBio] = useState("");
   const [newPerformerImage, setNewPerformerImage] = useState("");
+  const [newPerformerType, setNewPerformerType] = useState<PerformerType | "">("");
   
   const utils = trpc.useUtils();
   const { data: moviePerformers, isLoading: performersLoading } = trpc.admin.movies.getPerformers.useQuery({ movieId });
@@ -88,6 +109,7 @@ export function MoviePerformersManager({ movieId, movieTitle, onBack }: MoviePer
       setNewPerformerName("");
       setNewPerformerBio("");
       setNewPerformerImage("");
+      setNewPerformerType("");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -114,6 +136,7 @@ export function MoviePerformersManager({ movieId, movieTitle, onBack }: MoviePer
       name: newPerformerName,
       bio: newPerformerBio || undefined,
       imageUrl: newPerformerImage || undefined,
+      performerType: newPerformerType || undefined as PerformerType | undefined,
     });
   };
 
@@ -261,6 +284,21 @@ export function MoviePerformersManager({ movieId, movieTitle, onBack }: MoviePer
                 placeholder="Enter performer bio (optional)"
                 rows={4}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="performerType">Performer Type</Label>
+              <Select value={newPerformerType} onValueChange={(value) => setNewPerformerType(value as PerformerType)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERFORMER_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="image">Image URL</Label>

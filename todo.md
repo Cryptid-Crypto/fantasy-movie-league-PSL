@@ -102,3 +102,12 @@
 - [x] Debug error when adding performer to movie through MoviePerformersManager
 - [x] Check if issue is in frontend component or backend mutation
 - [x] Verify the add performer to movie mutation is working correctly
+
+## Performer Type Feature
+- [x] Add performerType enum field to performers table in database schema
+- [x] Update createPerformer and updatePerformer functions to handle performer type
+- [x] Add performer type dropdown to PerformersManager create/edit forms
+- [x] Add performer type dropdown to MoviePerformersManager create form
+- [x] Display performer type badge on performer profile pages
+- [ ] Add performer type filter to Performers list page
+- [x] Update seed script to include performer types for sample data
