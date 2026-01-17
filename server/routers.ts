@@ -350,6 +350,11 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getTournamentRosterRequirements(input.tournamentId);
       }),
+    getUserEntry: protectedProcedure
+      .input(z.object({ tournamentId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getUserTournamentEntry(input.tournamentId, ctx.user.id);
+      }),
     getLeaderboard: publicProcedure
       .input(z.object({ tournamentId: z.number() }))
       .query(async ({ input }) => {
@@ -378,6 +383,68 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already entered this tournament' });
         }
         
+        // Validate roster is not empty
+        if (!input.roster || input.roster.length === 0) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Roster cannot be empty' });
+        }
+        
+        // Get user's NFTs to verify ownership
+        const userNfts = await db.getUserNfts(ctx.user.id);
+        const userNftMap = new Map(userNfts.map(nft => [`${nft.performerId}-${nft.tokenId}`, nft]));
+        
+        // Verify NFT ownership for all performers in roster
+        for (const performer of input.roster) {
+          const key = `${performer.performerId}-${performer.nftTokenId}`;
+          if (!userNftMap.has(key)) {
+            throw new TRPCError({ 
+              code: 'FORBIDDEN', 
+              message: `You do not own NFT #${performer.nftTokenId} for performer ID ${performer.performerId}` 
+            });
+          }
+        }
+        
+        // Get tournament roster requirements
+        const requirements = await db.getTournamentRosterRequirements(input.tournamentId);
+        
+        if (requirements && requirements.length > 0) {
+          // Build a map of performer types in the roster
+          const rosterPerformerTypes = new Map<string | null, number>();
+          
+          for (const performer of input.roster) {
+            const nft = userNftMap.get(`${performer.performerId}-${performer.nftTokenId}`);
+            const performerType = nft?.performerType || null;
+            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
+          }
+          
+          // Validate each requirement
+          const unmetRequirements: string[] = [];
+          
+          for (const req of requirements) {
+            const requiredType = req.performerType;
+            const requiredCount = req.requiredCount;
+            
+            if (requiredType === null) {
+              // "Any Type" requirement - check total roster size
+              if (input.roster.length < requiredCount) {
+                unmetRequirements.push(`${requiredCount} Any Type (you have ${input.roster.length})`);
+              }
+            } else {
+              // Specific type requirement
+              const actualCount = rosterPerformerTypes.get(requiredType) || 0;
+              if (actualCount < requiredCount) {
+                unmetRequirements.push(`${requiredCount} ${requiredType} (you have ${actualCount})`);
+              }
+            }
+          }
+          
+          if (unmetRequirements.length > 0) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `Roster does not meet requirements: ${unmetRequirements.join(', ')}` 
+            });
+          }
+        }
+        
         // Create the tournament entry
         const entryId = await db.enterTournament({
           tournamentId: input.tournamentId,
@@ -400,6 +467,109 @@ export const appRouter = router({
       .input(z.object({ entryId: z.number() }))
       .query(async ({ input }) => {
         return db.getEntryPerformers(input.entryId);
+      }),
+    updateEntry: protectedProcedure
+      .input(z.object({
+        tournamentId: z.number(),
+        roster: z.array(z.object({
+          performerId: z.number(),
+          nftTokenId: z.string(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Get existing entry
+        const entry = await db.getUserTournamentEntry(input.tournamentId, ctx.user.id);
+        if (!entry) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'No entry found for this tournament' });
+        }
+        
+        // Check if tournament has started
+        const tournament = await db.getTournamentById(input.tournamentId);
+        if (!tournament) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Tournament not found' });
+        }
+        
+        const now = new Date();
+        const startDate = new Date(tournament.startDate);
+        if (now >= startDate) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot edit roster after tournament has started' });
+        }
+        
+        // Validate roster is not empty
+        if (!input.roster || input.roster.length === 0) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Roster cannot be empty' });
+        }
+        
+        // Get user's NFTs to verify ownership
+        const userNfts = await db.getUserNfts(ctx.user.id);
+        const userNftMap = new Map(userNfts.map(nft => [`${nft.performerId}-${nft.tokenId}`, nft]));
+        
+        // Verify NFT ownership for all performers in roster
+        for (const performer of input.roster) {
+          const key = `${performer.performerId}-${performer.nftTokenId}`;
+          if (!userNftMap.has(key)) {
+            throw new TRPCError({ 
+              code: 'FORBIDDEN', 
+              message: `You do not own NFT #${performer.nftTokenId} for performer ID ${performer.performerId}` 
+            });
+          }
+        }
+        
+        // Get tournament roster requirements
+        const requirements = await db.getTournamentRosterRequirements(input.tournamentId);
+        
+        if (requirements && requirements.length > 0) {
+          // Build a map of performer types in the roster
+          const rosterPerformerTypes = new Map<string | null, number>();
+          
+          for (const performer of input.roster) {
+            const nft = userNftMap.get(`${performer.performerId}-${performer.nftTokenId}`);
+            const performerType = nft?.performerType || null;
+            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
+          }
+          
+          // Validate each requirement
+          const unmetRequirements: string[] = [];
+          
+          for (const req of requirements) {
+            const requiredType = req.performerType;
+            const requiredCount = req.requiredCount;
+            
+            if (requiredType === null) {
+              // "Any Type" requirement - check total roster size
+              if (input.roster.length < requiredCount) {
+                unmetRequirements.push(`${requiredCount} Any Type (you have ${input.roster.length})`);
+              }
+            } else {
+              // Specific type requirement
+              const actualCount = rosterPerformerTypes.get(requiredType) || 0;
+              if (actualCount < requiredCount) {
+                unmetRequirements.push(`${requiredCount} ${requiredType} (you have ${actualCount})`);
+              }
+            }
+          }
+          
+          if (unmetRequirements.length > 0) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `Roster does not meet requirements: ${unmetRequirements.join(', ')}` 
+            });
+          }
+        }
+        
+        // Delete existing performers
+        await db.deleteEntryPerformers(entry.id);
+        
+        // Add new performers
+        for (const performer of input.roster) {
+          await db.addPerformerToEntry({
+            entryId: entry.id,
+            performerId: performer.performerId,
+            nftTokenId: performer.nftTokenId,
+          });
+        }
+        
+        return { id: entry.id };
       }),
   }),
 

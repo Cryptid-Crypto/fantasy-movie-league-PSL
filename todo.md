@@ -154,3 +154,16 @@
 - [x] Create statistics page UI with charts and metrics
 - [x] Add navigation link from performer profile to statistics page
 - [x] Write and pass vitest tests for statistics feature
+
+## Roster Editing and Backend Validation
+- [x] Add backend validation for roster requirements in tournament entry endpoint
+- [x] Verify NFT ownership on server-side before accepting entry
+- [x] Validate that roster meets all tournament requirements (type and count)
+- [x] Return detailed validation errors to frontend
+- [x] Add endpoint to check if user has existing entry for tournament
+- [x] Create endpoint to update/edit existing tournament entry roster
+- [x] Add UI to edit roster for tournaments that haven't started yet
+- [x] Show "Edit Roster" button on tournament cards when user has entry
+- [x] Prevent roster editing after tournament starts
+- [x] Write vitest tests for backend validation logic
+- [x] Write vitest tests for roster editing functionality

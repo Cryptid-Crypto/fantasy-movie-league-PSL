@@ -15,6 +15,7 @@ export default function TournamentEntry() {
   const { user } = useAuth();
 
   const [selectedRoster, setSelectedRoster] = useState<Array<{ performerId: number; nftTokenId: string }>>([]);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const { data: tournament, isLoading: tournamentLoading } = trpc.tournaments.getById.useQuery(
     { id: tournamentId },
@@ -28,9 +29,44 @@ export default function TournamentEntry() {
 
   const { data: userNfts, isLoading: nftsLoading } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
 
+  // Check if user has existing entry
+  const { data: existingEntry } = trpc.tournaments.getUserEntry.useQuery(
+    { tournamentId },
+    { enabled: !!user && tournamentId > 0 }
+  );
+
+  // Load existing roster if in edit mode
+  const { data: existingRoster } = trpc.tournaments.getEntryPerformers.useQuery(
+    { entryId: existingEntry?.id || 0 },
+    { enabled: !!existingEntry }
+  );
+
+  // Initialize roster with existing data when editing
+  useEffect(() => {
+    if (existingEntry && existingRoster && existingRoster.length > 0) {
+      setIsEditMode(true);
+      setSelectedRoster(
+        existingRoster.map((ep) => ({
+          performerId: ep.performerId,
+          nftTokenId: ep.nftTokenId,
+        }))
+      );
+    }
+  }, [existingEntry, existingRoster]);
+
   const enterMutation = trpc.tournaments.enter.useMutation({
     onSuccess: () => {
       toast.success("Successfully entered tournament!");
+      navigate(`/tournaments/${tournamentId}`);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const updateMutation = trpc.tournaments.updateEntry.useMutation({
+    onSuccess: () => {
+      toast.success("Roster updated successfully!");
       navigate(`/tournaments/${tournamentId}`);
     },
     onError: (error) => {
@@ -87,10 +123,17 @@ export default function TournamentEntry() {
       return;
     }
 
-    enterMutation.mutate({
-      tournamentId,
-      roster: selectedRoster,
-    });
+    if (isEditMode) {
+      updateMutation.mutate({
+        tournamentId,
+        roster: selectedRoster,
+      });
+    } else {
+      enterMutation.mutate({
+        tournamentId,
+        roster: selectedRoster,
+      });
+    }
   };
 
   if (tournamentLoading || requirementsLoading || nftsLoading) {
@@ -145,7 +188,9 @@ export default function TournamentEntry() {
             <Trophy className="h-8 w-8 text-primary" />
             <h1 className="text-4xl font-bold">{tournament.name}</h1>
           </div>
-          <p className="text-muted-foreground">Build your roster to enter the tournament</p>
+          <p className="text-muted-foreground">
+            {isEditMode ? "Edit your roster for this tournament" : "Build your roster to enter the tournament"}
+          </p>
         </div>
       </div>
 
@@ -221,9 +266,11 @@ export default function TournamentEntry() {
                     <Button
                       className="w-full"
                       onClick={handleSubmit}
-                      disabled={!isRosterValid || enterMutation.isPending}
+                      disabled={!isRosterValid || enterMutation.isPending || updateMutation.isPending}
                     >
-                      {enterMutation.isPending ? "Entering..." : "Enter Tournament"}
+                      {isEditMode
+                        ? (updateMutation.isPending ? "Updating..." : "Update Roster")
+                        : (enterMutation.isPending ? "Entering..." : "Enter Tournament")}
                     </Button>
                   </>
                 ) : (

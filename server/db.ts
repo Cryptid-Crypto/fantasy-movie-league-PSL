@@ -557,6 +557,13 @@ export async function updateTournamentEntryScore(entryId: number, score: number)
   await db.update(tournamentEntries).set({ totalScore: score }).where(eq(tournamentEntries.id, entryId));
 }
 
+export async function deleteEntryPerformers(entryId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(tournamentEntryPerformers).where(eq(tournamentEntryPerformers.entryId, entryId));
+}
+
 // ============ NFT INVENTORY FUNCTIONS ============
 
 export async function syncUserNft(nft: InsertUserNftInventory) {
