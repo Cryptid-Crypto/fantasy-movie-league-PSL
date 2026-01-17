@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Trophy, Medal, ArrowLeft, User, Crown } from "lucide-react";
 import { Link } from "wouter";
+import { TournamentRosterRequirements } from "@/components/TournamentRosterRequirements";
 
 export default function TournamentLeaderboard() {
   const [, params] = useRoute("/tournaments/:id");
@@ -104,7 +105,7 @@ export default function TournamentLeaderboard() {
               {getStatusBadge(tournament)}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground mb-1">Start Date</p>
@@ -122,6 +123,9 @@ export default function TournamentLeaderboard() {
                 <p className="text-sm text-muted-foreground mb-1">Participants</p>
                 <p className="font-semibold">{leaderboard?.length || 0}</p>
               </div>
+            </div>
+            <div className="pt-4 border-t">
+              <TournamentRosterRequirements tournamentId={tournamentId} />
             </div>
           </CardContent>
         </Card>
@@ -142,8 +146,7 @@ export default function TournamentLeaderboard() {
                     <TableRow>
                       <TableHead className="w-16">Rank</TableHead>
                       <TableHead>User</TableHead>
-                      <TableHead>Performer</TableHead>
-                      <TableHead>NFT Token</TableHead>
+                      <TableHead>Roster</TableHead>
                       <TableHead className="text-right">Score</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -166,23 +169,38 @@ export default function TournamentLeaderboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-3">
-                            {entry.performerImage ? (
-                              <img
-                                src={entry.performerImage}
-                                alt={entry.performerName || "Performer"}
-                                className="w-10 h-10 rounded-full object-cover"
-                              />
+                          <div className="flex items-center gap-2">
+                            {entry.roster && entry.roster.length > 0 ? (
+                              <>
+                                <div className="flex -space-x-2">
+                                  {entry.roster.slice(0, 3).map((performer) => (
+                                    performer.performerImage ? (
+                                      <img
+                                        key={performer.id}
+                                        src={performer.performerImage}
+                                        alt={performer.performerName || "Performer"}
+                                        className="w-8 h-8 rounded-full object-cover border-2 border-background"
+                                        title={performer.performerName || undefined}
+                                      />
+                                    ) : (
+                                      <div
+                                        key={performer.id}
+                                        className="w-8 h-8 rounded-full bg-muted flex items-center justify-center border-2 border-background"
+                                        title={performer.performerName || undefined}
+                                      >
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                      </div>
+                                    )
+                                  ))}
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {entry.roster.length} performer{entry.roster.length !== 1 ? 's' : ''}
+                                </span>
+                              </>
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                                <User className="h-5 w-5 text-muted-foreground" />
-                              </div>
+                              <span className="text-sm text-muted-foreground">No roster</span>
                             )}
-                            <span className="font-medium">{entry.performerName}</span>
                           </div>
-                        </TableCell>
-                        <TableCell className="font-mono text-sm text-muted-foreground">
-                          #{entry.nftTokenId}
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge

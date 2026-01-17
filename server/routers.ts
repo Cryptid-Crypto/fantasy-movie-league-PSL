@@ -353,13 +353,23 @@ export const appRouter = router({
     getLeaderboard: publicProcedure
       .input(z.object({ tournamentId: z.number() }))
       .query(async ({ input }) => {
-        return db.getTournamentEntries(input.tournamentId);
+        const entries = await db.getTournamentEntries(input.tournamentId);
+        // For each entry, fetch their roster
+        const entriesWithRosters = await Promise.all(
+          entries.map(async (entry) => {
+            const roster = await db.getEntryPerformers(entry.id);
+            return { ...entry, roster };
+          })
+        );
+        return entriesWithRosters;
       }),
     enter: protectedProcedure
       .input(z.object({
         tournamentId: z.number(),
-        performerId: z.number(),
-        nftTokenId: z.string(),
+        roster: z.array(z.object({
+          performerId: z.number(),
+          nftTokenId: z.string(),
+        })),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check if user already entered
@@ -368,12 +378,28 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already entered this tournament' });
         }
         
-        const id = await db.enterTournament({
-          ...input,
+        // Create the tournament entry
+        const entryId = await db.enterTournament({
+          tournamentId: input.tournamentId,
           userId: ctx.user.id,
           totalScore: 0,
         });
-        return { id };
+        
+        // Add all performers to the entry
+        for (const performer of input.roster) {
+          await db.addPerformerToEntry({
+            entryId,
+            performerId: performer.performerId,
+            nftTokenId: performer.nftTokenId,
+          });
+        }
+        
+        return { id: entryId };
+      }),
+    getEntryPerformers: publicProcedure
+      .input(z.object({ entryId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getEntryPerformers(input.entryId);
       }),
   }),
 

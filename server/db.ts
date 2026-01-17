@@ -21,6 +21,8 @@ import {
   InsertTournamentRosterRequirement,
   tournamentEntries,
   InsertTournamentEntry,
+  tournamentEntryPerformers,
+  InsertTournamentEntryPerformer,
   userNftInventory,
   InsertUserNftInventory,
 } from "../drizzle/schema";
@@ -491,18 +493,43 @@ export async function getTournamentEntries(tournamentId: number) {
       tournamentId: tournamentEntries.tournamentId,
       userId: tournamentEntries.userId,
       userName: users.name,
-      performerId: tournamentEntries.performerId,
-      performerName: performers.name,
-      performerImage: performers.imageUrl,
-      nftTokenId: tournamentEntries.nftTokenId,
       totalScore: tournamentEntries.totalScore,
       createdAt: tournamentEntries.createdAt,
     })
     .from(tournamentEntries)
     .leftJoin(users, eq(tournamentEntries.userId, users.id))
-    .leftJoin(performers, eq(tournamentEntries.performerId, performers.id))
     .where(eq(tournamentEntries.tournamentId, tournamentId))
     .orderBy(desc(tournamentEntries.totalScore));
+}
+
+export async function getEntryPerformers(entryId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select({
+      id: tournamentEntryPerformers.id,
+      entryId: tournamentEntryPerformers.entryId,
+      performerId: tournamentEntryPerformers.performerId,
+      performerName: performers.name,
+      performerImage: performers.imageUrl,
+      performerType: performers.performerType,
+      nftTokenId: tournamentEntryPerformers.nftTokenId,
+      createdAt: tournamentEntryPerformers.createdAt,
+    })
+    .from(tournamentEntryPerformers)
+    .leftJoin(performers, eq(tournamentEntryPerformers.performerId, performers.id))
+    .where(eq(tournamentEntryPerformers.entryId, entryId));
+}
+
+export async function addPerformerToEntry(entryPerformer: InsertTournamentEntryPerformer) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tournamentEntryPerformers).values(entryPerformer);
+  const insertId = result[0]?.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID from database");
+  return typeof insertId === 'bigint' ? Number(insertId) : Number(insertId);
 }
 
 export async function getUserTournamentEntry(tournamentId: number, userId: number) {
@@ -552,6 +579,7 @@ export async function getUserNfts(userId: number) {
       performerId: userNftInventory.performerId,
       performerName: performers.name,
       performerImage: performers.imageUrl,
+      performerType: performers.performerType,
       contractAddress: userNftInventory.contractAddress,
       tokenId: userNftInventory.tokenId,
       lastSyncedAt: userNftInventory.lastSyncedAt,
@@ -584,8 +612,17 @@ export async function calculateTournamentScores(tournamentId: number) {
     .from(tournamentEntries)
     .where(eq(tournamentEntries.tournamentId, tournamentId));
   
-  // For each entry, calculate their performer's score
+  // For each entry, calculate their roster's total score
   for (const entry of entries) {
+    // Get all performers in this entry's roster
+    const entryPerformers = await getEntryPerformers(entry.id);
+    const performerIds = entryPerformers.map(ep => ep.performerId).filter((id): id is number => id !== null);
+    
+    if (performerIds.length === 0) {
+      await updateTournamentEntryScore(entry.id, 0);
+      continue;
+    }
+    
     // Get all scenes within the tournament timeframe
     const scenesInTournament = await db
       .select({
@@ -607,7 +644,7 @@ export async function calculateTournamentScores(tournamentId: number) {
       continue;
     }
     
-    // Calculate total points for this performer in these scenes
+    // Calculate total points for all performers in the roster across these scenes
     const scoreResult = await db
       .select({
         totalPoints: sql<number>`COALESCE(SUM(${actions.points}), 0)`,
@@ -616,7 +653,7 @@ export async function calculateTournamentScores(tournamentId: number) {
       .leftJoin(actions, eq(scenePerformerActions.actionId, actions.id))
       .where(
         and(
-          eq(scenePerformerActions.performerId, entry.performerId),
+          sql`${scenePerformerActions.performerId} IN (${sql.join(performerIds.map(id => sql`${id}`), sql`, `)})`,
           sql`${scenePerformerActions.sceneId} IN (${sql.join(sceneIds.map(id => sql`${id}`), sql`, `)})`
         )
       );

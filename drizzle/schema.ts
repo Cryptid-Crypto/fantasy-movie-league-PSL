@@ -156,13 +156,12 @@ export type InsertTournamentRosterRequirement = typeof tournamentRosterRequireme
 
 /**
  * Tournament entries (users who joined tournaments)
+ * Note: Each entry can have multiple performers (roster) via tournamentEntryPerformers junction table
  */
 export const tournamentEntries = mysqlTable("tournamentEntries", {
   id: int("id").autoincrement().primaryKey(),
   tournamentId: int("tournamentId").notNull().references(() => tournaments.id, { onDelete: "cascade" }),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
-  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }), // The performer NFT they're using
-  nftTokenId: varchar("nftTokenId", { length: 78 }).notNull(), // The specific NFT token ID
   totalScore: int("totalScore").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -172,6 +171,23 @@ export const tournamentEntries = mysqlTable("tournamentEntries", {
 
 export type TournamentEntry = typeof tournamentEntries.$inferSelect;
 export type InsertTournamentEntry = typeof tournamentEntries.$inferInsert;
+
+/**
+ * Tournament entry performers (junction table for roster)
+ * Links tournament entries to multiple performers (the user's selected roster)
+ */
+export const tournamentEntryPerformers = mysqlTable("tournamentEntryPerformers", {
+  id: int("id").autoincrement().primaryKey(),
+  entryId: int("entryId").notNull().references(() => tournamentEntries.id, { onDelete: "cascade" }),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  nftTokenId: varchar("nftTokenId", { length: 78 }).notNull(), // The specific NFT token ID
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  uniquePerformer: unique().on(table.entryId, table.performerId),
+}));
+
+export type TournamentEntryPerformer = typeof tournamentEntryPerformers.$inferSelect;
+export type InsertTournamentEntryPerformer = typeof tournamentEntryPerformers.$inferInsert;
 
 /**
  * User NFT inventory cache (to avoid constant blockchain queries)

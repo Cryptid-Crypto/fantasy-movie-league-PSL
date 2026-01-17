@@ -121,6 +121,25 @@
 - [ ] Show user's progress toward meeting requirements in entry UI
 - [x] Update seed script to include roster requirements for sample tournaments
 
+## Display Roster Requirements on Tournament Cards
+- [x] Add backend query to fetch roster requirements for tournaments
+- [x] Display roster requirements on tournament list page
+- [x] Display roster requirements on tournament detail page
+- [x] Format requirements clearly (e.g., "2 Legends, 1 Anal Queen, 2 Any Type")
+
+## Tournament Entry UI
+- [x] Create tournament entry page/modal
+- [x] Build performer selection interface with user's NFT collection
+- [x] Add real-time validation showing which roster requirements are met
+- [x] Show visual feedback for fulfilled vs unfulfilled requirements
+- [x] Validate NFT ownership before allowing entry
+- [x] Submit tournament entry with selected performers
+- [x] Write vitest tests for tournament entry validation
+- [x] Update database schema to support multiple performers per entry (roster)
+- [x] Create tournamentEntryPerformers junction table
+- [x] Update backend functions for roster-based entries
+- [x] Update leaderboard to display rosters instead of single performers
+
 ## Number Input Fix
 - [x] Fix roster requirement count input to allow deleting existing value
 - [x] Allow users to select all and type new number without field resetting

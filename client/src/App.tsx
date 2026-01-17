@@ -13,6 +13,7 @@ import PerformerStatistics from "./pages/PerformerStatistics";
 import MyNFTs from "./pages/MyNFTs";
 import Tournaments from "./pages/Tournaments";
 import TournamentLeaderboard from "./pages/TournamentLeaderboard";
+import TournamentEntry from "./pages/TournamentEntry";
 import Dashboard from "./pages/Dashboard";
 
 function Router() {
@@ -26,6 +27,7 @@ function Router() {
       <Route path={"/performers/:id/statistics"} component={PerformerStatistics} />
       <Route path={"/my-nfts"} component={MyNFTs} />
       <Route path={"/tournaments"} component={Tournaments} />
+      <Route path={"/tournaments/:id/enter"} component={TournamentEntry} />
       <Route path={"/tournaments/:id"} component={TournamentLeaderboard} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/404"} component={NotFound} />

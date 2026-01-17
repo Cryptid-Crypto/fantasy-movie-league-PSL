@@ -4,63 +4,20 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+
 import { Trophy, Calendar, Users, ArrowLeft, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
+import { TournamentRosterRequirements } from "@/components/TournamentRosterRequirements";
 
 export default function Tournaments() {
   const { user } = useAuth();
-  const [selectedTournament, setSelectedTournament] = useState<any>(null);
-  const [selectedPerformerId, setSelectedPerformerId] = useState<string>("");
-  const [selectedTokenId, setSelectedTokenId] = useState<string>("");
+
 
   const utils = trpc.useUtils();
   const { data: tournaments, isLoading } = trpc.tournaments.list.useQuery();
   const { data: userNfts } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
-
-  const enterMutation = trpc.tournaments.enter.useMutation({
-    onSuccess: () => {
-      utils.tournaments.getLeaderboard.invalidate();
-      setSelectedTournament(null);
-      setSelectedPerformerId("");
-      setSelectedTokenId("");
-      toast.success("Successfully entered tournament!");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleEnterTournament = () => {
-    if (!selectedPerformerId || !selectedTokenId) {
-      toast.error("Please select a performer NFT");
-      return;
-    }
-
-    enterMutation.mutate({
-      tournamentId: selectedTournament.id,
-      performerId: parseInt(selectedPerformerId),
-      nftTokenId: selectedTokenId,
-    });
-  };
 
   const getStatusBadge = (tournament: any) => {
     const now = new Date();
@@ -157,6 +114,7 @@ export default function Tournaments() {
                           </span>
                         </div>
                       )}
+                      <TournamentRosterRequirements tournamentId={tournament.id} />
                     </div>
 
                     <div className="space-y-2">
@@ -170,74 +128,11 @@ export default function Tournaments() {
                       {isActive && (
                         user ? (
                           canEnter ? (
-                            <Dialog
-                              open={selectedTournament?.id === tournament.id}
-                              onOpenChange={(open) => !open && setSelectedTournament(null)}
-                            >
-                              <DialogTrigger asChild>
-                                <Button
-                                  className="w-full"
-                                  onClick={() => setSelectedTournament(tournament)}
-                                >
-                                  Enter Tournament
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Enter Tournament</DialogTitle>
-                                  <DialogDescription>
-                                    Select a Performer NFT to compete with
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                  <div className="space-y-2">
-                                    <Label>Select Your Performer NFT</Label>
-                                    <Select
-                                      value={selectedPerformerId}
-                                      onValueChange={(value) => {
-                                        setSelectedPerformerId(value);
-                                        const nft = availableNFTs.find(
-                                          (n) => n.performerId.toString() === value
-                                        );
-                                        if (nft) setSelectedTokenId(nft.tokenId);
-                                      }}
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Choose NFT" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {availableNFTs.map((nft) => (
-                                          <SelectItem
-                                            key={nft.id}
-                                            value={nft.performerId.toString()}
-                                          >
-                                            {nft.performerName} (#{nft.tokenId})
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  {tournament.entryFee && parseFloat(tournament.entryFee) > 0 && (
-                                    <div className="p-4 rounded-lg bg-muted/50">
-                                      <p className="text-sm text-muted-foreground mb-1">
-                                        Entry Fee
-                                      </p>
-                                      <p className="text-lg font-semibold">
-                                        {tournament.entryFee} MATIC
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                                <DialogFooter>
-                                  <Button
-                                    onClick={handleEnterTournament}
-                                    disabled={!selectedPerformerId || enterMutation.isPending}
-                                  >
-                                    {enterMutation.isPending ? "Entering..." : "Confirm Entry"}
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                            <Link href={`/tournaments/${tournament.id}/enter`}>
+                              <Button className="w-full">
+                                Enter Tournament
+                              </Button>
+                            </Link>
                           ) : (
                             <Button disabled className="w-full">
                               No Eligible NFTs
