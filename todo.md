@@ -122,5 +122,5 @@
 - [x] Update seed script to include roster requirements for sample tournaments
 
 ## Number Input Fix
-- [x] Fix roster requirement count input to allow clearing and typing new numbers
-- [x] Allow temporary empty state while user is typing
+- [x] Fix roster requirement count input to allow deleting existing value
+- [x] Allow users to select all and type new number without field resetting

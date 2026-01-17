@@ -286,13 +286,10 @@ export function TournamentsManager() {
                               <Input
                                 type="number"
                                 min="1"
-                                value={req.requiredCount}
+                                defaultValue={req.requiredCount}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  // Allow empty string while typing
-                                  if (val === '') {
-                                    updateRosterRequirement(index, 'requiredCount', 1);
-                                  } else {
+                                  if (val !== '') {
                                     const num = parseInt(val);
                                     if (!isNaN(num) && num >= 1) {
                                       updateRosterRequirement(index, 'requiredCount', num);
@@ -301,11 +298,13 @@ export function TournamentsManager() {
                                 }}
                                 onBlur={(e) => {
                                   // Ensure valid number on blur
-                                  const val = parseInt(e.target.value);
-                                  if (isNaN(val) || val < 1) {
+                                  const val = e.target.value;
+                                  if (val === '' || isNaN(parseInt(val)) || parseInt(val) < 1) {
+                                    e.target.value = '1';
                                     updateRosterRequirement(index, 'requiredCount', 1);
                                   }
                                 }}
+                                key={`req-${index}-${req.requiredCount}`}
                               />
                             </div>
                           </div>
