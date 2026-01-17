@@ -287,9 +287,25 @@ export function TournamentsManager() {
                                 type="number"
                                 min="1"
                                 value={req.requiredCount}
-                                onChange={(e) => 
-                                  updateRosterRequirement(index, 'requiredCount', parseInt(e.target.value) || 1)
-                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  // Allow empty string while typing
+                                  if (val === '') {
+                                    updateRosterRequirement(index, 'requiredCount', 1);
+                                  } else {
+                                    const num = parseInt(val);
+                                    if (!isNaN(num) && num >= 1) {
+                                      updateRosterRequirement(index, 'requiredCount', num);
+                                    }
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  // Ensure valid number on blur
+                                  const val = parseInt(e.target.value);
+                                  if (isNaN(val) || val < 1) {
+                                    updateRosterRequirement(index, 'requiredCount', 1);
+                                  }
+                                }}
                               />
                             </div>
                           </div>

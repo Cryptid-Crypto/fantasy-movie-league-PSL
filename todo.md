@@ -120,3 +120,7 @@
 - [ ] Display roster requirements on tournament cards and detail pages
 - [ ] Show user's progress toward meeting requirements in entry UI
 - [x] Update seed script to include roster requirements for sample tournaments
+
+## Number Input Fix
+- [x] Fix roster requirement count input to allow clearing and typing new numbers
+- [x] Allow temporary empty state while user is typing
