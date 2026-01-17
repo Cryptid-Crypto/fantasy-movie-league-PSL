@@ -167,3 +167,8 @@
 - [x] Prevent roster editing after tournament starts
 - [x] Write vitest tests for backend validation logic
 - [x] Write vitest tests for roster editing functionality
+
+## React Hooks Error Fix
+- [x] Fix "Rendered more hooks than during the previous render" error in Tournaments page
+- [x] Remove conditional hook calls inside forEach loop
+- [x] Properly fetch user entries for all tournaments without violating hooks rules

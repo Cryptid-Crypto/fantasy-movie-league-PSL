@@ -355,6 +355,22 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         return db.getUserTournamentEntry(input.tournamentId, ctx.user.id);
       }),
+    getAllUserEntries: protectedProcedure
+      .query(async ({ ctx }) => {
+        // Get all tournament entries for the current user
+        const db_instance = await db.getDb();
+        if (!db_instance) return [];
+        
+        const { tournamentEntries } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        const entries = await db_instance
+          .select()
+          .from(tournamentEntries)
+          .where(eq(tournamentEntries.userId, ctx.user.id));
+        
+        return entries;
+      }),
     getLeaderboard: publicProcedure
       .input(z.object({ tournamentId: z.number() }))
       .query(async ({ input }) => {

@@ -19,17 +19,11 @@ export default function Tournaments() {
   const { data: tournaments, isLoading } = trpc.tournaments.list.useQuery();
   const { data: userNfts } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
   
-  // Fetch user entries for all tournaments to check if they already entered
-  const userEntries = new Map<number, boolean>();
-  tournaments?.forEach((tournament) => {
-    const { data: entry } = trpc.tournaments.getUserEntry.useQuery(
-      { tournamentId: tournament.id },
-      { enabled: !!user }
-    );
-    if (entry) {
-      userEntries.set(tournament.id, true);
-    }
-  });
+  // Fetch all user entries at once
+  const { data: userEntries } = trpc.tournaments.getAllUserEntries.useQuery(undefined, { enabled: !!user });
+  
+  // Create a Set of tournament IDs the user has entered
+  const enteredTournamentIds = new Set(userEntries?.map(entry => entry.tournamentId) || []);
 
   const getStatusBadge = (tournament: any) => {
     const now = new Date();
@@ -139,7 +133,7 @@ export default function Tournaments() {
 
                       {isActive && (
                         user ? (
-                          userEntries.has(tournament.id) ? (
+                          enteredTournamentIds.has(tournament.id) ? (
                             <Link href={`/tournaments/${tournament.id}/enter`}>
                               <Button variant="secondary" className="w-full">
                                 Edit Roster
