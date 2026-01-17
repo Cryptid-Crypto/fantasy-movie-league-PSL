@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 import Performers from "./pages/Performers";
 import PerformerProfile from "./pages/PerformerProfile";
+import PerformerStatistics from "./pages/PerformerStatistics";
 import MyNFTs from "./pages/MyNFTs";
 import Tournaments from "./pages/Tournaments";
 import TournamentLeaderboard from "./pages/TournamentLeaderboard";
@@ -22,6 +23,7 @@ function Router() {
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/performers"} component={Performers} />
       <Route path={"/performers/:id"} component={PerformerProfile} />
+      <Route path={"/performers/:id/statistics"} component={PerformerStatistics} />
       <Route path={"/my-nfts"} component={MyNFTs} />
       <Route path={"/tournaments"} component={Tournaments} />
       <Route path={"/tournaments/:id"} component={TournamentLeaderboard} />

@@ -650,3 +650,66 @@ export async function getPerformerRecentPerformances(performerId: number, limit:
     .orderBy(desc(scenePerformerActions.createdAt))
     .limit(limit);
 }
+
+export async function getPerformerStatistics(performerId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Get total points and action count
+  const actionStats = await db
+    .select({
+      totalPoints: sql<number>`SUM(${actions.points})`,
+      totalActions: sql<number>`COUNT(*)`,
+    })
+    .from(scenePerformerActions)
+    .leftJoin(actions, eq(scenePerformerActions.actionId, actions.id))
+    .where(eq(scenePerformerActions.performerId, performerId));
+  
+  // Get action breakdown
+  const actionBreakdown = await db
+    .select({
+      actionName: actions.name,
+      actionPoints: actions.points,
+      count: sql<number>`COUNT(*)`,
+      totalPoints: sql<number>`SUM(${actions.points})`,
+    })
+    .from(scenePerformerActions)
+    .leftJoin(actions, eq(scenePerformerActions.actionId, actions.id))
+    .where(eq(scenePerformerActions.performerId, performerId))
+    .groupBy(actions.id, actions.name, actions.points);
+  
+  // Get scene count
+  const sceneCount = await db
+    .select({
+      count: sql<number>`COUNT(DISTINCT ${scenePerformerActions.sceneId})`,
+    })
+    .from(scenePerformerActions)
+    .where(eq(scenePerformerActions.performerId, performerId));
+  
+  // Get movie count
+  const movieCount = await db
+    .select({
+      count: sql<number>`COUNT(DISTINCT ${moviePerformers.movieId})`,
+    })
+    .from(moviePerformers)
+    .where(eq(moviePerformers.performerId, performerId));
+  
+  const totalPoints = Number(actionStats[0]?.totalPoints) || 0;
+  const totalActions = Number(actionStats[0]?.totalActions) || 0;
+  const totalScenes = Number(sceneCount[0]?.count) || 0;
+  const totalMovies = Number(movieCount[0]?.count) || 0;
+  
+  return {
+    totalPoints,
+    totalActions,
+    totalScenes,
+    totalMovies,
+    averagePointsPerScene: totalScenes > 0 ? totalPoints / totalScenes : 0,
+    actionBreakdown: actionBreakdown.map(action => ({
+      actionName: action.actionName,
+      actionPoints: Number(action.actionPoints),
+      count: Number(action.count),
+      totalPoints: Number(action.totalPoints),
+    })),
+  };
+}

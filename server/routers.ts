@@ -313,6 +313,20 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getPerformerRecentPerformances(input.performerId, input.limit);
       }),
+    getStatistics: publicProcedure
+      .input(z.object({ performerId: z.number() }))
+      .query(async ({ input }) => {
+        const stats = await db.getPerformerStatistics(input.performerId);
+        if (!stats) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Performer statistics not found' });
+        }
+        return stats;
+      }),
+    getMovies: publicProcedure
+      .input(z.object({ performerId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getMoviesByPerformerId(input.performerId);
+      }),
   }),
 
   tournaments: router({

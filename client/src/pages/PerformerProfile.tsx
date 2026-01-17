@@ -107,6 +107,12 @@ export default function PerformerProfile() {
                     <p className="text-foreground leading-relaxed">{performer.bio}</p>
                   </div>
                 )}
+                <Link href={`/performers/${performerId}/statistics`}>
+                  <Button className="w-full" variant="outline">
+                    <Zap className="mr-2 h-4 w-4" />
+                    View Statistics
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

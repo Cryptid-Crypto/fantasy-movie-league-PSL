@@ -124,3 +124,14 @@
 ## Number Input Fix
 - [x] Fix roster requirement count input to allow deleting existing value
 - [x] Allow users to select all and type new number without field resetting
+
+## Performer Statistics Page
+- [x] Create database queries to aggregate performer statistics
+- [x] Calculate total points earned across all scenes
+- [x] Show action breakdown (count and points per action type)
+- [x] Display movies and scenes performed in
+- [x] Show average points per scene
+- [ ] List tournament participation history
+- [x] Create statistics page UI with charts and metrics
+- [x] Add navigation link from performer profile to statistics page
+- [x] Write and pass vitest tests for statistics feature
