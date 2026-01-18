@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, name, performerType FROM performers ORDER BY id LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name, performerType FROM performers ORDER BY id LIMIT 15;",
+  "rows": [
+    {
+      "id": "120001",
+      "name": "Mia Stellar",
+      "performerType": "Legend"
+    },
+    {
+      "id": "120002",
+      "name": "Luna Rose",
+      "performerType": "Rising Star"
+    },
+    {
+      "id": "120003",
+      "name": "Scarlett Vixen",
+      "performerType": "Hall of Fame"
+    },
+    {
+      "id": "120004",
+      "name": "Jade Phoenix",
+      "performerType": "Super Slut"
+    },
+    {
+      "id": "120005",
+      "name": "Amber Blaze",
+      "performerType": "Girl Next Door"
+    },
+    {
+      "id": "120006",
+      "name": "Crystal Waters",
+      "performerType": "Specialist"
+    },
+    {
+      "id": "120007",
+      "name": "Raven Night",
+      "performerType": "Extreme"
+    },
+    {
+      "id": "120008",
+      "name": "Diamond Luxe",
+      "performerType": "Legend"
+    },
+    {
+      "id": "120009",
+      "name": "Ivy Valentine",
+      "performerType": "Anal Queen"
+    },
+    {
+      "id": "120010",
+      "name": "Ruby Passion",
+      "performerType": "Rising Star"
+    },
+    {
+      "id": "150001",
+      "name": "Test Performer 1",
+      "performerType": "Legend"
+    },
+    {
+      "id": "150002",
+      "name": "Test Performer 2",
+      "performerType": "Anal Queen"
+    },
+    {
+      "id": "180009",
+      "name": "Test Performer 1768675105260",
+      "performerType": "NULL"
+    },
+    {
+      "id": "180010",
+      "name": "Minimal Performer 1768675105393",
+      "performerType": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tperformerType\n120001\tMia Stellar\tLegend\n120002\tLuna Rose\tRising Star\n120003\tScarlett Vixen\tHall of Fame\n120004\tJade Phoenix\tSuper Slut\n120005\tAmber Blaze\tGirl Next Door\n120006\tCrystal Waters\tSpecialist\n120007\tRaven Night\tExtreme\n120008\tDiamond Luxe\tLegend\n120009\tIvy Valentine\tAnal Queen\n120010\tRuby Passion\tRising Star\n150001\tTest Performer 1\tLegend\n150002\tTest Performer 2\tAnal Queen\n180009\tTest Performer 1768675105260\tNULL\n180010\tMinimal Performer 1768675105393\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO userNftInventory (userId, performerId, tokenId, contractAddress) \nSELECT \n  (SELECT id FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx'),\n  id,\n  CONCAT('0x', LPAD(HEX(id), 64, '0')),\n  '0x1234567890123456789012345678901234567890'\nFROM performers\nWHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute INSERT INTO userNftInventory (userId, performerId, tokenId, contractAddress) \nSELECT \n  (SELECT id FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx'),\n  id,\n  CONCAT('0x', LPAD(HEX(id), 64, '0')),\n  '0x1234567890123456789012345678901234567890'\nFROM performers\nWHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 49
+}

@@ -1,0 +1,9 @@
+{
+  "query": "\nSELECT \n  m.id as movie_id,\n  m.title,\n  m.releaseDate,\n  s.id as scene_id,\n  s.title as scene_title,\n  COUNT(spa.id) as action_count,\n  SUM(a.points) as total_points\nFROM movies m\nJOIN scenes s ON m.id = s.movieId\nLEFT JOIN scenePerformerActions spa ON s.id = spa.sceneId\nLEFT JOIN actions a ON spa.actionId = a.id\nWHERE m.releaseDate >= '2025-03-01' AND m.releaseDate <= '2025-05-31'\nGROUP BY m.id, m.title, m.releaseDate, s.id, s.title\nORDER BY m.releaseDate DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  m.id as movie_id,\n  m.title,\n  m.releaseDate,\n  s.id as scene_id,\n  s.title as scene_title,\n  COUNT(spa.id) as action_count,\n  SUM(a.points) as total_points\nFROM movies m\nJOIN scenes s ON m.id = s.movieId\nLEFT JOIN scenePerformerActions spa ON s.id = spa.sceneId\nLEFT JOIN actions a ON spa.actionId = a.id\nWHERE m.releaseDate >= '2025-03-01' AND m.releaseDate <= '2025-05-31'\nGROUP BY m.id, m.title, m.releaseDate, s.id, s.title\nORDER BY m.releaseDate DESC;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 55
+}

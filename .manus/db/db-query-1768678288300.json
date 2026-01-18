@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, openId, name FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, openId, name FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx' LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "i8t9fnusv9acyGYNiVhjbx",
+      "name": "Cryptid Crypto"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\n1\ti8t9fnusv9acyGYNiVhjbx\tCryptid Crypto\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

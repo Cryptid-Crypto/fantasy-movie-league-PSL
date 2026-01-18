@@ -96,6 +96,13 @@ export const appRouter = router({
         }))
         .mutation(async ({ input }) => {
           const id = await db.createMovie(input);
+          
+          // Recalculate tournament scores if movie has a release date
+          if (input.releaseDate) {
+            const { recalculateScoresForMovie } = await import('./scoring-utils');
+            await recalculateScoresForMovie(id);
+          }
+          
           return { id };
         }),
       update: adminProcedure
@@ -109,6 +116,11 @@ export const appRouter = router({
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
           await db.updateMovie(id, data);
+          
+          // Recalculate tournament scores after update
+          const { recalculateScoresForMovie } = await import('./scoring-utils');
+          await recalculateScoresForMovie(id);
+          
           return { success: true };
         }),
       delete: adminProcedure

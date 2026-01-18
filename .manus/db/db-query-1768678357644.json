@@ -1,0 +1,70 @@
+{
+  "query": "SELECT n.id, p.name, p.performerType, n.tokenId \nFROM userNftInventory n \nJOIN performers p ON n.performerId = p.id \nWHERE n.userId = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT n.id, p.name, p.performerType, n.tokenId \nFROM userNftInventory n \nJOIN performers p ON n.performerId = p.id \nWHERE n.userId = 1;",
+  "rows": [
+    {
+      "id": "30011",
+      "name": "Mia Stellar",
+      "performerType": "Legend",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C1"
+    },
+    {
+      "id": "30012",
+      "name": "Luna Rose",
+      "performerType": "Rising Star",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C2"
+    },
+    {
+      "id": "30013",
+      "name": "Scarlett Vixen",
+      "performerType": "Hall of Fame",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C3"
+    },
+    {
+      "id": "30014",
+      "name": "Jade Phoenix",
+      "performerType": "Super Slut",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C4"
+    },
+    {
+      "id": "30015",
+      "name": "Amber Blaze",
+      "performerType": "Girl Next Door",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C5"
+    },
+    {
+      "id": "30016",
+      "name": "Crystal Waters",
+      "performerType": "Specialist",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C6"
+    },
+    {
+      "id": "30017",
+      "name": "Raven Night",
+      "performerType": "Extreme",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C7"
+    },
+    {
+      "id": "30018",
+      "name": "Diamond Luxe",
+      "performerType": "Legend",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C8"
+    },
+    {
+      "id": "30019",
+      "name": "Ivy Valentine",
+      "performerType": "Anal Queen",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4C9"
+    },
+    {
+      "id": "30020",
+      "name": "Ruby Passion",
+      "performerType": "Rising Star",
+      "tokenId": "0x000000000000000000000000000000000000000000000000000000000001D4CA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tperformerType\ttokenId\n30011\tMia Stellar\tLegend\t0x000000000000000000000000000000000000000000000000000000000001D4C1\n30012\tLuna Rose\tRising Star\t0x000000000000000000000000000000000000000000000000000000000001D4C2\n30013\tScarlett Vixen\tHall of Fame\t0x000000000000000000000000000000000000000000000000000000000001D4C3\n30014\tJade Phoenix\tSuper Slut\t0x000000000000000000000000000000000000000000000000000000000001D4C4\n30015\tAmber Blaze\tGirl Next Door\t0x000000000000000000000000000000000000000000000000000000000001D4C5\n30016\tCrystal Waters\tSpecialist\t0x000000000000000000000000000000000000000000000000000000000001D4C6\n30017\tRaven Night\tExtreme\t0x000000000000000000000000000000000000000000000000000000000001D4C7\n30018\tDiamond Luxe\tLegend\t0x000000000000000000000000000000000000000000000000000000000001D4C8\n30019\tIvy Valentine\tAnal Queen\t0x000000000000000000000000000000000000000000000000000000000001D4C9\n30020\tRuby Passion\tRising Star\t0x000000000000000000000000000000000000000000000000000000000001D4CA\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

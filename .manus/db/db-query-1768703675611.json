@@ -1,0 +1,64 @@
+{
+  "query": "\nSELECT \n  te.id as entry_id,\n  te.tournamentId,\n  te.userId,\n  te.totalScore,\n  t.name as tournament_name,\n  t.startDate,\n  t.endDate\nFROM tournamentEntries te\nJOIN tournaments t ON te.tournamentId = t.id\nORDER BY te.id DESC\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  te.id as entry_id,\n  te.tournamentId,\n  te.userId,\n  te.totalScore,\n  t.name as tournament_name,\n  t.startDate,\n  t.endDate\nFROM tournamentEntries te\nJOIN tournaments t ON te.tournamentId = t.id\nORDER BY te.id DESC\nLIMIT 10;\n",
+  "rows": [
+    {
+      "entry_id": "60001",
+      "tournamentId": "60002",
+      "userId": "1",
+      "totalScore": "80",
+      "tournament_name": "Spring Showdown",
+      "startDate": "2026-01-01 05:00:00",
+      "endDate": "2026-01-31 05:00:00"
+    },
+    {
+      "entry_id": "30003",
+      "tournamentId": "120003",
+      "userId": "300001",
+      "totalScore": "0",
+      "tournament_name": "Test Validation Tournament",
+      "startDate": "2025-06-01 00:00:00",
+      "endDate": "2025-06-30 00:00:00"
+    },
+    {
+      "entry_id": "30002",
+      "tournamentId": "120002",
+      "userId": "270002",
+      "totalScore": "0",
+      "tournament_name": "Test Roster Tournament",
+      "startDate": "2025-01-01 00:00:00",
+      "endDate": "2025-12-31 00:00:00"
+    },
+    {
+      "entry_id": "30001",
+      "tournamentId": "120001",
+      "userId": "300001",
+      "totalScore": "0",
+      "tournament_name": "Test Validation Tournament",
+      "startDate": "2025-06-01 00:00:00",
+      "endDate": "2025-06-30 00:00:00"
+    },
+    {
+      "entry_id": "3",
+      "tournamentId": "90002",
+      "userId": "270002",
+      "totalScore": "0",
+      "tournament_name": "Test Roster Tournament",
+      "startDate": "2025-01-01 00:00:00",
+      "endDate": "2025-12-31 00:00:00"
+    },
+    {
+      "entry_id": "1",
+      "tournamentId": "90001",
+      "userId": "270002",
+      "totalScore": "0",
+      "tournament_name": "Test Roster Tournament",
+      "startDate": "2025-01-01 00:00:00",
+      "endDate": "2025-12-31 00:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "entry_id\ttournamentId\tuserId\ttotalScore\ttournament_name\tstartDate\tendDate\n60001\t60002\t1\t80\tSpring Showdown\t2026-01-01 05:00:00\t2026-01-31 05:00:00\n30003\t120003\t300001\t0\tTest Validation Tournament\t2025-06-01 00:00:00\t2025-06-30 00:00:00\n30002\t120002\t270002\t0\tTest Roster Tournament\t2025-01-01 00:00:00\t2025-12-31 00:00:00\n30001\t120001\t300001\t0\tTest Validation Tournament\t2025-06-01 00:00:00\t2025-06-30 00:00:00\n3\t90002\t270002\t0\tTest Roster Tournament\t2025-01-01 00:00:00\t2025-12-31 00:00:00\n1\t90001\t270002\t0\tTest Roster Tournament\t2025-01-01 00:00:00\t2025-12-31 00:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

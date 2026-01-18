@@ -1,0 +1,9 @@
+{
+  "query": "\nSELECT \n  te.id,\n  te.totalScore,\n  u.name as user_name\nFROM tournamentEntries te\nJOIN users u ON te.userId = u.id\nWHERE te.tournamentId = 1\nORDER BY te.totalScore DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  te.id,\n  te.totalScore,\n  u.name as user_name\nFROM tournamentEntries te\nJOIN users u ON te.userId = u.id\nWHERE te.tournamentId = 1\nORDER BY te.totalScore DESC;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 60
+}

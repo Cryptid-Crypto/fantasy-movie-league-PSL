@@ -1,0 +1,9 @@
+{
+  "query": "SELECT n.id, n.userId, n.performerId, p.name, p.performerType \nFROM userNftInventory n \nJOIN performers p ON n.performerId = p.id \nWHERE n.userId = (SELECT id FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT n.id, n.userId, n.performerId, p.name, p.performerType \nFROM userNftInventory n \nJOIN performers p ON n.performerId = p.id \nWHERE n.userId = (SELECT id FROM users WHERE openId = 'i8t9fnusv9acyGYNiVhjbx');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 54
+}

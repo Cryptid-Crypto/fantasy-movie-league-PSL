@@ -1,0 +1,45 @@
+{
+  "query": "\nSELECT \n  m.id as movie_id,\n  m.title as movie_title,\n  m.releaseDate,\n  COUNT(DISTINCT s.id) as scene_count,\n  COUNT(DISTINCT spa.id) as action_count\nFROM movies m\nLEFT JOIN scenes s ON m.id = s.movieId\nLEFT JOIN scenePerformerActions spa ON s.id = spa.sceneId\nGROUP BY m.id\nORDER BY m.id DESC\nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  m.id as movie_id,\n  m.title as movie_title,\n  m.releaseDate,\n  COUNT(DISTINCT s.id) as scene_count,\n  COUNT(DISTINCT spa.id) as action_count\nFROM movies m\nLEFT JOIN scenes s ON m.id = s.movieId\nLEFT JOIN scenePerformerActions spa ON s.id = spa.sceneId\nGROUP BY m.id\nORDER BY m.id DESC\nLIMIT 5;\n",
+  "rows": [
+    {
+      "movie_id": "120002",
+      "movie_title": "The more the merrier ",
+      "releaseDate": "2026-01-17 00:00:00",
+      "scene_count": "3",
+      "action_count": "8"
+    },
+    {
+      "movie_id": "120001",
+      "movie_title": "Anal fest",
+      "releaseDate": "2026-01-17 00:00:00",
+      "scene_count": "3",
+      "action_count": "5"
+    },
+    {
+      "movie_id": "90007",
+      "movie_title": "Mountain Escape",
+      "releaseDate": "2024-07-22 00:00:00",
+      "scene_count": "5",
+      "action_count": "19"
+    },
+    {
+      "movie_id": "90006",
+      "movie_title": "Neon Nights",
+      "releaseDate": "2024-06-18 00:00:00",
+      "scene_count": "5",
+      "action_count": "19"
+    },
+    {
+      "movie_id": "90005",
+      "movie_title": "Ocean of Pleasure",
+      "releaseDate": "2024-05-12 00:00:00",
+      "scene_count": "4",
+      "action_count": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "movie_id\tmovie_title\treleaseDate\tscene_count\taction_count\n120002\tThe more the merrier \t2026-01-17 00:00:00\t3\t8\n120001\tAnal fest\t2026-01-17 00:00:00\t3\t5\n90007\tMountain Escape\t2024-07-22 00:00:00\t5\t19\n90006\tNeon Nights\t2024-06-18 00:00:00\t5\t19\n90005\tOcean of Pleasure\t2024-05-12 00:00:00\t4\t15\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

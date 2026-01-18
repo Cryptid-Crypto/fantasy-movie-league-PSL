@@ -172,3 +172,38 @@
 - [x] Fix "Rendered more hooks than during the previous render" error in Tournaments page
 - [x] Remove conditional hook calls inside forEach loop
 - [x] Properly fetch user entries for all tournaments without violating hooks rules
+
+## Test NFT Creation
+- [x] Query database for owner user ID
+- [x] Add test NFTs to owner's inventory for tournament testing
+- [x] Include NFTs with different performer types (Legend, Anal Queen, Super Slut, etc.)
+- [x] Verify NFTs appear in My NFTs page
+
+## OAuth Callback Error Fix
+- [ ] Check server logs for OAuth callback errors
+- [ ] Verify OAuth configuration and environment variables
+- [ ] Fix OAuth callback handler to properly handle redirects
+- [ ] Test login flow end-to-end
+
+## Development Authentication Bypass
+- [x] Add development-only auto-login endpoint
+- [x] Create session for owner user without OAuth
+- [x] Test all features work with bypass authentication
+- [x] Document that this is temporary for testing only
+
+## Tournament Scoring Fix
+- [ ] Investigate why scores don't update when movies are added
+- [ ] Fix scoring calculation to include all performer scene actions
+- [ ] Ensure tournament leaderboard updates automatically
+- [ ] Test scoring with sample movie data
+
+## React Hooks Error Fix (Second Instance)
+- [x] Identify source of "Rendered more hooks" error
+- [x] Fix conditional or loop-based hook calls
+- [x] Test all pages to ensure error is resolved
+
+## Scoring System Demo Data
+- [x] Add sample scene performer actions to database
+- [x] Ensure actions are in tournament date range
+- [x] Verify scores calculate correctly
+- [x] Document scoring data requirements for users

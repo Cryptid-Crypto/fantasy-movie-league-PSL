@@ -29,16 +29,17 @@ export default function TournamentEntry() {
 
   const { data: userNfts, isLoading: nftsLoading } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
 
-  // Check if user has existing entry
+  // Check if user has existing entry - always call hook, condition is stable
   const { data: existingEntry } = trpc.tournaments.getUserEntry.useQuery(
     { tournamentId },
     { enabled: !!user && tournamentId > 0 }
   );
 
-  // Load existing roster if in edit mode
+  // Load existing roster if in edit mode - always call hook with stable condition
+  const entryId = existingEntry?.id || 0;
   const { data: existingRoster } = trpc.tournaments.getEntryPerformers.useQuery(
-    { entryId: existingEntry?.id || 0 },
-    { enabled: !!existingEntry }
+    { entryId },
+    { enabled: entryId > 0 }
   );
 
   // Initialize roster with existing data when editing

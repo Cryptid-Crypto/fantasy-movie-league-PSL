@@ -1,0 +1,64 @@
+{
+  "query": "\nSELECT \n  id,\n  title,\n  releaseDate,\n  createdAt\nFROM movies\nORDER BY createdAt DESC\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  id,\n  title,\n  releaseDate,\n  createdAt\nFROM movies\nORDER BY createdAt DESC\nLIMIT 10;\n",
+  "rows": [
+    {
+      "id": "120002",
+      "title": "The more the merrier ",
+      "releaseDate": "2026-01-17 00:00:00",
+      "createdAt": "2026-01-18 02:12:24"
+    },
+    {
+      "id": "120001",
+      "title": "Anal fest",
+      "releaseDate": "2026-01-17 00:00:00",
+      "createdAt": "2026-01-18 01:56:04"
+    },
+    {
+      "id": "90005",
+      "title": "Ocean of Pleasure",
+      "releaseDate": "2024-05-12 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90003",
+      "title": "Passion Protocol",
+      "releaseDate": "2024-03-10 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90004",
+      "title": "Desert Heat",
+      "releaseDate": "2024-04-05 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90001",
+      "title": "Fantasy Island XXX",
+      "releaseDate": "2024-01-15 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90002",
+      "title": "Midnight Desires",
+      "releaseDate": "2024-02-20 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90006",
+      "title": "Neon Nights",
+      "releaseDate": "2024-06-18 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "90007",
+      "title": "Mountain Escape",
+      "releaseDate": "2024-07-22 00:00:00",
+      "createdAt": "2026-01-17 03:25:51"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\treleaseDate\tcreatedAt\n120002\tThe more the merrier \t2026-01-17 00:00:00\t2026-01-18 02:12:24\n120001\tAnal fest\t2026-01-17 00:00:00\t2026-01-18 01:56:04\n90005\tOcean of Pleasure\t2024-05-12 00:00:00\t2026-01-17 03:25:51\n90003\tPassion Protocol\t2024-03-10 00:00:00\t2026-01-17 03:25:51\n90004\tDesert Heat\t2024-04-05 00:00:00\t2026-01-17 03:25:51\n90001\tFantasy Island XXX\t2024-01-15 00:00:00\t2026-01-17 03:25:51\n90002\tMidnight Desires\t2024-02-20 00:00:00\t2026-01-17 03:25:51\n90006\tNeon Nights\t2024-06-18 00:00:00\t2026-01-17 03:25:51\n90007\tMountain Escape\t2024-07-22 00:00:00\t2026-01-17 03:25:51\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

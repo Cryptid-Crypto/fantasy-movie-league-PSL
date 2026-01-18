@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT \n  tep.entryId,\n  tep.performerId,\n  p.name as performer_name,\n  COUNT(spa.id) as total_actions,\n  SUM(a.points) as total_points\nFROM tournamentEntryPerformers tep\nJOIN performers p ON tep.performerId = p.id\nLEFT JOIN scenePerformerActions spa ON spa.performerId = tep.performerId\nLEFT JOIN actions a ON spa.actionId = a.id\nGROUP BY tep.entryId, tep.performerId\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  tep.entryId,\n  tep.performerId,\n  p.name as performer_name,\n  COUNT(spa.id) as total_actions,\n  SUM(a.points) as total_points\nFROM tournamentEntryPerformers tep\nJOIN performers p ON tep.performerId = p.id\nLEFT JOIN scenePerformerActions spa ON spa.performerId = tep.performerId\nLEFT JOIN actions a ON spa.actionId = a.id\nGROUP BY tep.entryId, tep.performerId\nLIMIT 20;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1055 (42000) at line 2: Expression #3 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'dWUnvuCqdxwX7Y3rW9HJ6z.p.name' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by"
+  ]
+}

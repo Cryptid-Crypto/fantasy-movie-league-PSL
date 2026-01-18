@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as nft_count FROM userNftInventory WHERE userId = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT COUNT(*) as nft_count FROM userNftInventory WHERE userId = 1;",
+  "rows": [
+    {
+      "nft_count": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "nft_count\n10\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

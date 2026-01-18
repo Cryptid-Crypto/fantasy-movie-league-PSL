@@ -1,0 +1,59 @@
+{
+  "query": "\nSELECT \n  tep.entryId,\n  tep.performerId,\n  p.name as performer_name,\n  COUNT(spa.id) as total_actions,\n  SUM(a.points) as total_points\nFROM tournamentEntryPerformers tep\nJOIN performers p ON tep.performerId = p.id\nLEFT JOIN scenePerformerActions spa ON spa.performerId = tep.performerId\nLEFT JOIN actions a ON spa.actionId = a.id\nGROUP BY tep.entryId, tep.performerId, p.name\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nSELECT \n  tep.entryId,\n  tep.performerId,\n  p.name as performer_name,\n  COUNT(spa.id) as total_actions,\n  SUM(a.points) as total_points\nFROM tournamentEntryPerformers tep\nJOIN performers p ON tep.performerId = p.id\nLEFT JOIN scenePerformerActions spa ON spa.performerId = tep.performerId\nLEFT JOIN actions a ON spa.actionId = a.id\nGROUP BY tep.entryId, tep.performerId, p.name\nLIMIT 20;\n",
+  "rows": [
+    {
+      "entryId": "60001",
+      "performerId": "120001",
+      "performer_name": "Mia Stellar",
+      "total_actions": "8",
+      "total_points": "108"
+    },
+    {
+      "entryId": "60001",
+      "performerId": "120002",
+      "performer_name": "Luna Rose",
+      "total_actions": "3",
+      "total_points": "55"
+    },
+    {
+      "entryId": "60001",
+      "performerId": "120003",
+      "performer_name": "Scarlett Vixen",
+      "total_actions": "28",
+      "total_points": "388"
+    },
+    {
+      "entryId": "60001",
+      "performerId": "120007",
+      "performer_name": "Raven Night",
+      "total_actions": "5",
+      "total_points": "100"
+    },
+    {
+      "entryId": "1",
+      "performerId": "150001",
+      "performer_name": "Test Performer 1",
+      "total_actions": "0",
+      "total_points": "NULL"
+    },
+    {
+      "entryId": "1",
+      "performerId": "150002",
+      "performer_name": "Test Performer 2",
+      "total_actions": "0",
+      "total_points": "NULL"
+    },
+    {
+      "entryId": "60001",
+      "performerId": "120004",
+      "performer_name": "Jade Phoenix",
+      "total_actions": "29",
+      "total_points": "427"
+    }
+  ],
+  "messages": [],
+  "stdout": "entryId\tperformerId\tperformer_name\ttotal_actions\ttotal_points\n60001\t120001\tMia Stellar\t8\t108\n60001\t120002\tLuna Rose\t3\t55\n60001\t120003\tScarlett Vixen\t28\t388\n60001\t120007\tRaven Night\t5\t100\n1\t150001\tTest Performer 1\t0\tNULL\n1\t150002\tTest Performer 2\t0\tNULL\n60001\t120004\tJade Phoenix\t29\t427\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
