@@ -207,3 +207,19 @@
 - [x] Ensure actions are in tournament date range
 - [x] Verify scores calculate correctly
 - [x] Document scoring data requirements for users
+
+## Crypto Payment System (MATIC → PSL Token Ready)
+- [x] Add walletAddress field to users table
+- [x] Add entryFee, prizePool, paymentToken fields to tournaments table
+- [x] Create transactions table for tracking payments and payouts
+- [x] Install wagmi, viem, and Web3 dependencies
+- [x] Set up Web3 provider and wallet connection UI
+- [x] Create smart contract for tournament escrow (Solidity)
+- [ ] Deploy smart contract to Polygon testnet
+- [ ] Build payment flow: connect wallet → pay entry fee → enter tournament
+- [ ] Add prize pool display on tournament cards and detail pages
+- [ ] Implement payout structure (1st place 50%, 2nd place 30%, 3rd place 20%)
+- [ ] Create admin function to trigger winner payouts
+- [ ] Add transaction history page for users
+- [ ] Test full payment flow on testnet
+- [ ] Document PSL token migration path

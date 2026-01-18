@@ -43,6 +43,13 @@
       "when": 1768625022395,
       "tag": "0005_cute_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1768707773053,
+      "tag": "0006_thick_skrulls",
+      "breakpoints": true
     }
   ]
 }

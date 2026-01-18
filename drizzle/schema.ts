@@ -131,7 +131,11 @@ export const tournaments = mysqlTable("tournaments", {
   startDate: timestamp("startDate").notNull(),
   endDate: timestamp("endDate").notNull(),
   requiredNftContractAddress: varchar("requiredNftContractAddress", { length: 42 }), // Required NFT to enter
-  entryFee: decimal("entryFee", { precision: 18, scale: 8 }).default("0"), // In MATIC or other token
+  entryFee: decimal("entryFee", { precision: 18, scale: 8 }).default("0"), // In MATIC or PSL token
+  paymentTokenAddress: varchar("paymentTokenAddress", { length: 42 }), // Token contract address (null = native MATIC)
+  prizePool: decimal("prizePool", { precision: 18, scale: 8 }).default("0"), // Total prize pool accumulated
+  escrowContractAddress: varchar("escrowContractAddress", { length: 42 }), // Smart contract holding funds
+  payoutComplete: boolean("payoutComplete").default(false).notNull(), // Whether winners have been paid
   status: mysqlEnum("status", ["upcoming", "active", "completed"]).default("upcoming").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -206,3 +210,25 @@ export const userNftInventory = mysqlTable("userNftInventory", {
 
 export type UserNftInventory = typeof userNftInventory.$inferSelect;
 export type InsertUserNftInventory = typeof userNftInventory.$inferInsert;
+
+/**
+ * Transactions table for tracking all crypto payments and payouts
+ */
+export const transactions = mysqlTable("transactions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tournamentId: int("tournamentId").references(() => tournaments.id, { onDelete: "set null" }),
+  type: mysqlEnum("type", ["entry_fee", "prize_payout", "refund"]).notNull(),
+  amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
+  tokenAddress: varchar("tokenAddress", { length: 42 }), // null = native MATIC
+  txHash: varchar("txHash", { length: 66 }).notNull().unique(), // Blockchain transaction hash
+  fromAddress: varchar("fromAddress", { length: 42 }).notNull(),
+  toAddress: varchar("toAddress", { length: 42 }).notNull(),
+  status: mysqlEnum("status", ["pending", "confirmed", "failed"]).default("pending").notNull(),
+  blockNumber: int("blockNumber"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  confirmedAt: timestamp("confirmedAt"),
+});
+
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = typeof transactions.$inferInsert;
