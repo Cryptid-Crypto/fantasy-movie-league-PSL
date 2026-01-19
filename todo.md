@@ -308,3 +308,9 @@
 - [ ] Composite exact logos onto all 6 card templates
 - [ ] Upload updated cards to S3
 - [ ] Update database with new card URLs
+
+## NFT Card Display Issues (CRITICAL - User Reported)
+- [x] Fix visible square backgrounds on NFT card badges
+- [x] Fix missing performer names on NFT cards (names should be visible in large white text)
+- [x] Verify badges have proper transparency in browser (not just image viewers)
+- [x] Ensure all 6 performer cards match Ryan Connor template exactly
