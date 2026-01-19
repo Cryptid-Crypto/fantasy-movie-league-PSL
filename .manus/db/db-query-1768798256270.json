@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO performers (name, bio, imageUrl, performerType) \nVALUES (\n  'Ryan Connor',\n  'Ryan Connor is an American adult film actress known for her platinum blonde hair, striking blue eyes, and voluptuous figure. She has appeared in numerous productions and is recognized for her passionate performances and distinctive look.',\n  'https://d2xsxph8kpxj0f.cloudfront.net/310419663028198646/dWUnvuCqdxwX7Y3rW9HJ6z/performers/ryan-connor-portrait.png',\n  'Anal Queen'\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute INSERT INTO performers (name, bio, imageUrl, performerType) \nVALUES (\n  'Ryan Connor',\n  'Ryan Connor is an American adult film actress known for her platinum blonde hair, striking blue eyes, and voluptuous figure. She has appeared in numerous productions and is recognized for her passionate performances and distinctive look.',\n  'https://d2xsxph8kpxj0f.cloudfront.net/310419663028198646/dWUnvuCqdxwX7Y3rW9HJ6z/performers/ryan-connor-portrait.png',\n  'Anal Queen'\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1068
+}

@@ -239,3 +239,50 @@
 - [ ] Create performer management page
 - [ ] Protect admin routes on frontend
 - [ ] Test all CRUD operations
+
+## Performer Type Logo Badges
+- [x] Design and generate logo badge for Legend type
+- [x] Design and generate logo badge for Anal Queen type
+- [x] Design and generate logo badge for Super Slut type
+- [x] Design and generate logo badge for Extreme type
+- [x] Design and generate logo badge for Girl Next Door type
+- [x] Design and generate logo badge for Rising Star type
+- [x] Design and generate logo badge for Hall of Fame type
+- [x] Design and generate logo badge for Specialist type
+- [x] Design and generate logo badge for MILF type
+- [x] Save all logos to project assets directory
+- [ ] Integrate type logos into NFT cards and profile pages
+
+## NFT Portrait Generation
+- [x] Create NFT portrait for Luna Star with PSL logo
+- [x] Create NFT portrait for Ryan Connor with PSL logo (with diamond frame)
+- [ ] Create NFT portraits for remaining performers
+
+## Database Integration - Ryan Connor Performer
+- [x] Upload Ryan Connor NFT portrait to S3 storage
+- [x] Upload Ryan Connor NFT card to S3 storage
+- [x] Add Ryan Connor to performers table with all attributes
+- [ ] Associate performer type badges (Anal Queen, MILF, Legend) with Ryan Connor
+- [ ] Associate country (USA) with Ryan Connor
+
+## NFT Portrait Generation - Batch 2 (6 Performers)
+- [x] Research Veronica Leal - find reference images and signature features
+- [x] Research Jane Wilde - find reference images and signature features
+- [x] Research Nicole Kitt - find reference images and signature features
+- [x] Research Millie Morgan - find reference images and signature features
+- [x] Research Chanel Camryn - find reference images and signature features
+- [x] Research Gal Ritchie - find reference images and signature features
+- [x] Generate NFT portrait for Veronica Leal
+- [x] Generate NFT portrait for Jane Wilde
+- [x] Generate NFT portrait for Nicole Kitt
+- [x] Generate NFT portrait for Millie Morgan
+- [x] Generate NFT portrait for Chanel Camryn
+- [x] Generate NFT portrait for Gal Ritchie
+- [x] Create NFT card for Veronica Leal with badges
+- [x] Create NFT card for Jane Wilde with badges
+- [x] Create NFT card for Nicole Kitt with badges
+- [x] Create NFT card for Millie Morgan with badges
+- [x] Create NFT card for Chanel Camryn with badges
+- [x] Create NFT card for Gal Ritchie with badges
+- [x] Upload all portraits and cards to S3 storage
+- [x] Add all 6 performers to database with appropriate types

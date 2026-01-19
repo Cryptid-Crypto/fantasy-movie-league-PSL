@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, performerType FROM performers WHERE name = 'Ryan Connor';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name, performerType FROM performers WHERE name = 'Ryan Connor';",
+  "rows": [
+    {
+      "id": "210001",
+      "name": "Ryan Connor",
+      "performerType": "Anal Queen"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tperformerType\n210001\tRyan Connor\tAnal Queen\n",
+  "stderr": "",
+  "execution_time_ms": 445
+}
