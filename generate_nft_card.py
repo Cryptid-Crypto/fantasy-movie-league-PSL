@@ -43,7 +43,7 @@ def generate_nft_card(portrait_path, performer_name, output_path, badge_logos=[]
     
     # Load and paste portrait (upper 60% of card)
     portrait = Image.open(portrait_path).convert('RGBA')
-    portrait_height = int(card_height * 0.60)
+    portrait_height = int(card_height * 0.55)  # Reduced from 0.60 to leave room for name
     portrait_width = card_width - (border_width * 2) - 40  # Extra margin
     
     # Resize portrait to fit
@@ -60,20 +60,30 @@ def generate_nft_card(portrait_path, performer_name, output_path, badge_logos=[]
         card.paste(portrait, (portrait_x, portrait_y))
     
     # Add performer name (middle 15% section)
-    name_y = int(card_height * 0.65)
+    name_section_top = int(card_height * 0.58)
+    name_section_height = int(card_height * 0.12)
+    
+    # Draw name background section (dark gray bar)
+    draw.rectangle(
+        [(border_width, name_section_top), 
+         (card_width - border_width, name_section_top + name_section_height)],
+        fill='#1a1a1a'
+    )
     
     # Try to load a bold font, fallback to default
     try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 100)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 180)
     except:
         font = ImageFont.load_default()
     
     # Get text bounding box for centering
     bbox = draw.textbbox((0, 0), performer_name, font=font)
     text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
     text_x = (card_width - text_width) // 2
+    text_y = name_section_top + (name_section_height - text_height) // 2
     
-    draw.text((text_x, name_y), performer_name, fill='#FFFFFF', font=font)
+    draw.text((text_x, text_y), performer_name, fill='#FFFFFF', font=font)
     
     # Add badges (bottom 25% section)
     badge_size = 200

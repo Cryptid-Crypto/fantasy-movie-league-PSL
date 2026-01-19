@@ -297,3 +297,14 @@
 - [x] Recreate all 6 NFT cards with updated portraits
 - [x] Upload updated portraits and cards to S3
 - [x] Update database image URLs
+
+## Regenerate NFT Cards with Proper Template
+- [ ] Generate Veronica Leal card template matching Ryan Connor style
+- [ ] Generate Jane Wilde card template matching Ryan Connor style
+- [ ] Generate Nicole Kitt card template matching Ryan Connor style
+- [ ] Generate Millie Morgan card template matching Ryan Connor style
+- [ ] Generate Chanel Camryn card template matching Ryan Connor style
+- [ ] Generate Gal Ritchie card template matching Ryan Connor style
+- [ ] Composite exact logos onto all 6 card templates
+- [ ] Upload updated cards to S3
+- [ ] Update database with new card URLs
