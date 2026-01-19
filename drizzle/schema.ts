@@ -37,6 +37,7 @@ export const performers = mysqlTable("performers", {
     "Rising Star",
     "Hall of Fame",
     "Specialist",
+    "MILF",
   ]),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

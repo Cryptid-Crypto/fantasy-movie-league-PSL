@@ -338,3 +338,13 @@
 - [x] Update badge order: country flag first, then performer type badge
 - [x] Regenerate all 6 NFT cards with correct badge order
 - [x] Upload to S3 and update database
+
+## New Performer NFT Cards (User Requested - 18 performers)
+- [x] Research performer details and assign badges for: Angela White, Anna Claire Clouds, Violet Myers, Abella Danger, Riley Reid, Lana Rhoades, Cherie DeVille, Kenna James, Lauren Phillips, Gianna Dior, Blake Blossom, Leana Lovings, Octavia Red, Willow Ryder, Kendra Lust, Mia Malkova, Adriana Chechik, Cherry Kiss
+- [x] Generate missing country flag badges (Australia, Serbia, etc.)
+- [x] Generate missing performer type badges (MILF, Legend, Hall of Fame, etc.)
+- [x] Generate 18 performer portraits in 3D animation style with accurate resemblance
+- [x] Create NFT cards with proper badge order (country first, then type)
+- [x] Upload all cards to S3
+- [x] Add all performers to database
+- [x] Verify display on website
