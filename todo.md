@@ -286,3 +286,14 @@
 - [x] Create NFT card for Gal Ritchie with badges
 - [x] Upload all portraits and cards to S3 storage
 - [x] Add all 6 performers to database with appropriate types
+
+## Fix PSL Logo on Performer Portraits
+- [x] Regenerate Veronica Leal portrait with PSL bunny logo on outfit
+- [x] Regenerate Jane Wilde portrait with PSL bunny logo on outfit
+- [x] Regenerate Nicole Kitt portrait with PSL bunny logo on outfit
+- [x] Regenerate Millie Morgan portrait with PSL bunny logo on outfit
+- [x] Regenerate Chanel Camryn portrait with PSL bunny logo on outfit
+- [x] Regenerate Gal Ritchie portrait with PSL bunny logo on outfit
+- [x] Recreate all 6 NFT cards with updated portraits
+- [x] Upload updated portraits and cards to S3
+- [x] Update database image URLs
