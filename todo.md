@@ -223,3 +223,19 @@
 - [ ] Add transaction history page for users
 - [ ] Test full payment flow on testnet
 - [ ] Document PSL token migration path
+
+
+## Admin Content Management Panel
+- [x] Create admin router with protected endpoints
+- [x] Add movie CRUD endpoints (create, read, update, delete)
+- [x] Add scene CRUD endpoints
+- [x] Add scene performer assignment endpoints
+- [x] Add scene action assignment endpoints
+- [x] Add performer CRUD endpoints
+- [x] Add admin role check middleware (adminProcedure)
+- [ ] Build admin dashboard layout with navigation
+- [ ] Create movie management page with list and forms
+- [ ] Create scene management page with performer/action assignment
+- [ ] Create performer management page
+- [ ] Protect admin routes on frontend
+- [ ] Test all CRUD operations

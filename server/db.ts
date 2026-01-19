@@ -757,3 +757,105 @@ export async function getPerformerStatistics(performerId: number) {
     })),
   };
 }
+
+// ============ SCENE PERFORMER MANAGEMENT ============
+
+export async function getScenePerformers(sceneId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get unique performers in a scene from scenePerformerActions
+  const result = await db
+    .select({
+      performerId: scenePerformerActions.performerId,
+      performerName: performers.name,
+      performerImage: performers.imageUrl,
+      performerType: performers.performerType,
+    })
+    .from(scenePerformerActions)
+    .leftJoin(performers, eq(scenePerformerActions.performerId, performers.id))
+    .where(eq(scenePerformerActions.sceneId, sceneId))
+    .groupBy(scenePerformerActions.performerId, performers.name, performers.imageUrl, performers.performerType);
+  
+  return result;
+}
+
+export async function addScenePerformer(sceneId: number, performerId: number) {
+  // This is handled by adding actions - no separate table needed
+  // Return success
+  return { sceneId, performerId };
+}
+
+export async function removeScenePerformer(sceneId: number, performerId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Remove all actions for this performer in this scene
+  await db
+    .delete(scenePerformerActions)
+    .where(
+      and(
+        eq(scenePerformerActions.sceneId, sceneId),
+        eq(scenePerformerActions.performerId, performerId)
+      )
+    );
+}
+
+export async function getScenePerformerActionsList(sceneId: number, performerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select({
+      id: scenePerformerActions.id,
+      actionId: scenePerformerActions.actionId,
+      actionName: actions.name,
+      actionPoints: actions.points,
+    })
+    .from(scenePerformerActions)
+    .leftJoin(actions, eq(scenePerformerActions.actionId, actions.id))
+    .where(
+      and(
+        eq(scenePerformerActions.sceneId, sceneId),
+        eq(scenePerformerActions.performerId, performerId)
+      )
+    );
+}
+
+export async function addScenePerformerAction(
+  sceneId: number,
+  performerId: number,
+  actionId: number
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(scenePerformerActions).values({
+    sceneId,
+    performerId,
+    actionId,
+  });
+  
+  return { id: result[0]?.insertId };
+}
+
+export async function removeScenePerformerAction(
+  sceneId: number,
+  performerId: number,
+  actionId: number
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db
+    .delete(scenePerformerActions)
+    .where(
+      and(
+        eq(scenePerformerActions.sceneId, sceneId),
+        eq(scenePerformerActions.performerId, performerId),
+        eq(scenePerformerActions.actionId, actionId)
+      )
+    );
+}
+
+
