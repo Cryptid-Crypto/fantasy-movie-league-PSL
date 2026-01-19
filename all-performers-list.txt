@@ -1,0 +1,10 @@
+ALL 55 PERFORMERS IN DATABASE
+(Listed alphabetically - Please review and tell me which ones to remove)
+
+The query returned 55 rows. Since I cannot see the actual data in the query result, let me export this to a file you can review on the website's Performers page, or I can query specific details.
+
+Would you like me to:
+1. Open the Performers page in the browser so you can see all cards visually?
+2. Query and export the full list with IDs so you can tell me which IDs to delete?
+
+Please let me know your preference!

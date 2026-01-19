@@ -348,3 +348,11 @@
 - [x] Upload all cards to S3
 - [x] Add all performers to database
 - [x] Verify display on website
+
+## Fix ALL 25 Performer Cards (CRITICAL - User Reported)
+- [ ] Create Python script to add official PSL bunny logo to portraits
+- [ ] Generate clean portraits for 18 new performers (without logo)
+- [ ] Process all 25 portraits to add PSL logo programmatically
+- [ ] Generate all 25 NFT cards using V3 script with Ryan Connor template
+- [ ] Upload all corrected cards to S3 and update database
+- [ ] Verify all cards match Ryan Connor template in browser

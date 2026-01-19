@@ -1,0 +1,130 @@
+{
+  "query": "SELECT name FROM performers ORDER BY name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT name FROM performers ORDER BY name;",
+  "rows": [
+    {
+      "name": "Abella Danger"
+    },
+    {
+      "name": "Adriana Chechik"
+    },
+    {
+      "name": "Alexis Texas"
+    },
+    {
+      "name": "Angela White"
+    },
+    {
+      "name": "Anna Claire Clouds"
+    },
+    {
+      "name": "Asa Akira"
+    },
+    {
+      "name": "Blake Blossom"
+    },
+    {
+      "name": "Brandi Love"
+    },
+    {
+      "name": "Chanel Camryn"
+    },
+    {
+      "name": "Cherie DeVille"
+    },
+    {
+      "name": "Cherry Kiss"
+    },
+    {
+      "name": "Dani Daniels"
+    },
+    {
+      "name": "Elsa Jean"
+    },
+    {
+      "name": "Gal Ritchie"
+    },
+    {
+      "name": "Gianna Dior"
+    },
+    {
+      "name": "Jada Stevens"
+    },
+    {
+      "name": "Jane Wilde"
+    },
+    {
+      "name": "Kagney Linn Karter"
+    },
+    {
+      "name": "Karlee Grey"
+    },
+    {
+      "name": "Kendra Lust"
+    },
+    {
+      "name": "Kenna James"
+    },
+    {
+      "name": "Kimmy Granger"
+    },
+    {
+      "name": "Lana Rhoades"
+    },
+    {
+      "name": "Lauren Phillips"
+    },
+    {
+      "name": "Leana Lovings"
+    },
+    {
+      "name": "Lisa Ann"
+    },
+    {
+      "name": "Mia Khalifa"
+    },
+    {
+      "name": "Mia Malkova"
+    },
+    {
+      "name": "Millie Morgan"
+    },
+    {
+      "name": "Nicole Aniston"
+    },
+    {
+      "name": "Nicole Kitt"
+    },
+    {
+      "name": "Octavia Red"
+    },
+    {
+      "name": "Phoenix Marie"
+    },
+    {
+      "name": "Piper Perri"
+    },
+    {
+      "name": "Riley Reid"
+    },
+    {
+      "name": "Romi Rain"
+    },
+    {
+      "name": "Tori Black"
+    },
+    {
+      "name": "Veronica Leal"
+    },
+    {
+      "name": "Violet Myers"
+    },
+    {
+      "name": "Willow Ryder"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\nAbella Danger\nAdriana Chechik\nAlexis Texas\nAngela White\nAnna Claire Clouds\nAsa Akira\nBlake Blossom\nBrandi Love\nChanel Camryn\nCherie DeVille\nCherry Kiss\nDani Daniels\nElsa Jean\nGal Ritchie\nGianna Dior\nJada Stevens\nJane Wilde\nKagney Linn Karter\nKarlee Grey\nKendra Lust\nKenna James\nKimmy Granger\nLana Rhoades\nLauren Phillips\nLeana Lovings\nLisa Ann\nMia Khalifa\nMia Malkova\nMillie Morgan\nNicole Aniston\nNicole Kitt\nOctavia Red\nPhoenix Marie\nPiper Perri\nRiley Reid\nRomi Rain\nTori Black\nVeronica Leal\nViolet Myers\nWillow Ryder\n",
+  "stderr": "",
+  "execution_time_ms": 374
+}

@@ -1,0 +1,340 @@
+{
+  "query": "SELECT id, name, performerType, createdAt FROM performers ORDER BY name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name, performerType, createdAt FROM performers ORDER BY name;",
+  "rows": [
+    {
+      "id": "300002",
+      "name": "Abella Danger",
+      "performerType": "Anal Queen",
+      "createdAt": "2026-01-19 18:42:26"
+    },
+    {
+      "id": "300006",
+      "name": "Adriana Chechik",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 18:57:20"
+    },
+    {
+      "id": "300009",
+      "name": "Alexis Texas",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 18:57:20"
+    },
+    {
+      "id": "120005",
+      "name": "Amber Blaze",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "270001",
+      "name": "Angela White",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "270002",
+      "name": "Anna Claire Clouds",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "300011",
+      "name": "Asa Akira",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:02:15"
+    },
+    {
+      "id": "270011",
+      "name": "Blake Blossom",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "300014",
+      "name": "Brandi Love",
+      "performerType": "MILF",
+      "createdAt": "2026-01-19 19:02:15"
+    },
+    {
+      "id": "240005",
+      "name": "Chanel Camryn",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "300005",
+      "name": "Cherie DeVille",
+      "performerType": "MILF",
+      "createdAt": "2026-01-19 18:42:26"
+    },
+    {
+      "id": "270018",
+      "name": "Cherry Kiss",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "120006",
+      "name": "Crystal Waters",
+      "performerType": "Specialist",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "300013",
+      "name": "Dani Daniels",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:02:15"
+    },
+    {
+      "id": "120008",
+      "name": "Diamond Luxe",
+      "performerType": "Legend",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "300012",
+      "name": "Elsa Jean",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 19:02:15"
+    },
+    {
+      "id": "240006",
+      "name": "Gal Ritchie",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "270010",
+      "name": "Gianna Dior",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "120009",
+      "name": "Ivy Valentine",
+      "performerType": "Anal Queen",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "300019",
+      "name": "Jada Stevens",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:05:48"
+    },
+    {
+      "id": "120004",
+      "name": "Jade Phoenix",
+      "performerType": "Super Slut",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "240002",
+      "name": "Jane Wilde",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "300017",
+      "name": "Kagney Linn Karter",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:05:48"
+    },
+    {
+      "id": "300023",
+      "name": "Karlee Grey",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 19:08:28"
+    },
+    {
+      "id": "300008",
+      "name": "Kendra Lust",
+      "performerType": "MILF",
+      "createdAt": "2026-01-19 18:57:20"
+    },
+    {
+      "id": "270008",
+      "name": "Kenna James",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "300024",
+      "name": "Kimmy Granger",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:08:28"
+    },
+    {
+      "id": "300004",
+      "name": "Lana Rhoades",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 18:42:26"
+    },
+    {
+      "id": "270009",
+      "name": "Lauren Phillips",
+      "performerType": "MILF",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "270012",
+      "name": "Leana Lovings",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "300020",
+      "name": "Lisa Ann",
+      "performerType": "MILF",
+      "createdAt": "2026-01-19 19:08:28"
+    },
+    {
+      "id": "120002",
+      "name": "Luna Rose",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "300010",
+      "name": "Mia Khalifa",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:02:15"
+    },
+    {
+      "id": "300007",
+      "name": "Mia Malkova",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 18:57:20"
+    },
+    {
+      "id": "120001",
+      "name": "Mia Stellar",
+      "performerType": "Legend",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "240004",
+      "name": "Millie Morgan",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "180010",
+      "name": "Minimal Performer 1768675105393",
+      "performerType": "NULL",
+      "createdAt": "2026-01-17 18:38:25"
+    },
+    {
+      "id": "300015",
+      "name": "Nicole Aniston",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:05:48"
+    },
+    {
+      "id": "240003",
+      "name": "Nicole Kitt",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "270013",
+      "name": "Octavia Red",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    },
+    {
+      "id": "300016",
+      "name": "Phoenix Marie",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:05:48"
+    },
+    {
+      "id": "300021",
+      "name": "Piper Perri",
+      "performerType": "Girl Next Door",
+      "createdAt": "2026-01-19 19:08:28"
+    },
+    {
+      "id": "120007",
+      "name": "Raven Night",
+      "performerType": "Extreme",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "300003",
+      "name": "Riley Reid",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 18:42:26"
+    },
+    {
+      "id": "300022",
+      "name": "Romi Rain",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:08:28"
+    },
+    {
+      "id": "120010",
+      "name": "Ruby Passion",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "210001",
+      "name": "Ryan Connor",
+      "performerType": "Anal Queen",
+      "createdAt": "2026-01-19 04:50:56"
+    },
+    {
+      "id": "120003",
+      "name": "Scarlett Vixen",
+      "performerType": "Hall of Fame",
+      "createdAt": "2026-01-17 03:25:51"
+    },
+    {
+      "id": "150001",
+      "name": "Test Performer 1",
+      "performerType": "Legend",
+      "createdAt": "2026-01-17 04:49:32"
+    },
+    {
+      "id": "180009",
+      "name": "Test Performer 1768675105260",
+      "performerType": "NULL",
+      "createdAt": "2026-01-17 18:38:25"
+    },
+    {
+      "id": "150002",
+      "name": "Test Performer 2",
+      "performerType": "Anal Queen",
+      "createdAt": "2026-01-17 04:49:32"
+    },
+    {
+      "id": "300018",
+      "name": "Tori Black",
+      "performerType": "Legend",
+      "createdAt": "2026-01-19 19:05:48"
+    },
+    {
+      "id": "240001",
+      "name": "Veronica Leal",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 05:26:32"
+    },
+    {
+      "id": "300001",
+      "name": "Violet Myers",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 18:42:26"
+    },
+    {
+      "id": "270014",
+      "name": "Willow Ryder",
+      "performerType": "Rising Star",
+      "createdAt": "2026-01-19 17:06:13"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tperformerType\tcreatedAt\n300002\tAbella Danger\tAnal Queen\t2026-01-19 18:42:26\n300006\tAdriana Chechik\tLegend\t2026-01-19 18:57:20\n300009\tAlexis Texas\tLegend\t2026-01-19 18:57:20\n120005\tAmber Blaze\tGirl Next Door\t2026-01-17 03:25:51\n270001\tAngela White\tLegend\t2026-01-19 17:06:13\n270002\tAnna Claire Clouds\tRising Star\t2026-01-19 17:06:13\n300011\tAsa Akira\tLegend\t2026-01-19 19:02:15\n270011\tBlake Blossom\tRising Star\t2026-01-19 17:06:13\n300014\tBrandi Love\tMILF\t2026-01-19 19:02:15\n240005\tChanel Camryn\tGirl Next Door\t2026-01-19 05:26:32\n300005\tCherie DeVille\tMILF\t2026-01-19 18:42:26\n270018\tCherry Kiss\tLegend\t2026-01-19 17:06:13\n120006\tCrystal Waters\tSpecialist\t2026-01-17 03:25:51\n300013\tDani Daniels\tLegend\t2026-01-19 19:02:15\n120008\tDiamond Luxe\tLegend\t2026-01-17 03:25:51\n300012\tElsa Jean\tGirl Next Door\t2026-01-19 19:02:15\n240006\tGal Ritchie\tRising Star\t2026-01-19 05:26:32\n270010\tGianna Dior\tRising Star\t2026-01-19 17:06:13\n120009\tIvy Valentine\tAnal Queen\t2026-01-17 03:25:51\n300019\tJada Stevens\tLegend\t2026-01-19 19:05:48\n120004\tJade Phoenix\tSuper Slut\t2026-01-17 03:25:51\n240002\tJane Wilde\tGirl Next Door\t2026-01-19 05:26:32\n300017\tKagney Linn Karter\tLegend\t2026-01-19 19:05:48\n300023\tKarlee Grey\tRising Star\t2026-01-19 19:08:28\n300008\tKendra Lust\tMILF\t2026-01-19 18:57:20\n270008\tKenna James\tGirl Next Door\t2026-01-19 17:06:13\n300024\tKimmy Granger\tLegend\t2026-01-19 19:08:28\n300004\tLana Rhoades\tLegend\t2026-01-19 18:42:26\n270009\tLauren Phillips\tMILF\t2026-01-19 17:06:13\n270012\tLeana Lovings\tRising Star\t2026-01-19 17:06:13\n300020\tLisa Ann\tMILF\t2026-01-19 19:08:28\n120002\tLuna Rose\tRising Star\t2026-01-17 03:25:51\n300010\tMia Khalifa\tLegend\t2026-01-19 19:02:15\n300007\tMia Malkova\tLegend\t2026-01-19 18:57:20\n120001\tMia Stellar\tLegend\t2026-01-17 03:25:51\n240004\tMillie Morgan\tGirl Next Door\t2026-01-19 05:26:32\n180010\tMinimal Performer 1768675105393\tNULL\t2026-01-17 18:38:25\n300015\tNicole Aniston\tLegend\t2026-01-19 19:05:48\n240003\tNicole Kitt\tRising Star\t2026-01-19 05:26:32\n270013\tOctavia Red\tRising Star\t2026-01-19 17:06:13\n300016\tPhoenix Marie\tLegend\t2026-01-19 19:05:48\n300021\tPiper Perri\tGirl Next Door\t2026-01-19 19:08:28\n120007\tRaven Night\tExtreme\t2026-01-17 03:25:51\n300003\tRiley Reid\tLegend\t2026-01-19 18:42:26\n300022\tRomi Rain\tLegend\t2026-01-19 19:08:28\n120010\tRuby Passion\tRising Star\t2026-01-17 03:25:51\n210001\tRyan Connor\tAnal Queen\t2026-01-19 04:50:56\n120003\tScarlett Vixen\tHall of Fame\t2026-01-17 03:25:51\n150001\tTest Performer 1\tLegend\t2026-01-17 04:49:32\n180009\tTest Performer 1768675105260\tNULL\t2026-01-17 18:38:25\n150002\tTest Performer 2\tAnal Queen\t2026-01-17 04:49:32\n300018\tTori Black\tLegend\t2026-01-19 19:05:48\n240001\tVeronica Leal\tRising Star\t2026-01-19 05:26:32\n300001\tViolet Myers\tRising Star\t2026-01-19 18:42:26\n270014\tWillow Ryder\tRising Star\t2026-01-19 17:06:13\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}

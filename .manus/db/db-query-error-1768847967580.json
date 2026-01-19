@@ -1,0 +1,8 @@
+{
+  "query": "SELECT name, performerType, country FROM performers WHERE name IN ('Violet Myers', 'Abella Danger', 'Riley Reid', 'Lana Rhoades', 'Cherie DeVille');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT name, performerType, country FROM performers WHERE name IN ('Violet Myers', 'Abella Danger', 'Riley Reid', 'Lana Rhoades', 'Cherie DeVille');",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'country' in 'field list'"
+  ]
+}

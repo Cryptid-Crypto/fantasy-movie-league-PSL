@@ -1,0 +1,42 @@
+{
+  "query": "SELECT name, COUNT(*) as count FROM performers GROUP BY name HAVING count > 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT name, COUNT(*) as count FROM performers GROUP BY name HAVING count > 1;",
+  "rows": [
+    {
+      "name": "Kendra Lust",
+      "count": "2"
+    },
+    {
+      "name": "Adriana Chechik",
+      "count": "2"
+    },
+    {
+      "name": "Mia Malkova",
+      "count": "2"
+    },
+    {
+      "name": "Abella Danger",
+      "count": "2"
+    },
+    {
+      "name": "Riley Reid",
+      "count": "2"
+    },
+    {
+      "name": "Lana Rhoades",
+      "count": "2"
+    },
+    {
+      "name": "Cherie DeVille",
+      "count": "2"
+    },
+    {
+      "name": "Violet Myers",
+      "count": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\tcount\nKendra Lust\t2\nAdriana Chechik\t2\nMia Malkova\t2\nAbella Danger\t2\nRiley Reid\t2\nLana Rhoades\t2\nCherie DeVille\t2\nViolet Myers\t2\n",
+  "stderr": "",
+  "execution_time_ms": 385
+}

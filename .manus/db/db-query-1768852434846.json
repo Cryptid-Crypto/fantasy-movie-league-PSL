@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total_count, \n       SUM(CASE WHEN name LIKE '%Test%' OR name LIKE '%Stellar%' OR name LIKE '%Passion%' OR name LIKE '%Valentine%' OR name LIKE '%Luxe%' OR name LIKE '%Night%' OR name LIKE '%Waters%' OR name LIKE '%Blaze%' OR name LIKE '%Phoenix%' OR name LIKE '%Vixen%' OR name LIKE '%Rose%' OR name = 'Ryan Connor' THEN 1 ELSE 0 END) as test_count,\n       COUNT(DISTINCT name) as unique_names\nFROM performers;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT COUNT(*) as total_count, \n       SUM(CASE WHEN name LIKE '%Test%' OR name LIKE '%Stellar%' OR name LIKE '%Passion%' OR name LIKE '%Valentine%' OR name LIKE '%Luxe%' OR name LIKE '%Night%' OR name LIKE '%Waters%' OR name LIKE '%Blaze%' OR name LIKE '%Phoenix%' OR name LIKE '%Vixen%' OR name LIKE '%Rose%' OR name = 'Ryan Connor' THEN 1 ELSE 0 END) as test_count,\n       COUNT(DISTINCT name) as unique_names\nFROM performers;",
+  "rows": [
+    {
+      "total_count": "40",
+      "test_count": "1",
+      "unique_names": "40"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_count\ttest_count\tunique_names\n40\t1\t40\n",
+  "stderr": "",
+  "execution_time_ms": 365
+}

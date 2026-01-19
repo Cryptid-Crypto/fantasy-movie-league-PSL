@@ -1,0 +1,30 @@
+{
+  "query": "SELECT name, performerType FROM performers WHERE name IN ('Violet Myers', 'Abella Danger', 'Riley Reid', 'Lana Rhoades', 'Cherie DeVille');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT name, performerType FROM performers WHERE name IN ('Violet Myers', 'Abella Danger', 'Riley Reid', 'Lana Rhoades', 'Cherie DeVille');",
+  "rows": [
+    {
+      "name": "Violet Myers",
+      "performerType": "Rising Star"
+    },
+    {
+      "name": "Abella Danger",
+      "performerType": "Legend"
+    },
+    {
+      "name": "Riley Reid",
+      "performerType": "Legend"
+    },
+    {
+      "name": "Lana Rhoades",
+      "performerType": "Legend"
+    },
+    {
+      "name": "Cherie DeVille",
+      "performerType": "MILF"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\tperformerType\nViolet Myers\tRising Star\nAbella Danger\tLegend\nRiley Reid\tLegend\nLana Rhoades\tLegend\nCherie DeVille\tMILF\n",
+  "stderr": "",
+  "execution_time_ms": 454
+}

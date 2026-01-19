@@ -1,0 +1,285 @@
+{
+  "query": "SELECT name, COUNT(*) as count, GROUP_CONCAT(id ORDER BY id) as ids \nFROM performers \nGROUP BY name \nORDER BY count DESC, name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT name, COUNT(*) as count, GROUP_CONCAT(id ORDER BY id) as ids \nFROM performers \nGROUP BY name \nORDER BY count DESC, name;",
+  "rows": [
+    {
+      "name": "Abella Danger",
+      "count": "1",
+      "ids": "300002"
+    },
+    {
+      "name": "Adriana Chechik",
+      "count": "1",
+      "ids": "300006"
+    },
+    {
+      "name": "Alexis Texas",
+      "count": "1",
+      "ids": "300009"
+    },
+    {
+      "name": "Amber Blaze",
+      "count": "1",
+      "ids": "120005"
+    },
+    {
+      "name": "Angela White",
+      "count": "1",
+      "ids": "270001"
+    },
+    {
+      "name": "Anna Claire Clouds",
+      "count": "1",
+      "ids": "270002"
+    },
+    {
+      "name": "Asa Akira",
+      "count": "1",
+      "ids": "300011"
+    },
+    {
+      "name": "Blake Blossom",
+      "count": "1",
+      "ids": "270011"
+    },
+    {
+      "name": "Brandi Love",
+      "count": "1",
+      "ids": "300014"
+    },
+    {
+      "name": "Chanel Camryn",
+      "count": "1",
+      "ids": "240005"
+    },
+    {
+      "name": "Cherie DeVille",
+      "count": "1",
+      "ids": "300005"
+    },
+    {
+      "name": "Cherry Kiss",
+      "count": "1",
+      "ids": "270018"
+    },
+    {
+      "name": "Crystal Waters",
+      "count": "1",
+      "ids": "120006"
+    },
+    {
+      "name": "Dani Daniels",
+      "count": "1",
+      "ids": "300013"
+    },
+    {
+      "name": "Diamond Luxe",
+      "count": "1",
+      "ids": "120008"
+    },
+    {
+      "name": "Elsa Jean",
+      "count": "1",
+      "ids": "300012"
+    },
+    {
+      "name": "Gal Ritchie",
+      "count": "1",
+      "ids": "240006"
+    },
+    {
+      "name": "Gianna Dior",
+      "count": "1",
+      "ids": "270010"
+    },
+    {
+      "name": "Ivy Valentine",
+      "count": "1",
+      "ids": "120009"
+    },
+    {
+      "name": "Jada Stevens",
+      "count": "1",
+      "ids": "300019"
+    },
+    {
+      "name": "Jade Phoenix",
+      "count": "1",
+      "ids": "120004"
+    },
+    {
+      "name": "Jane Wilde",
+      "count": "1",
+      "ids": "240002"
+    },
+    {
+      "name": "Kagney Linn Karter",
+      "count": "1",
+      "ids": "300017"
+    },
+    {
+      "name": "Karlee Grey",
+      "count": "1",
+      "ids": "300023"
+    },
+    {
+      "name": "Kendra Lust",
+      "count": "1",
+      "ids": "300008"
+    },
+    {
+      "name": "Kenna James",
+      "count": "1",
+      "ids": "270008"
+    },
+    {
+      "name": "Kimmy Granger",
+      "count": "1",
+      "ids": "300024"
+    },
+    {
+      "name": "Lana Rhoades",
+      "count": "1",
+      "ids": "300004"
+    },
+    {
+      "name": "Lauren Phillips",
+      "count": "1",
+      "ids": "270009"
+    },
+    {
+      "name": "Leana Lovings",
+      "count": "1",
+      "ids": "270012"
+    },
+    {
+      "name": "Lisa Ann",
+      "count": "1",
+      "ids": "300020"
+    },
+    {
+      "name": "Luna Rose",
+      "count": "1",
+      "ids": "120002"
+    },
+    {
+      "name": "Mia Khalifa",
+      "count": "1",
+      "ids": "300010"
+    },
+    {
+      "name": "Mia Malkova",
+      "count": "1",
+      "ids": "300007"
+    },
+    {
+      "name": "Mia Stellar",
+      "count": "1",
+      "ids": "120001"
+    },
+    {
+      "name": "Millie Morgan",
+      "count": "1",
+      "ids": "240004"
+    },
+    {
+      "name": "Minimal Performer 1768675105393",
+      "count": "1",
+      "ids": "180010"
+    },
+    {
+      "name": "Nicole Aniston",
+      "count": "1",
+      "ids": "300015"
+    },
+    {
+      "name": "Nicole Kitt",
+      "count": "1",
+      "ids": "240003"
+    },
+    {
+      "name": "Octavia Red",
+      "count": "1",
+      "ids": "270013"
+    },
+    {
+      "name": "Phoenix Marie",
+      "count": "1",
+      "ids": "300016"
+    },
+    {
+      "name": "Piper Perri",
+      "count": "1",
+      "ids": "300021"
+    },
+    {
+      "name": "Raven Night",
+      "count": "1",
+      "ids": "120007"
+    },
+    {
+      "name": "Riley Reid",
+      "count": "1",
+      "ids": "300003"
+    },
+    {
+      "name": "Romi Rain",
+      "count": "1",
+      "ids": "300022"
+    },
+    {
+      "name": "Ruby Passion",
+      "count": "1",
+      "ids": "120010"
+    },
+    {
+      "name": "Ryan Connor",
+      "count": "1",
+      "ids": "210001"
+    },
+    {
+      "name": "Scarlett Vixen",
+      "count": "1",
+      "ids": "120003"
+    },
+    {
+      "name": "Test Performer 1",
+      "count": "1",
+      "ids": "150001"
+    },
+    {
+      "name": "Test Performer 1768675105260",
+      "count": "1",
+      "ids": "180009"
+    },
+    {
+      "name": "Test Performer 2",
+      "count": "1",
+      "ids": "150002"
+    },
+    {
+      "name": "Tori Black",
+      "count": "1",
+      "ids": "300018"
+    },
+    {
+      "name": "Veronica Leal",
+      "count": "1",
+      "ids": "240001"
+    },
+    {
+      "name": "Violet Myers",
+      "count": "1",
+      "ids": "300001"
+    },
+    {
+      "name": "Willow Ryder",
+      "count": "1",
+      "ids": "270014"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\tcount\tids\nAbella Danger\t1\t300002\nAdriana Chechik\t1\t300006\nAlexis Texas\t1\t300009\nAmber Blaze\t1\t120005\nAngela White\t1\t270001\nAnna Claire Clouds\t1\t270002\nAsa Akira\t1\t300011\nBlake Blossom\t1\t270011\nBrandi Love\t1\t300014\nChanel Camryn\t1\t240005\nCherie DeVille\t1\t300005\nCherry Kiss\t1\t270018\nCrystal Waters\t1\t120006\nDani Daniels\t1\t300013\nDiamond Luxe\t1\t120008\nElsa Jean\t1\t300012\nGal Ritchie\t1\t240006\nGianna Dior\t1\t270010\nIvy Valentine\t1\t120009\nJada Stevens\t1\t300019\nJade Phoenix\t1\t120004\nJane Wilde\t1\t240002\nKagney Linn Karter\t1\t300017\nKarlee Grey\t1\t300023\nKendra Lust\t1\t300008\nKenna James\t1\t270008\nKimmy Granger\t1\t300024\nLana Rhoades\t1\t300004\nLauren Phillips\t1\t270009\nLeana Lovings\t1\t270012\nLisa Ann\t1\t300020\nLuna Rose\t1\t120002\nMia Khalifa\t1\t300010\nMia Malkova\t1\t300007\nMia Stellar\t1\t120001\nMillie Morgan\t1\t240004\nMinimal Performer 1768675105393\t1\t180010\nNicole Aniston\t1\t300015\nNicole Kitt\t1\t240003\nOctavia Red\t1\t270013\nPhoenix Marie\t1\t300016\nPiper Perri\t1\t300021\nRaven Night\t1\t120007\nRiley Reid\t1\t300003\nRomi Rain\t1\t300022\nRuby Passion\t1\t120010\nRyan Connor\t1\t210001\nScarlett Vixen\t1\t120003\nTest Performer 1\t1\t150001\nTest Performer 1768675105260\t1\t180009\nTest Performer 2\t1\t150002\nTori Black\t1\t300018\nVeronica Leal\t1\t240001\nViolet Myers\t1\t300001\nWillow Ryder\t1\t270014\n",
+  "stderr": "",
+  "execution_time_ms": 369
+}

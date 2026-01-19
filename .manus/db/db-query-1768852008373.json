@@ -1,0 +1,9 @@
+{
+  "query": "DELETE p1 FROM performers p1\nINNER JOIN performers p2 \nWHERE p1.name = p2.name \nAND p1.id < p2.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute DELETE p1 FROM performers p1\nINNER JOIN performers p2 \nWHERE p1.name = p2.name \nAND p1.id < p2.id;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 466
+}
