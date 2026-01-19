@@ -28,8 +28,8 @@ def generate_nft_card(portrait_path, performer_name, output_path, badge_logos=[]
     card_width = 1536
     card_height = 2752
     
-    # Create black background with white border
-    card = Image.new('RGB', (card_width, card_height), color='#000000')
+    # Create black background with white border (RGBA for proper transparency)
+    card = Image.new('RGBA', (card_width, card_height), color='#000000')
     draw = ImageDraw.Draw(card)
     
     # Draw white border (20px)
