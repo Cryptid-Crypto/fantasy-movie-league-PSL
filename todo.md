@@ -326,3 +326,10 @@
 - [x] Generate UK flag badge matching USA badge style
 - [x] Update Veronica Leal NFT card with Colombia badge
 - [x] Update Gal Ritchie NFT card with UK badge
+
+## Performer Resemblance Fix (User Requested)
+- [x] Research Jane Wilde's distinctive features and characteristics
+- [x] Research Millie Morgan's distinctive features and characteristics
+- [x] Regenerate Jane Wilde portrait with accurate resemblance in 3D animation style
+- [x] Regenerate Millie Morgan portrait with accurate resemblance in 3D animation style
+- [x] Update NFT cards and upload to S3
