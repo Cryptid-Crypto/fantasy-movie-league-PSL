@@ -333,3 +333,8 @@
 - [x] Regenerate Jane Wilde portrait with accurate resemblance in 3D animation style
 - [x] Regenerate Millie Morgan portrait with accurate resemblance in 3D animation style
 - [x] Update NFT cards and upload to S3
+
+## Badge Order Fix (User Requested)
+- [x] Update badge order: country flag first, then performer type badge
+- [x] Regenerate all 6 NFT cards with correct badge order
+- [x] Upload to S3 and update database
