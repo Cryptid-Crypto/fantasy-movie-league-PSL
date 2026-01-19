@@ -314,3 +314,15 @@
 - [x] Fix missing performer names on NFT cards (names should be visible in large white text)
 - [x] Verify badges have proper transparency in browser (not just image viewers)
 - [x] Ensure all 6 performer cards match Ryan Connor template exactly
+
+## Portrait Updates (User Requested)
+- [x] Regenerate Jane Wilde portrait with more revealing outfit in 3D animation style
+- [x] Regenerate Millie Morgan portrait with more revealing outfit in 3D animation style
+- [x] Create updated NFT cards with new portraits
+- [x] Upload to S3 and update database
+
+## Country Badge Generation (User Requested)
+- [x] Generate Colombia flag badge matching USA badge style
+- [x] Generate UK flag badge matching USA badge style
+- [x] Update Veronica Leal NFT card with Colombia badge
+- [x] Update Gal Ritchie NFT card with UK badge
