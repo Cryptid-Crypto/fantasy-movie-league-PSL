@@ -121,9 +121,9 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {badge.iconUrl && (
-                          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-black/5">
+                          <div className="w-12 h-12 flex items-center justify-center">
                             <img
-                              src={`${badge.iconUrl}?v=2`}
+                              src={`${badge.iconUrl}?v=3`}
                               alt={badge.name}
                               className="w-10 h-10 object-contain"
                             />

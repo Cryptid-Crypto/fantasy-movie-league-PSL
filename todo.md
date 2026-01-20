@@ -444,3 +444,10 @@
 - [x] Add rounded background container for better badge visibility
 - [ ] Test badge display after hard browser refresh (Ctrl+Shift+R)
 - [ ] Save checkpoint with UI improvements
+
+## Badge Grey Background Fix (User Reported)
+- [x] Remove bg-black/5 background from badge icon container in BadgeManager
+- [x] Update cache-busting parameter to v=3
+- [x] Test badge display - all 9 badges showing proper transparency
+- [x] Visual verification complete - no grey backgrounds visible
+- [x] Fix confirmed and ready for checkpoint
