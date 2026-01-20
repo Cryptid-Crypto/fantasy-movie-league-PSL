@@ -356,3 +356,17 @@
 - [ ] Generate all 25 NFT cards using V3 script with Ryan Connor template
 - [ ] Upload all corrected cards to S3 and update database
 - [ ] Verify all cards match Ryan Connor template in browser
+
+## NFT Card Quality Review (User Requested)
+- [ ] Review all 25 performer cards for cropped arms on sides
+- [ ] Verify all cards have proper PSL logo (white diamond + black bunny)
+- [ ] Confirm all cards have pure black backgrounds
+- [ ] Regenerate any cards with quality issues
+- [ ] Update database with fixed card URLs
+
+## Fix Cropped Arms on NFT Cards (User Requested - Option A)
+- [x] Identify all performers with arms cropped on sides
+- [x] Regenerate portraits for those performers with full arms visible
+- [x] Regenerate NFT cards with corrected portraits
+- [x] Upload fixed cards to S3
+- [x] Update database with new card URLs
