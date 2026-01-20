@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE badges SET iconUrl = '/legend-badge-v5.png' WHERE name = 'Legend';\nUPDATE badges SET iconUrl = '/milf-badge-v5.png' WHERE name = 'MILF';\nUPDATE badges SET iconUrl = '/anal-queen-badge-v5.png' WHERE name = 'Anal Queen';\nUPDATE badges SET iconUrl = '/hall-of-fame-badge-v5.png' WHERE name = 'Hall of Fame';\nUPDATE badges SET iconUrl = '/specialist-badge-v5.png' WHERE name = 'Specialist';\nUPDATE badges SET iconUrl = '/rising-star-badge-v5.png' WHERE name = 'Rising Star';\nUPDATE badges SET iconUrl = '/girl-next-door-badge-v5.png' WHERE name = 'Girl Next Door';\nUPDATE badges SET iconUrl = '/extreme-badge-v5.png' WHERE name = 'Extreme';\nUPDATE badges SET iconUrl = '/super-slut-badge-v5.png' WHERE name = 'Super Slut';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute UPDATE badges SET iconUrl = '/legend-badge-v5.png' WHERE name = 'Legend';\nUPDATE badges SET iconUrl = '/milf-badge-v5.png' WHERE name = 'MILF';\nUPDATE badges SET iconUrl = '/anal-queen-badge-v5.png' WHERE name = 'Anal Queen';\nUPDATE badges SET iconUrl = '/hall-of-fame-badge-v5.png' WHERE name = 'Hall of Fame';\nUPDATE badges SET iconUrl = '/specialist-badge-v5.png' WHERE name = 'Specialist';\nUPDATE badges SET iconUrl = '/rising-star-badge-v5.png' WHERE name = 'Rising Star';\nUPDATE badges SET iconUrl = '/girl-next-door-badge-v5.png' WHERE name = 'Girl Next Door';\nUPDATE badges SET iconUrl = '/extreme-badge-v5.png' WHERE name = 'Extreme';\nUPDATE badges SET iconUrl = '/super-slut-badge-v5.png' WHERE name = 'Super Slut';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2865
+}

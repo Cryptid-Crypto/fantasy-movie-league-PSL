@@ -451,3 +451,27 @@
 - [x] Test badge display - all 9 badges showing proper transparency
 - [x] Visual verification complete - no grey backgrounds visible
 - [x] Fix confirmed and ready for checkpoint
+
+## Badge Icon Transparency Fix (User Reported - Root Cause)
+- [ ] Regenerate Legend badge icon with transparent PNG background
+- [ ] Regenerate MILF badge icon with transparent PNG background
+- [ ] Regenerate Anal Queen badge icon with transparent PNG background
+- [ ] Regenerate Hall of Fame badge icon with transparent PNG background
+- [ ] Regenerate Specialist badge icon with transparent PNG background
+- [ ] Regenerate Rising Star badge icon with transparent PNG background
+- [ ] Regenerate Girl Next Door badge icon with transparent PNG background
+- [ ] Regenerate Extreme badge icon with transparent PNG background
+- [ ] Regenerate Super Slut badge icon with transparent PNG background
+- [ ] Update database with new badge icon paths
+- [ ] Test badge display in BadgeManager
+- [ ] Save checkpoint
+
+## Stylized 3D Badge Icon Redesign (User Requested)
+- [x] Regenerate all 9 badge icons with stylized 3D look (not photorealistic)
+- [x] Use playful creative imagery (e.g., peach with crown for Anal Queen)
+- [x] No circle frames around icons
+- [x] Illustrated/graphic style with visual richness but not realistic
+- [x] Ensure transparent PNG backgrounds
+- [x] Update database with new icon paths (v5)
+- [x] Test in BadgeManager interface - all badges displaying correctly
+- [x] Save checkpoint
