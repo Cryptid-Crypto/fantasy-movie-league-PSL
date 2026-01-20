@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, name, iconUrl FROM badges ORDER BY name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name, iconUrl FROM badges ORDER BY name;",
+  "rows": [
+    {
+      "id": "2",
+      "name": "Anal Queen",
+      "iconUrl": "/type-logo-anal-queen.png"
+    },
+    {
+      "id": "4",
+      "name": "Extreme",
+      "iconUrl": "/type-logo-extreme.png"
+    },
+    {
+      "id": "5",
+      "name": "Girl Next Door",
+      "iconUrl": "/type-logo-girl-next-door.png"
+    },
+    {
+      "id": "7",
+      "name": "Hall of Fame",
+      "iconUrl": "/type-logo-hall-of-fame.png"
+    },
+    {
+      "id": "1",
+      "name": "Legend",
+      "iconUrl": "/type-logo-legend.png"
+    },
+    {
+      "id": "9",
+      "name": "MILF",
+      "iconUrl": "/type-logo-milf.png"
+    },
+    {
+      "id": "6",
+      "name": "Rising Star",
+      "iconUrl": "/type-logo-rising-star.png"
+    },
+    {
+      "id": "8",
+      "name": "Specialist",
+      "iconUrl": "/type-logo-specialist.png"
+    },
+    {
+      "id": "3",
+      "name": "Super Slut",
+      "iconUrl": "/badges/super-slut.png"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ticonUrl\n2\tAnal Queen\t/type-logo-anal-queen.png\n4\tExtreme\t/type-logo-extreme.png\n5\tGirl Next Door\t/type-logo-girl-next-door.png\n7\tHall of Fame\t/type-logo-hall-of-fame.png\n1\tLegend\t/type-logo-legend.png\n9\tMILF\t/type-logo-milf.png\n6\tRising Star\t/type-logo-rising-star.png\n8\tSpecialist\t/type-logo-specialist.png\n3\tSuper Slut\t/badges/super-slut.png\n",
+  "stderr": "",
+  "execution_time_ms": 371
+}

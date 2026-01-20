@@ -436,3 +436,11 @@
 - [x] Fix hook ordering violations (moved useLocation to top before conditional returns)
 - [ ] Test AdminDashboard page loads without errors (ready for testing)
 - [ ] Save checkpoint with fix
+
+## Badge Transparency Fix & Super Slut Badge (User Reported)
+- [x] Check badge files for transparency - all badges have proper PNG transparency
+- [x] Verify Super Slut badge exists in files and database - confirmed present
+- [x] Improve badge icon display in BadgeManager (larger icons 40x40, cache-busting v=2)
+- [x] Add rounded background container for better badge visibility
+- [ ] Test badge display after hard browser refresh (Ctrl+Shift+R)
+- [ ] Save checkpoint with UI improvements
