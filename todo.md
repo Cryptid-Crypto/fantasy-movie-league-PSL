@@ -423,3 +423,10 @@
 - [ ] Update database with new card URLs
 - [ ] Add loading states during card regeneration
 - [ ] Test badge updates and card regeneration flow
+
+## Badge Image Display Fix (User Reported)
+- [x] Investigate why badge images are not displaying in BadgeManager
+- [x] Fix image paths to correctly reference badge files in /client/public/
+- [x] Update badges table with correct iconUrl paths
+- [ ] Test badge display in admin dashboard (ready for testing)
+- [ ] Save checkpoint with fix
