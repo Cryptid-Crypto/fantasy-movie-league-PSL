@@ -9,6 +9,7 @@ import { config } from '@/lib/web3';
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import "./mobile-touch.css";
 
 const queryClient = new QueryClient();
 

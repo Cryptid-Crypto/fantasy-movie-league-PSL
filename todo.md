@@ -370,3 +370,15 @@
 - [x] Regenerate NFT cards with corrected portraits
 - [x] Upload fixed cards to S3
 - [x] Update database with new card URLs
+
+## Mobile Optimization (User Requested)
+- [x] Audit current mobile experience and identify pain points
+- [x] Implement responsive navigation (hamburger menu for mobile)
+- [x] Optimize performer cards for mobile (1 column on mobile, 2 on tablet)
+- [x] Add mobile-friendly tournament UI with responsive grid
+- [x] Implement touch-friendly CSS (larger tap targets, active states)
+- [x] Add mobile-specific breakpoints and layouts
+- [x] Update viewport meta tag for proper mobile rendering
+- [x] Make all buttons and CTAs full-width on mobile
+- [ ] Test on various mobile screen sizes (ready for testing)
+- [ ] Add PWA features (optional: install prompt, offline support)

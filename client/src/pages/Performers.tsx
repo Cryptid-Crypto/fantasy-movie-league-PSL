@@ -25,8 +25,8 @@ export default function Performers() {
               Back
             </Button>
           </Link>
-          <h1 className="text-4xl font-bold mb-2">Porn Stars</h1>
-          <p className="text-muted-foreground">Browse all registered porn stars</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Porn Stars</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Browse all registered porn stars</p>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ export default function Performers() {
             <p className="text-muted-foreground">Loading porn stars...</p>
           </div>
         ) : filteredPerformers && filteredPerformers.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
             {filteredPerformers.map((performer) => (
               <Link key={performer.id} href={`/performers/${performer.id}`}>
                 <Card className="overflow-hidden card-elevated hover-lift cursor-pointer group">

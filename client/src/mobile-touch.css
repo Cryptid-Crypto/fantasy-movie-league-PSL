@@ -1,0 +1,114 @@
+/* Mobile Touch Optimizations */
+
+/* Larger tap targets for mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve touch feedback */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Prevent text selection on tap */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling for mobile */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better touch scrolling */
+  .touch-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Pull-to-refresh indicator */
+  .pull-to-refresh {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Swipeable card container */
+.swipeable-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.swipeable-container::-webkit-scrollbar {
+  display: none;
+}
+
+.swipeable-item {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Mobile-friendly modals */
+@media (max-width: 768px) {
+  [role="dialog"] {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* Improve form inputs on mobile */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Bottom sheet animation */
+.bottom-sheet {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Loading skeleton for mobile */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

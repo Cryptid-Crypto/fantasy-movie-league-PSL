@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Users, Wallet, Zap, Film, Crown } from "lucide-react";
 import { Link } from "wouter";
 import { getLoginUrl } from "@/const";
+import MobileNav from "@/components/MobileNav";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -20,7 +21,7 @@ export default function Home() {
                 Porn Star League
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-4">
               <Link href="/performers">
                 <Button variant="ghost">Performers</Button>
               </Link>
@@ -42,9 +43,11 @@ export default function Home() {
               ) : (
                 <Button onClick={() => (window.location.href = getLoginUrl())}>
                   Sign In
-                </Button>
+              </Button>
               )}
             </div>
+            {/* Mobile Navigation */}
+            <MobileNav />
           </div>
         </div>
       </nav>
@@ -53,28 +56,28 @@ export default function Home() {
       <section className="container py-20">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-6xl font-bold leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
               Compete with{" "}
               <span className="text-primary">
                 Porn Star NFTs
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               The first Web3 fantasy tournament platform where your Porn Star NFTs compete based on
               real scene performance data on Polygon Network.
             </p>
           </div>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto px-4 sm:px-0">
             {user ? (
               <>
                 <Link href="/tournaments">
-                  <Button size="lg" className="gap-2">
+                  <Button size="lg" className="gap-2 w-full sm:w-auto">
                     <Trophy className="h-5 w-5" />
                     Browse Tournaments
                   </Button>
                 </Link>
                 <Link href="/my-nfts">
-                  <Button size="lg" variant="outline" className="gap-2">
+                  <Button size="lg" variant="outline" className="gap-2 w-full sm:w-auto">
                     <Wallet className="h-5 w-5" />
                     My Collection
                   </Button>
@@ -85,12 +88,12 @@ export default function Home() {
                 <Button
                   size="lg"
                   onClick={() => (window.location.href = getLoginUrl())}
-                  className="gap-2"
+                  className="gap-2 w-full sm:w-auto"
                 >
                   Get Started
                 </Button>
                 <Link href="/performers">
-                  <Button size="lg" variant="outline">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
                     Explore Performers
                   </Button>
                 </Link>

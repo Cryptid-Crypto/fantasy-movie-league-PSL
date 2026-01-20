@@ -64,8 +64,8 @@ export default function Tournaments() {
               Back
             </Button>
           </Link>
-          <h1 className="text-4xl font-bold mb-2">Tournaments</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Tournaments</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Compete with your Performer NFTs for glory and prizes
           </p>
         </div>
@@ -75,10 +75,10 @@ export default function Tournaments() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading tournaments...</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Loading tournaments...</p>
           </div>
         ) : tournaments && tournaments.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {tournaments.map((tournament) => {
               const availableNFTs = getAvailableNFTs(tournament);
               const canEnter = user && availableNFTs.length > 0;
