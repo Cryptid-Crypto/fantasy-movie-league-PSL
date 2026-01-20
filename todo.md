@@ -382,3 +382,20 @@
 - [x] Make all buttons and CTAs full-width on mobile
 - [ ] Test on various mobile screen sizes (ready for testing)
 - [ ] Add PWA features (optional: install prompt, offline support)
+
+## PWA Features (User Requested)
+- [x] Create web app manifest (manifest.json) with app metadata
+- [x] Add app icons in multiple sizes (192x192, 512x512)
+- [x] Implement service worker for offline caching
+- [x] Cache static assets (HTML, CSS, JS, images)
+- [x] Implement cache-first strategy for performer images
+- [x] Add network-first strategy for API calls with fallback
+- [x] Create install prompt UI component
+- [x] Detect if app is installable and show prompt
+- [x] Handle beforeinstallprompt event
+- [x] Implement push notification permission request
+- [x] Create NotificationSettings component in Dashboard
+- [x] Add push notification subscription/unsubscription
+- [ ] Test offline functionality (ready for testing)
+- [ ] Test install flow on mobile devices (ready for testing)
+- [ ] Test push notifications (ready for testing)

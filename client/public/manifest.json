@@ -1,0 +1,62 @@
+{
+  "name": "Porn Star League - Web3 Fantasy Movie League",
+  "short_name": "PSL",
+  "description": "The first Web3 fantasy tournament platform where your Porn Star NFTs compete based on real scene performance data on Polygon Network",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "games", "sports"],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Performers",
+      "short_name": "Performers",
+      "description": "View all porn star performers",
+      "url": "/performers",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tournaments",
+      "short_name": "Tournaments",
+      "description": "Browse active tournaments",
+      "url": "/tournaments",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My NFTs",
+      "short_name": "Collection",
+      "description": "View your NFT collection",
+      "url": "/my-nfts",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

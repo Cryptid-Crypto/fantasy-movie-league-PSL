@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Wallet, Trophy, User, ArrowLeft, ArrowRight } from "lucide-react";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 
@@ -85,6 +86,9 @@ export default function Dashboard() {
       </div>
 
       <div className="container py-8 space-y-6">
+        {/* Notification Settings */}
+        <NotificationSettings />
+
         {/* Stats Overview */}
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="card-elevated">
