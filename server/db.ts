@@ -859,3 +859,97 @@ export async function removeScenePerformerAction(
 }
 
 
+
+// ============ BADGE FUNCTIONS ============
+
+export async function getAllBadges() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { badges } = await import("../drizzle/schema");
+  return db.select().from(badges).orderBy(badges.name);
+}
+
+export async function getPerformerBadges(performerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { performerBadges, badges } = await import("../drizzle/schema");
+  
+  return db
+    .select({
+      id: badges.id,
+      name: badges.name,
+      iconUrl: badges.iconUrl,
+      description: badges.description,
+      order: performerBadges.order,
+    })
+    .from(performerBadges)
+    .innerJoin(badges, eq(performerBadges.badgeId, badges.id))
+    .where(eq(performerBadges.performerId, performerId))
+    .orderBy(performerBadges.order);
+}
+
+export async function updatePerformerBadges(performerId: number, badgeIds: number[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { performerBadges } = await import("../drizzle/schema");
+  
+  // Delete existing badges
+  await db.delete(performerBadges).where(eq(performerBadges.performerId, performerId));
+  
+  // Insert new badges with order
+  if (badgeIds.length > 0) {
+    const values = badgeIds.map((badgeId, index) => ({
+      performerId,
+      badgeId,
+      order: index,
+    }));
+    
+    await db.insert(performerBadges).values(values);
+  }
+}
+
+export async function regeneratePerformerCard(performerId: number) {
+  const { exec } = await import("child_process");
+  const { promisify } = await import("util");
+  const execAsync = promisify(exec);
+  
+  // Get performer details
+  const performer = await getPerformerById(performerId);
+  if (!performer) {
+    throw new Error("Performer not found");
+  }
+  
+  // Get performer badges
+  const badges = await getPerformerBadges(performerId);
+  
+  // Build badge names array for Python script
+  const badgeNames = badges.map(b => b.name);
+  
+  // Call Python script to regenerate card
+  const scriptPath = "/home/ubuntu/fantasy-movie-league/generate_nft_card_v3.py";
+  const portraitPath = `/home/ubuntu/nft-cards-backup/${performer.name.toLowerCase().replace(/ /g, '-')}-final-portrait.png`;
+  const outputPath = `/home/ubuntu/fantasy-movie-league/${performer.name.toLowerCase().replace(/ /g, '-')}-FINAL-CARD.png`;
+  
+  const badgesArg = badgeNames.join(',');
+  const command = `cd /home/ubuntu/fantasy-movie-league && python3.11 ${scriptPath} "${portraitPath}" "${performer.name}" "${outputPath}" "${badgesArg}"`;
+  
+  try {
+    await execAsync(command);
+    
+    // Upload to S3
+    const uploadCommand = `manus-upload-file "${outputPath}"`;
+    const { stdout } = await execAsync(uploadCommand);
+    const cardUrl = stdout.trim();
+    
+    // Update performer imageUrl
+    await updatePerformer(performerId, { imageUrl: cardUrl });
+    
+    return { success: true, cardUrl };
+  } catch (error: any) {
+    console.error("Error regenerating card:", error);
+    throw new Error(`Failed to regenerate card: ${error.message}`);
+  }
+}

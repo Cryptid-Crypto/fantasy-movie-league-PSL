@@ -47,6 +47,37 @@ export type Performer = typeof performers.$inferSelect;
 export type InsertPerformer = typeof performers.$inferInsert;
 
 /**
+ * Badge types available for performers
+ */
+export const badges = mysqlTable("badges", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  iconUrl: text("iconUrl"), // URL to badge icon image
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Badge = typeof badges.$inferSelect;
+export type InsertBadge = typeof badges.$inferInsert;
+
+/**
+ * Junction table linking performers to their badges
+ * Allows multiple badges per performer
+ */
+export const performerBadges = mysqlTable("performerBadges", {
+  id: int("id").autoincrement().primaryKey(),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  badgeId: int("badgeId").notNull().references(() => badges.id, { onDelete: "cascade" }),
+  order: int("order").notNull().default(0), // Display order on the card
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  uniquePerformerBadge: unique().on(table.performerId, table.badgeId),
+}));
+
+export type PerformerBadge = typeof performerBadges.$inferSelect;
+export type InsertPerformerBadge = typeof performerBadges.$inferInsert;
+
+/**
  * Movies in the platform
  */
 export const movies = mysqlTable("movies", {

@@ -399,3 +399,27 @@
 - [ ] Test offline functionality (ready for testing)
 - [ ] Test install flow on mobile devices (ready for testing)
 - [ ] Test push notifications (ready for testing)
+
+## Crypto Payment System (User Requested - Web3 Only)
+- [ ] Create ERC-20 PSL token contract on Polygon
+- [ ] Integrate USDC contract (Polygon mainnet address)
+- [ ] Implement NFT card pack purchase system (5, 10, 20 packs) with USDC
+- [ ] Create randomized pack opening mechanism
+- [ ] Implement tournament entry fee payment in PSL token
+- [ ] Build prize pool smart contract with automatic PSL distribution
+- [ ] Add wallet balance display (USDC, PSL, MATIC)
+- [ ] Create payment confirmation modals with gas estimates
+- [ ] Implement transaction history in Dashboard
+- [ ] Add pack opening animation/UI
+- [ ] Test all payment flows on Polygon testnet
+
+## Admin Badge Management System (User Requested)
+- [ ] Create performer badge management UI in admin dashboard
+- [ ] Add multi-select badge picker for each performer
+- [ ] Create tRPC mutation to update performer badges
+- [ ] Implement automatic card regeneration when badges change
+- [ ] Add badge preview before regenerating card
+- [ ] Upload regenerated cards to S3 automatically
+- [ ] Update database with new card URLs
+- [ ] Add loading states during card regeneration
+- [ ] Test badge updates and card regeneration flow

@@ -1,0 +1,9 @@
+{
+  "query": "\nINSERT INTO badges (name, iconUrl, description) VALUES\n('Legend', '/badges/legend.png', 'Industry legend with iconic status'),\n('Anal Queen', '/badges/anal-queen.png', 'Specialist in anal performances'),\n('Super Slut', '/badges/super-slut.png', 'Versatile performer'),\n('Extreme', '/badges/extreme.png', 'Extreme and hardcore performances'),\n('Girl Next Door', '/badges/girl-next-door.png', 'Approachable and relatable'),\n('Rising Star', '/badges/rising-star.png', 'New talent on the rise'),\n('Hall of Fame', '/badges/hall-of-fame.png', 'Hall of Fame inductee'),\n('Specialist', '/badges/specialist.png', 'Specialized performer'),\n('MILF', '/badges/milf.png', 'Mature performer')\nON DUPLICATE KEY UPDATE iconUrl=VALUES(iconUrl), description=VALUES(description);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute \nINSERT INTO badges (name, iconUrl, description) VALUES\n('Legend', '/badges/legend.png', 'Industry legend with iconic status'),\n('Anal Queen', '/badges/anal-queen.png', 'Specialist in anal performances'),\n('Super Slut', '/badges/super-slut.png', 'Versatile performer'),\n('Extreme', '/badges/extreme.png', 'Extreme and hardcore performances'),\n('Girl Next Door', '/badges/girl-next-door.png', 'Approachable and relatable'),\n('Rising Star', '/badges/rising-star.png', 'New talent on the rise'),\n('Hall of Fame', '/badges/hall-of-fame.png', 'Hall of Fame inductee'),\n('Specialist', '/badges/specialist.png', 'Specialized performer'),\n('MILF', '/badges/milf.png', 'Mature performer')\nON DUPLICATE KEY UPDATE iconUrl=VALUES(iconUrl), description=VALUES(description);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 654
+}

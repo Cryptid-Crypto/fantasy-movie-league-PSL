@@ -28,8 +28,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, User } from "lucide-react";
+import { Plus, Pencil, Trash2, User, Award } from "lucide-react";
 import { toast } from "sonner";
+import { BadgeManager } from "./BadgeManager";
 
 const PERFORMER_TYPES = [
   "Legend",
@@ -40,13 +41,15 @@ const PERFORMER_TYPES = [
   "Rising Star",
   "Hall of Fame",
   "Specialist",
+  "MILF",
 ] as const;
 
-type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist";
+type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist" | "MILF";
 
 export function PerformersManager() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingPerformer, setEditingPerformer] = useState<any>(null);
+  const [badgeManagerPerformer, setBadgeManagerPerformer] = useState<any>(null);
   const [performerType, setPerformerType] = useState<PerformerType | "">("");
   const [editPerformerType, setEditPerformerType] = useState<PerformerType | "">("");
   
@@ -93,7 +96,7 @@ export function PerformersManager() {
       bio: formData.get("bio") as string || undefined,
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
-      performerType: performerType || undefined as PerformerType | undefined,
+      performerType: (performerType || undefined) as any,
     });
   };
 
@@ -106,7 +109,7 @@ export function PerformersManager() {
       bio: formData.get("bio") as string || undefined,
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
-      performerType: editPerformerType || undefined as PerformerType | undefined,
+      performerType: (editPerformerType || undefined) as any,
     });
   };
 
@@ -251,6 +254,14 @@ export function PerformersManager() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setBadgeManagerPerformer(performer)}
+                      title="Manage Badges"
+                    >
+                      <Award className="h-4 w-4" />
+                    </Button>
                     <Dialog
                       open={editingPerformer?.id === performer.id}
                       onOpenChange={(open) => !open && setEditingPerformer(null)}
@@ -358,6 +369,17 @@ export function PerformersManager() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Badge Manager Dialog */}
+      {badgeManagerPerformer && (
+        <Dialog open={!!badgeManagerPerformer} onOpenChange={(open) => !open && setBadgeManagerPerformer(null)}>
+          <BadgeManager
+            performerId={badgeManagerPerformer.id}
+            performerName={badgeManagerPerformer.name}
+            onClose={() => setBadgeManagerPerformer(null)}
+          />
+        </Dialog>
+      )}
     </div>
   );
 }

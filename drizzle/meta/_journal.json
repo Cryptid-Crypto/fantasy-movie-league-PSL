@@ -57,6 +57,13 @@
       "when": 1768842353737,
       "tag": "0007_flashy_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1768935957336,
+      "tag": "0008_flowery_human_torch",
+      "breakpoints": true
     }
   ]
 }

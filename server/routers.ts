@@ -75,6 +75,28 @@ export const appRouter = router({
           await db.deletePerformer(input.id);
           return { success: true };
         }),
+      updateBadges: adminProcedure
+        .input(z.object({
+          performerId: z.number(),
+          badgeIds: z.array(z.number()),
+        }))
+        .mutation(async ({ input }) => {
+          await db.updatePerformerBadges(input.performerId, input.badgeIds);
+          return { success: true };
+        }),
+      regenerateCard: adminProcedure
+        .input(z.object({ performerId: z.number() }))
+        .mutation(async ({ input }) => {
+          const result = await db.regeneratePerformerCard(input.performerId);
+          return result;
+        }),
+    }),
+
+    // Badge management
+    badges: router({
+      list: adminProcedure.query(async () => {
+        return db.getAllBadges();
+      }),
     }),
 
     // Movie management
