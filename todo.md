@@ -430,3 +430,9 @@
 - [x] Update badges table with correct iconUrl paths
 - [ ] Test badge display in admin dashboard (ready for testing)
 - [ ] Save checkpoint with fix
+
+## React Hooks Error Fix - AdminDashboard (User Reported)
+- [x] Identify conditional or loop-based hook calls in AdminDashboard
+- [x] Fix hook ordering violations (moved useLocation to top before conditional returns)
+- [ ] Test AdminDashboard page loads without errors (ready for testing)
+- [ ] Save checkpoint with fix

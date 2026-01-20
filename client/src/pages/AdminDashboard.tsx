@@ -12,6 +12,7 @@ import { TournamentsManager } from "@/components/admin/TournamentsManager";
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
+  const [, setLocation] = useLocation();
 
   if (loading) {
     return (
@@ -23,8 +24,6 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
-  const [, setLocation] = useLocation();
 
   if (!user) {
     // Not logged in - redirect to login
