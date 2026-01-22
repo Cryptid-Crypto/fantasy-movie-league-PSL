@@ -556,3 +556,8 @@
 - [x] Upload all flag sphere badges to S3 storage
 - [x] Add all country badges to database with S3 URLs
 - [ ] Test country badge auto-assignment with new sphere badges
+
+## Python Environment Fix
+- [x] Fix Python SRE module mismatch error in NFT card generation
+- [x] Ensure generate_nft_card_v3.py uses correct Python environment
+- [ ] Test NFT card regeneration from admin panel

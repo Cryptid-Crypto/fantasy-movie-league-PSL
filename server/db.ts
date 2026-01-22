@@ -934,7 +934,7 @@ export async function regeneratePerformerCard(performerId: number) {
   const outputPath = `/home/ubuntu/fantasy-movie-league/${performer.name.toLowerCase().replace(/ /g, '-')}-FINAL-CARD.png`;
   
   const badgesArg = badgeNames.join(',');
-  const command = `cd /home/ubuntu/fantasy-movie-league && python3 ${scriptPath} "${portraitPath}" "${performer.name}" "${outputPath}" "${badgesArg}"`;
+  const command = `cd /home/ubuntu/fantasy-movie-league && python3.11 ${scriptPath} "${portraitPath}" "${performer.name}" "${outputPath}" "${badgesArg}"`;
   
   try {
     await execAsync(command);
