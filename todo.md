@@ -538,3 +538,21 @@
 - [x] Add country dropdown filter to BadgeManager component
 - [x] Filter badges to show only country badges when country is selected
 - [x] Test country filtering functionality in admin panel
+
+
+## Bug Fix - Country Dropdown Not Visible in BadgeManager
+- [ ] Investigate why country dropdown filter is not showing in BadgeManager
+- [ ] Check if code changes were properly saved and deployed
+- [ ] Fix implementation to make country dropdown visible
+- [ ] Test country dropdown functionality
+
+
+## Country Selection Dropdown in BadgeManager
+- [x] Add country selection dropdown to BadgeManager (separate from badge category filter)
+- [x] Populate dropdown with comprehensive list of countries (40+ countries, alphabetically sorted)
+- [x] Implement auto-assignment of country badge when country is selected
+- [x] Test country selection dropdown functionality
+- [x] Generate 40 country flag badges as 3D spheres with flag colors/patterns
+- [x] Upload all flag sphere badges to S3 storage
+- [x] Add all country badges to database with S3 URLs
+- [ ] Test country badge auto-assignment with new sphere badges

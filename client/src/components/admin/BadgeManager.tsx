@@ -36,12 +36,16 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
   );
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
 
   const utils = trpc.useUtils();
   const { data: allBadges, isLoading: badgesLoading } = trpc.admin.badges.list.useQuery();
   
+  // Define country list for dropdown
+  const countries = ['USA', 'UK', 'Colombia', 'Brazil', 'France', 'Germany', 'Spain', 'Italy', 'Japan', 'Canada', 'Australia', 'Mexico', 'Argentina', 'Russia', 'China', 'India', 'South Korea', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Ukraine', 'Thailand', 'Vietnam', 'Philippines', 'Indonesia', 'Malaysia', 'Singapore', 'New Zealand', 'South Africa', 'Egypt', 'Morocco', 'Kenya', 'Nigeria', 'Ghana'].sort();
+  
   // Define country badge names (you can expand this list)
-  const countryBadgeNames = ['USA', 'UK', 'Colombia', 'Brazil', 'France', 'Germany', 'Spain', 'Italy', 'Japan', 'Canada', 'Australia', 'Mexico', 'Argentina', 'Russia', 'China', 'India', 'South Korea', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Ukraine', 'Thailand', 'Vietnam', 'Philippines', 'Indonesia', 'Malaysia', 'Singapore', 'New Zealand', 'South Africa', 'Egypt', 'Morocco', 'Kenya', 'Nigeria', 'Ghana'];
+  const countryBadgeNames = countries;
   
   // Filter badges based on selected category
   const filteredBadges = allBadges?.filter((badge: any) => {
@@ -123,6 +127,48 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
       </DialogHeader>
 
       <div className="py-4">
+        {/* Country Selection Dropdown */}
+        <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <Label className="mb-2 block font-semibold flex items-center gap-2">
+            <Flag className="h-4 w-4" />
+            Select Performer Country
+          </Label>
+          <Select
+            value={selectedCountry}
+            onValueChange={(country) => {
+              setSelectedCountry(country);
+              // Find or auto-select country badge
+              const countryBadge = allBadges?.find((b: any) => b.name === country);
+              if (countryBadge) {
+                // Remove any existing country badges
+                const nonCountryBadges = selectedBadgeIds.filter(id => {
+                  const badge = allBadges?.find((b: any) => b.id === id);
+                  return badge && !countryBadgeNames.includes(badge.name);
+                });
+                // Add the new country badge
+                setSelectedBadgeIds([...nonCountryBadges, countryBadge.id]);
+                toast.success(`${country} badge selected`);
+              } else {
+                toast.info(`${country} badge not found in database. Please create it first.`);
+              }
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a country..." />
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              {countries.map(country => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground mt-2">
+            Selecting a country will automatically assign the country badge (if it exists in the database)
+          </p>
+        </div>
+
         {/* Category Filter */}
         <div className="mb-4">
           <Label className="mb-2 block">Filter by Category</Label>

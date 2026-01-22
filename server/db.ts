@@ -880,7 +880,7 @@ export async function getPerformerBadges(performerId: number) {
     .select({
       id: badges.id,
       name: badges.name,
-      iconUrl: badges.iconUrl,
+      icon: badges.icon,
       description: badges.description,
       order: performerBadges.order,
     })

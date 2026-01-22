@@ -1,0 +1,45 @@
+{
+  "query": "SELECT * FROM badges LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT * FROM badges LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Legend",
+      "iconUrl": "/legend-badge-v5.png",
+      "description": "Industry legend with iconic status",
+      "createdAt": "2026-01-20 19:06:22"
+    },
+    {
+      "id": "2",
+      "name": "Anal Queen",
+      "iconUrl": "/anal-queen-badge-v5.png",
+      "description": "Specialist in anal performances",
+      "createdAt": "2026-01-20 19:06:22"
+    },
+    {
+      "id": "3",
+      "name": "Super Slut",
+      "iconUrl": "/super-slut-badge-v5.png",
+      "description": "Versatile performer",
+      "createdAt": "2026-01-20 19:06:22"
+    },
+    {
+      "id": "4",
+      "name": "Extreme",
+      "iconUrl": "/extreme-badge-v5.png",
+      "description": "Extreme and hardcore performances",
+      "createdAt": "2026-01-20 19:06:22"
+    },
+    {
+      "id": "5",
+      "name": "Girl Next Door",
+      "iconUrl": "/girl-next-door-badge-v5.png",
+      "description": "Approachable and relatable",
+      "createdAt": "2026-01-20 19:06:22"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ticonUrl\tdescription\tcreatedAt\n1\tLegend\t/legend-badge-v5.png\tIndustry legend with iconic status\t2026-01-20 19:06:22\n2\tAnal Queen\t/anal-queen-badge-v5.png\tSpecialist in anal performances\t2026-01-20 19:06:22\n3\tSuper Slut\t/super-slut-badge-v5.png\tVersatile performer\t2026-01-20 19:06:22\n4\tExtreme\t/extreme-badge-v5.png\tExtreme and hardcore performances\t2026-01-20 19:06:22\n5\tGirl Next Door\t/girl-next-door-badge-v5.png\tApproachable and relatable\t2026-01-20 19:06:22\n",
+  "stderr": "",
+  "execution_time_ms": 188
+}

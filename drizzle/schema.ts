@@ -52,7 +52,8 @@ export type InsertPerformer = typeof performers.$inferInsert;
 export const badges = mysqlTable("badges", {
   id: int("id").autoincrement().primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
-  iconUrl: text("iconUrl"), // URL to badge icon image
+  category: mysqlEnum("category", ["performer_type", "country"]).notNull().default("performer_type"),
+  icon: text("icon"), // URL to badge icon image
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
