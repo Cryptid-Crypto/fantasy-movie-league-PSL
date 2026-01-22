@@ -482,3 +482,48 @@
 - [x] Verified Python 3.11 has all required packages
 - [x] Ready for user testing
 - [ ] Save checkpoint
+
+## Portrait Fixes (User Reported)
+- [x] Regenerate Adriana Chechik portrait WITHOUT tattoos (incorrectly added)
+- [x] Upload corrected portrait to CDN
+- [x] Update database with new image URL
+
+## Baby Kxtten Portrait Fix (User Reported)
+- [x] Regenerate Baby Kxtten portrait - should be BLONDE with MINIMAL tattoos (not heavily tattooed)
+- [x] Upload corrected portrait to CDN
+- [x] Update database with correct image URL
+
+## Tattoo Research & Portrait Regeneration (Critical Fix)
+- [x] Research actual tattoo details for first 20 performers using reference images
+- [x] Document specific tattoo designs, locations, and imagery for first 20 performers
+- [x] Regenerate first 20 portraits with accurate specific tattoo descriptions (not generic "has tattoos")
+- [x] Upload first 20 corrected portraits to CDN
+- [x] Update database with first 20 corrected image URLs
+- [ ] Continue research and regeneration for remaining 82 performers
+- [ ] Save checkpoint after completion
+
+## Style Adjustment - Artistic Balance
+- [x] Regenerate first 20 portraits with new style: 86% realistic / 10% anime / 4% artistic
+- [x] Upload adjusted portraits to CDN
+- [x] Update database with new image URLs
+- [ ] Get user approval on style before continuing with remaining 82 performers
+
+## Abigail Mac & Abella Danger Corrections
+- [x] Regenerate Abigail Mac portrait - should have CLEAN SKIN (no tattoos)
+- [x] Regenerate Abella Danger portrait - should have CLEAN SKIN (no tattoos)
+- [x] Upload corrected portraits to CDN
+- [x] Update database with corrected image URLs
+
+## Batch 2 Generation (Performers 21-40) - Clean Skin First Approach
+- [x] Generate 20 portraits with CLEAN SKIN by default (86% realistic / 10% anime / 4% artistic)
+- [x] Upload to CDN
+- [x] Update database
+- [ ] User reviews and identifies which performers need tattoos
+- [ ] Regenerate only those with tattoos based on user guidance
+
+## Batches 3-6 Generation (Performers 41-102) - Clean Skin First Approach
+- [x] Generate all 62 remaining portraits with CLEAN SKIN by default (86% realistic / 10% anime / 4% artistic)
+- [x] Upload all 62 portraits to CDN
+- [x] Update database with all portrait URLs
+- [ ] User reviews all 102 performers and identifies which need tattoos
+- [ ] Regenerate performers with tattoos based on user guidance

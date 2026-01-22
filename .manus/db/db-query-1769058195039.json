@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, name FROM performers ORDER BY id LIMIT 20 OFFSET 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name FROM performers ORDER BY id LIMIT 20 OFFSET 20;",
+  "rows": [
+    {
+      "id": "300005",
+      "name": "Cherie DeVille"
+    },
+    {
+      "id": "300006",
+      "name": "Adriana Chechik"
+    },
+    {
+      "id": "300007",
+      "name": "Mia Malkova"
+    },
+    {
+      "id": "300008",
+      "name": "Kendra Lust"
+    },
+    {
+      "id": "300009",
+      "name": "Alexis Texas"
+    },
+    {
+      "id": "300010",
+      "name": "Mia Khalifa"
+    },
+    {
+      "id": "300011",
+      "name": "Asa Akira"
+    },
+    {
+      "id": "300012",
+      "name": "Elsa Jean"
+    },
+    {
+      "id": "300013",
+      "name": "Dani Daniels"
+    },
+    {
+      "id": "300014",
+      "name": "Brandi Love"
+    },
+    {
+      "id": "300015",
+      "name": "Nicole Aniston"
+    },
+    {
+      "id": "300016",
+      "name": "Phoenix Marie"
+    },
+    {
+      "id": "300017",
+      "name": "Kagney Linn Karter"
+    },
+    {
+      "id": "300018",
+      "name": "Tori Black"
+    },
+    {
+      "id": "300019",
+      "name": "Jada Stevens"
+    },
+    {
+      "id": "300020",
+      "name": "Lisa Ann"
+    },
+    {
+      "id": "300021",
+      "name": "Piper Perri"
+    },
+    {
+      "id": "300022",
+      "name": "Romi Rain"
+    },
+    {
+      "id": "300023",
+      "name": "Karlee Grey"
+    },
+    {
+      "id": "300024",
+      "name": "Kimmy Granger"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n300005\tCherie DeVille\n300006\tAdriana Chechik\n300007\tMia Malkova\n300008\tKendra Lust\n300009\tAlexis Texas\n300010\tMia Khalifa\n300011\tAsa Akira\n300012\tElsa Jean\n300013\tDani Daniels\n300014\tBrandi Love\n300015\tNicole Aniston\n300016\tPhoenix Marie\n300017\tKagney Linn Karter\n300018\tTori Black\n300019\tJada Stevens\n300020\tLisa Ann\n300021\tPiper Perri\n300022\tRomi Rain\n300023\tKarlee Grey\n300024\tKimmy Granger\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

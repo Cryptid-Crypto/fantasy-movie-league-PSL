@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, name FROM performers ORDER BY id LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name FROM performers ORDER BY id LIMIT 20;",
+  "rows": [
+    {
+      "id": "240001",
+      "name": "Veronica Leal"
+    },
+    {
+      "id": "240002",
+      "name": "Jane Wilde"
+    },
+    {
+      "id": "240003",
+      "name": "Nicole Kitt"
+    },
+    {
+      "id": "240004",
+      "name": "Millie Morgan"
+    },
+    {
+      "id": "240005",
+      "name": "Chanel Camryn"
+    },
+    {
+      "id": "240006",
+      "name": "Gal Ritchie"
+    },
+    {
+      "id": "270001",
+      "name": "Angela White"
+    },
+    {
+      "id": "270002",
+      "name": "Anna Claire Clouds"
+    },
+    {
+      "id": "270008",
+      "name": "Kenna James"
+    },
+    {
+      "id": "270009",
+      "name": "Lauren Phillips"
+    },
+    {
+      "id": "270010",
+      "name": "Gianna Dior"
+    },
+    {
+      "id": "270011",
+      "name": "Blake Blossom"
+    },
+    {
+      "id": "270012",
+      "name": "Leana Lovings"
+    },
+    {
+      "id": "270013",
+      "name": "Octavia Red"
+    },
+    {
+      "id": "270014",
+      "name": "Willow Ryder"
+    },
+    {
+      "id": "270018",
+      "name": "Cherry Kiss"
+    },
+    {
+      "id": "300001",
+      "name": "Violet Myers"
+    },
+    {
+      "id": "300002",
+      "name": "Abella Danger"
+    },
+    {
+      "id": "300003",
+      "name": "Riley Reid"
+    },
+    {
+      "id": "300004",
+      "name": "Lana Rhoades"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n240001\tVeronica Leal\n240002\tJane Wilde\n240003\tNicole Kitt\n240004\tMillie Morgan\n240005\tChanel Camryn\n240006\tGal Ritchie\n270001\tAngela White\n270002\tAnna Claire Clouds\n270008\tKenna James\n270009\tLauren Phillips\n270010\tGianna Dior\n270011\tBlake Blossom\n270012\tLeana Lovings\n270013\tOctavia Red\n270014\tWillow Ryder\n270018\tCherry Kiss\n300001\tViolet Myers\n300002\tAbella Danger\n300003\tRiley Reid\n300004\tLana Rhoades\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

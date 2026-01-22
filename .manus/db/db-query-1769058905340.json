@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, name FROM performers ORDER BY id LIMIT 62 OFFSET 40;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name FROM performers ORDER BY id LIMIT 62 OFFSET 40;",
+  "rows": [
+    {
+      "id": "330001",
+      "name": "Abella Danger"
+    },
+    {
+      "id": "330002",
+      "name": "Abigaiil Morris"
+    },
+    {
+      "id": "330003",
+      "name": "Adriana Chechik"
+    },
+    {
+      "id": "330004",
+      "name": "Aidra Fox"
+    },
+    {
+      "id": "330005",
+      "name": "Alina Lopez"
+    },
+    {
+      "id": "330006",
+      "name": "Ameena Green"
+    },
+    {
+      "id": "330007",
+      "name": "Angel Emily"
+    },
+    {
+      "id": "330008",
+      "name": "Angela White"
+    },
+    {
+      "id": "330009",
+      "name": "Anissa Kate"
+    },
+    {
+      "id": "330010",
+      "name": "Anna Claire Clouds"
+    },
+    {
+      "id": "330011",
+      "name": "Anna Polina"
+    },
+    {
+      "id": "330012",
+      "name": "Anne Antonela"
+    },
+    {
+      "id": "330013",
+      "name": "April Olsen"
+    },
+    {
+      "id": "330014",
+      "name": "Autumn Falls"
+    },
+    {
+      "id": "330015",
+      "name": "Baby Kxtten"
+    },
+    {
+      "id": "330016",
+      "name": "Beca Barbie"
+    },
+    {
+      "id": "330017",
+      "name": "Blake Blossom"
+    },
+    {
+      "id": "330018",
+      "name": "Bonnie Blue"
+    },
+    {
+      "id": "330019",
+      "name": "Casey Calvert"
+    },
+    {
+      "id": "330020",
+      "name": "Cayenne Klein"
+    },
+    {
+      "id": "330021",
+      "name": "Chanel Camryn"
+    },
+    {
+      "id": "330022",
+      "name": "Cherie DeVille"
+    },
+    {
+      "id": "330023",
+      "name": "Cherry Kiss"
+    },
+    {
+      "id": "330024",
+      "name": "Chloe Amour"
+    },
+    {
+      "id": "330025",
+      "name": "Chloe Surreal"
+    },
+    {
+      "id": "330026",
+      "name": "Coco Lovelock"
+    },
+    {
+      "id": "330027",
+      "name": "Connie Perignon"
+    },
+    {
+      "id": "330028",
+      "name": "Dani Daniels"
+    },
+    {
+      "id": "330029",
+      "name": "Demi Sutra"
+    },
+    {
+      "id": "330030",
+      "name": "Eliza Ibarra"
+    },
+    {
+      "id": "330031",
+      "name": "Emily Willis"
+    },
+    {
+      "id": "330032",
+      "name": "Emma Hix"
+    },
+    {
+      "id": "330033",
+      "name": "Emma Magnolia"
+    },
+    {
+      "id": "330034",
+      "name": "Eva Elfie"
+    },
+    {
+      "id": "330035",
+      "name": "Gabbie Carter"
+    },
+    {
+      "id": "330036",
+      "name": "Gal Ritchie"
+    },
+    {
+      "id": "330037",
+      "name": "Gianna Dior"
+    },
+    {
+      "id": "330038",
+      "name": "Gina Valentina"
+    },
+    {
+      "id": "330039",
+      "name": "Giselle Palmer"
+    },
+    {
+      "id": "330040",
+      "name": "Gizelle Blanco"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n330001\tAbella Danger\n330002\tAbigaiil Morris\n330003\tAdriana Chechik\n330004\tAidra Fox\n330005\tAlina Lopez\n330006\tAmeena Green\n330007\tAngel Emily\n330008\tAngela White\n330009\tAnissa Kate\n330010\tAnna Claire Clouds\n330011\tAnna Polina\n330012\tAnne Antonela\n330013\tApril Olsen\n330014\tAutumn Falls\n330015\tBaby Kxtten\n330016\tBeca Barbie\n330017\tBlake Blossom\n330018\tBonnie Blue\n330019\tCasey Calvert\n330020\tCayenne Klein\n330021\tChanel Camryn\n330022\tCherie DeVille\n330023\tCherry Kiss\n330024\tChloe Amour\n330025\tChloe Surreal\n330026\tCoco Lovelock\n330027\tConnie Perignon\n330028\tDani Daniels\n330029\tDemi Sutra\n330030\tEliza Ibarra\n330031\tEmily Willis\n330032\tEmma Hix\n330033\tEmma Magnolia\n330034\tEva Elfie\n330035\tGabbie Carter\n330036\tGal Ritchie\n330037\tGianna Dior\n330038\tGina Valentina\n330039\tGiselle Palmer\n330040\tGizelle Blanco\n",
+  "stderr": "",
+  "execution_time_ms": 128
+}
