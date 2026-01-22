@@ -527,3 +527,14 @@
 - [x] Update database with all portrait URLs
 - [ ] User reviews all 102 performers and identifies which need tattoos
 - [ ] Regenerate performers with tattoos based on user guidance
+
+## Feature - Country Dropdown in BadgeManager
+- [ ] Add country dropdown filter to BadgeManager component
+- [ ] Filter badges to show only country badges when country is selected
+- [ ] Test country filtering functionality in admin panel
+
+
+## Feature - Country Dropdown in BadgeManager
+- [x] Add country dropdown filter to BadgeManager component
+- [x] Filter badges to show only country badges when country is selected
+- [x] Test country filtering functionality in admin panel

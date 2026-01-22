@@ -13,7 +13,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, Award, RefreshCw } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Award, RefreshCw, Flag } from "lucide-react";
 import { toast } from "sonner";
 
 interface BadgeManagerProps {
@@ -28,9 +35,25 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
     currentBadges.map(b => b.id)
   );
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string>("all");
 
   const utils = trpc.useUtils();
   const { data: allBadges, isLoading: badgesLoading } = trpc.admin.badges.list.useQuery();
+  
+  // Define country badge names (you can expand this list)
+  const countryBadgeNames = ['USA', 'UK', 'Colombia', 'Brazil', 'France', 'Germany', 'Spain', 'Italy', 'Japan', 'Canada', 'Australia', 'Mexico', 'Argentina', 'Russia', 'China', 'India', 'South Korea', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Ukraine', 'Thailand', 'Vietnam', 'Philippines', 'Indonesia', 'Malaysia', 'Singapore', 'New Zealand', 'South Africa', 'Egypt', 'Morocco', 'Kenya', 'Nigeria', 'Ghana'];
+  
+  // Filter badges based on selected category
+  const filteredBadges = allBadges?.filter((badge: any) => {
+    if (filterCategory === 'all') return true;
+    if (filterCategory === 'country') {
+      return countryBadgeNames.includes(badge.name);
+    }
+    if (filterCategory === 'type') {
+      return !countryBadgeNames.includes(badge.name);
+    }
+    return true;
+  });
   
   const updateBadgesMutation = trpc.admin.performers.updateBadges.useMutation({
     onSuccess: () => {
@@ -100,8 +123,28 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
       </DialogHeader>
 
       <div className="py-4">
+        {/* Category Filter */}
+        <div className="mb-4">
+          <Label className="mb-2 block">Filter by Category</Label>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Badges" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Badges</SelectItem>
+              <SelectItem value="country">
+                <div className="flex items-center gap-2">
+                  <Flag className="h-4 w-4" />
+                  Country Badges
+                </div>
+              </SelectItem>
+              <SelectItem value="type">Performer Type Badges</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
-          {allBadges?.map((badge: any) => {
+          {filteredBadges?.map((badge: any) => {
             const isSelected = selectedBadgeIds.includes(badge.id);
             return (
               <Card
