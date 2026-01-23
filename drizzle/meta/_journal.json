@@ -71,6 +71,13 @@
       "when": 1769110992292,
       "tag": "0009_sharp_randall_flagg",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1769135950171,
+      "tag": "0010_futuristic_daredevil",
+      "breakpoints": true
     }
   ]
 }

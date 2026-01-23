@@ -26,7 +26,8 @@ export const performers = mysqlTable("performers", {
   id: int("id").autoincrement().primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   bio: text("bio"),
-  imageUrl: text("imageUrl"),
+  portraitUrl: text("portraitUrl"), // Original portrait image
+  imageUrl: text("imageUrl"), // Generated NFT card
   nftContractAddress: varchar("nftContractAddress", { length: 42 }), // Polygon contract address
   performerType: mysqlEnum("performerType", [
     "Legend",

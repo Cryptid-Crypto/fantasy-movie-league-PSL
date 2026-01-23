@@ -925,20 +925,38 @@ export async function regeneratePerformerCard(performerId: number) {
   // Get performer badges
   const badges = await getPerformerBadges(performerId);
   
-  // Build badge names array for Python script
-  const badgeNames = badges.map(b => b.name);
+  // Download portrait from CDN to use as base
+  // Use portraitUrl if available, otherwise fall back to imageUrl (which might be a card)
+  const portraitSource = performer.portraitUrl || performer.imageUrl;
+  if (!portraitSource) {
+    throw new Error("Performer has no portrait or card image");
+  }
   
-  // Download current portrait from CDN to use as base
   const portraitPath = `/tmp/${performer.name.toLowerCase().replace(/ /g, '-')}-portrait.png`;
-  const downloadCommand = `curl -s -o "${portraitPath}" "${performer.imageUrl}"`;
+  const downloadCommand = `curl -s -o "${portraitPath}" "${portraitSource}"`;
   await execAsync(downloadCommand);
+  
+  // Download badge images to temp directory
+  const badgePaths: string[] = [];
+  for (let i = 0; i < badges.length; i++) {
+    const badge = badges[i];
+    const badgePath = `/tmp/badge-${i}-${badge.name.toLowerCase().replace(/ /g, '-')}.png`;
+    try {
+      const badgeDownloadCmd = `curl -s -o "${badgePath}" "${badge.icon}"`;
+      await execAsync(badgeDownloadCmd);
+      badgePaths.push(badgePath);
+    } catch (error) {
+      console.error(`Failed to download badge ${badge.name}:`, error);
+    }
+  }
   
   // Call Python script to regenerate card
   const scriptPath = "/home/ubuntu/fantasy-movie-league/generate_nft_card_v3.py";
   const outputPath = `/home/ubuntu/fantasy-movie-league/${performer.name.toLowerCase().replace(/ /g, '-')}-FINAL-CARD.png`;
   
-  const badgesArg = badgeNames.join(',');
-  const command = `cd /home/ubuntu/fantasy-movie-league && env -i PATH=/usr/bin:/bin HOME=/home/ubuntu python3.11 ${scriptPath} "${portraitPath}" "${performer.name}" "${outputPath}" "${badgesArg}"`;
+  // Pass badge file paths as separate arguments
+  const badgeArgs = badgePaths.map(p => `"${p}"`).join(' ');
+  const command = `cd /home/ubuntu/fantasy-movie-league && env -i PATH=/usr/bin:/bin HOME=/home/ubuntu python3.11 ${scriptPath} "${portraitPath}" "${performer.name}" "${outputPath}" ${badgeArgs}`;
   
   try {
     await execAsync(command);

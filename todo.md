@@ -601,3 +601,8 @@
 ## Fix Upload Output Parsing
 - [x] Update regeneratePerformerCard to extract only CDN URL from manus-upload-file output
 - [ ] Test card regeneration with correct URL parsing
+
+## Card Regeneration Issues
+- [x] Fix duplicate card appearing on top instead of replacing existing card
+- [x] Fix badges not appearing on regenerated cards
+- [x] Verify Python script receives badge names correctly
