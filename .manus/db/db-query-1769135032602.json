@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, imageUrl FROM performers WHERE name = 'Emma Hix';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user zFHT5FCru9ok1xS.cec69d91c8c2 --database dWUnvuCqdxwX7Y3rW9HJ6z --execute SELECT id, name, imageUrl FROM performers WHERE name = 'Emma Hix';",
+  "rows": [
+    {
+      "id": "330032",
+      "name": "Emma Hix",
+      "imageUrl": "Uploading file: /home/ubuntu/fantasy-movie-league/emma-hix-FINAL-CARD.png (size: 716356 bytes)"
+    }
+  ],
+  "messages": [
+    "Upload timeout: 2m0s",
+    "File uploaded successfully!",
+    "CDN URL: https://files.manuscdn.com/user_upload_by_module/session_file/310419663028198646/TsvRVvOWkuEsdgBP.png"
+  ],
+  "stdout": "id\tname\timageUrl\n330032\tEmma Hix\tUploading file: /home/ubuntu/fantasy-movie-league/emma-hix-FINAL-CARD.png (size: 716356 bytes)\nUpload timeout: 2m0s\nFile uploaded successfully!\nCDN URL: https://files.manuscdn.com/user_upload_by_module/session_file/310419663028198646/TsvRVvOWkuEsdgBP.png\n",
+  "stderr": "",
+  "execution_time_ms": 224
+}

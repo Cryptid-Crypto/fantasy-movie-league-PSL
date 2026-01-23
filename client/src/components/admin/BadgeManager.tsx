@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,15 +31,21 @@ interface BadgeManagerProps {
 }
 
 export function BadgeManager({ performerId, performerName, currentBadges = [], onClose }: BadgeManagerProps) {
-  const [selectedBadgeIds, setSelectedBadgeIds] = useState<number[]>(
-    currentBadges.map(b => b.id)
-  );
   const [isRegenerating, setIsRegenerating] = useState(false);
-
   const [selectedCountry, setSelectedCountry] = useState<string>("");
 
   const utils = trpc.useUtils();
   const { data: allBadges, isLoading: badgesLoading } = trpc.admin.badges.list.useQuery();
+  const { data: performerBadges, isLoading: performerBadgesLoading } = trpc.admin.performers.getBadges.useQuery({ performerId });
+  
+  const [selectedBadgeIds, setSelectedBadgeIds] = useState<number[]>([]);
+  
+  // Update selectedBadgeIds when performerBadges loads
+  useEffect(() => {
+    if (performerBadges) {
+      setSelectedBadgeIds(performerBadges.map((b: any) => b.id));
+    }
+  }, [performerBadges]);
   
   // Define country list for dropdown
   const countries = ['USA', 'UK', 'Colombia', 'Brazil', 'France', 'Germany', 'Spain', 'Italy', 'Japan', 'Canada', 'Australia', 'Mexico', 'Argentina', 'Russia', 'China', 'India', 'South Korea', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Ukraine', 'Thailand', 'Vietnam', 'Philippines', 'Indonesia', 'Malaysia', 'Singapore', 'New Zealand', 'South Africa', 'Egypt', 'Morocco', 'Kenya', 'Nigeria', 'Ghana'].sort();
@@ -55,6 +61,7 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
   const updateBadgesMutation = trpc.admin.performers.updateBadges.useMutation({
     onSuccess: () => {
       utils.admin.performers.list.invalidate();
+      utils.admin.performers.getBadges.invalidate({ performerId });
       toast.success("Badges updated successfully");
     },
     onError: (error) => {
@@ -101,7 +108,7 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
     }
   };
 
-  if (badgesLoading) {
+  if (badgesLoading || performerBadgesLoading) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin" />

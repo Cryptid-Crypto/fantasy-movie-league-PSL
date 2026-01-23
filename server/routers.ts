@@ -75,6 +75,12 @@ export const appRouter = router({
           await db.deletePerformer(input.id);
           return { success: true };
         }),
+      getBadges: adminProcedure
+        .input(z.object({ performerId: z.number() }))
+        .query(async ({ input }) => {
+          const badges = await db.getPerformerBadges(input.performerId);
+          return badges;
+        }),
       updateBadges: adminProcedure
         .input(z.object({
           performerId: z.number(),

@@ -588,3 +588,12 @@
 - [x] Check if frontend cache needs invalidation after card update
 - [x] Verify performer page is fetching latest imageUrl from database
 - [ ] Test card display after regeneration
+
+## Fix Malformed ImageUrl
+- [x] Update Emma Hix's imageUrl to contain only the CDN URL
+- [ ] Test card regeneration after fixing imageUrl
+
+## Badge Disappearing Issue
+- [x] Check if badges are being saved to database correctly
+- [x] Verify badge UI state management and refresh logic
+- [ ] Test badge persistence after save
