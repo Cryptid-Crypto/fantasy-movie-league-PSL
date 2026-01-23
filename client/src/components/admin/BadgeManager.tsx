@@ -65,6 +65,8 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
   const regenerateCardMutation = trpc.admin.performers.regenerateCard.useMutation({
     onSuccess: () => {
       utils.admin.performers.list.invalidate();
+      utils.performers.list.invalidate();
+      utils.performers.getById.invalidate({ id: performerId });
       setIsRegenerating(false);
       toast.success("NFT card regenerated successfully!");
       onClose();

@@ -578,3 +578,13 @@
 ## NFT Card Regeneration Portrait Fix
 - [x] Check available portrait files location
 - [x] Update regeneratePerformerCard to use correct portrait file path or fetch from imageUrl
+
+## Card Regeneration Display Issue
+- [ ] Check where regenerated card is being saved
+- [ ] Verify card upload to CDN is working
+- [ ] Verify database imageUrl is being updated correctly
+
+## Card Display After Regeneration
+- [x] Check if frontend cache needs invalidation after card update
+- [x] Verify performer page is fetching latest imageUrl from database
+- [ ] Test card display after regeneration
