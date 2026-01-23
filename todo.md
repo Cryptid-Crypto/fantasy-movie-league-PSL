@@ -574,3 +574,7 @@
 ## BadgeManager UI Simplification
 - [x] Remove category filter dropdown from BadgeManager
 - [x] Hide country badges from badge selection grid (only show in country dropdown)
+
+## NFT Card Regeneration Portrait Fix
+- [x] Check available portrait files location
+- [x] Update regeneratePerformerCard to use correct portrait file path or fetch from imageUrl

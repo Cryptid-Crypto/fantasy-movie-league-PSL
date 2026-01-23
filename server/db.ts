@@ -928,9 +928,13 @@ export async function regeneratePerformerCard(performerId: number) {
   // Build badge names array for Python script
   const badgeNames = badges.map(b => b.name);
   
+  // Download current portrait from CDN to use as base
+  const portraitPath = `/tmp/${performer.name.toLowerCase().replace(/ /g, '-')}-portrait.png`;
+  const downloadCommand = `curl -s -o "${portraitPath}" "${performer.imageUrl}"`;
+  await execAsync(downloadCommand);
+  
   // Call Python script to regenerate card
   const scriptPath = "/home/ubuntu/fantasy-movie-league/generate_nft_card_v3.py";
-  const portraitPath = `/home/ubuntu/nft-cards-backup/${performer.name.toLowerCase().replace(/ /g, '-')}-final-portrait.png`;
   const outputPath = `/home/ubuntu/fantasy-movie-league/${performer.name.toLowerCase().replace(/ /g, '-')}-FINAL-CARD.png`;
   
   const badgesArg = badgeNames.join(',');
