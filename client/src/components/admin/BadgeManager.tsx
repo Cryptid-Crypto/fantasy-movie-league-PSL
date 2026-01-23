@@ -184,7 +184,6 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
                   Country Badges
                 </div>
               </SelectItem>
-              <SelectItem value="type">Performer Type Badges</SelectItem>
             </SelectContent>
           </Select>
         </div>

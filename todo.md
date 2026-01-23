@@ -563,3 +563,10 @@
 - [ ] Test NFT card regeneration from admin panel
 - [x] Isolate Python 3.11 environment to prevent module conflicts with Python 3.13
 - [x] Clear PYTHONPATH when calling Python 3.11 script
+
+## Git Repository Cleanup
+- [x] Create fresh Git repository without bloated history
+- [ ] Test checkpoint save with clean repository
+
+## Badge Admin UI Improvements
+- [x] Remove badge type dropdown from admin interface
