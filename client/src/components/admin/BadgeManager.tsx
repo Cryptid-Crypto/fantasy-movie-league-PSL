@@ -35,7 +35,7 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
     currentBadges.map(b => b.id)
   );
   const [isRegenerating, setIsRegenerating] = useState(false);
-  const [filterCategory, setFilterCategory] = useState<string>("all");
+
   const [selectedCountry, setSelectedCountry] = useState<string>("");
 
   const utils = trpc.useUtils();
@@ -47,16 +47,9 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
   // Define country badge names (you can expand this list)
   const countryBadgeNames = countries;
   
-  // Filter badges based on selected category
+  // Filter out country badges from the selection grid (they're in the dropdown)
   const filteredBadges = allBadges?.filter((badge: any) => {
-    if (filterCategory === 'all') return true;
-    if (filterCategory === 'country') {
-      return countryBadgeNames.includes(badge.name);
-    }
-    if (filterCategory === 'type') {
-      return !countryBadgeNames.includes(badge.name);
-    }
-    return true;
+    return !countryBadgeNames.includes(badge.name);
   });
   
   const updateBadgesMutation = trpc.admin.performers.updateBadges.useMutation({
@@ -169,24 +162,7 @@ export function BadgeManager({ performerId, performerName, currentBadges = [], o
           </p>
         </div>
 
-        {/* Category Filter */}
-        <div className="mb-4">
-          <Label className="mb-2 block">Filter by Category</Label>
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All Badges" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Badges</SelectItem>
-              <SelectItem value="country">
-                <div className="flex items-center gap-2">
-                  <Flag className="h-4 w-4" />
-                  Country Badges
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+
 
         <div className="grid grid-cols-2 gap-4">
           {filteredBadges?.map((badge: any) => {

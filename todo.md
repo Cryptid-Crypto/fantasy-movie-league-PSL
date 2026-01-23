@@ -560,13 +560,17 @@
 ## Python Environment Fix
 - [x] Fix Python SRE module mismatch error in NFT card generation
 - [x] Ensure generate_nft_card_v3.py uses correct Python environment
-- [ ] Test NFT card regeneration from admin panel
+- [x] Test NFT card regeneration from admin panel
 - [x] Isolate Python 3.11 environment to prevent module conflicts with Python 3.13
 - [x] Clear PYTHONPATH when calling Python 3.11 script
 
 ## Git Repository Cleanup
 - [x] Create fresh Git repository without bloated history
-- [ ] Test checkpoint save with clean repository
+- [x] Test checkpoint save with clean repository
 
 ## Badge Admin UI Improvements
 - [x] Remove badge type dropdown from admin interface
+
+## BadgeManager UI Simplification
+- [x] Remove category filter dropdown from BadgeManager
+- [x] Hide country badges from badge selection grid (only show in country dropdown)
