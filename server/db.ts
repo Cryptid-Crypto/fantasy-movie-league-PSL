@@ -946,7 +946,9 @@ export async function regeneratePerformerCard(performerId: number) {
     // Upload to S3
     const uploadCommand = `manus-upload-file "${outputPath}"`;
     const { stdout } = await execAsync(uploadCommand);
-    const cardUrl = stdout.trim();
+    // Extract only the CDN URL from the output (last line starting with https://)
+    const cdnUrlMatch = stdout.match(/CDN URL: (https:\/\/[^\s]+)/);
+    const cardUrl = cdnUrlMatch ? cdnUrlMatch[1] : stdout.trim();
     
     // Update performer imageUrl
     await updatePerformer(performerId, { imageUrl: cardUrl });

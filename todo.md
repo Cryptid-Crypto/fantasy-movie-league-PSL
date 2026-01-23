@@ -597,3 +597,7 @@
 - [x] Check if badges are being saved to database correctly
 - [x] Verify badge UI state management and refresh logic
 - [ ] Test badge persistence after save
+
+## Fix Upload Output Parsing
+- [x] Update regeneratePerformerCard to extract only CDN URL from manus-upload-file output
+- [ ] Test card regeneration with correct URL parsing
