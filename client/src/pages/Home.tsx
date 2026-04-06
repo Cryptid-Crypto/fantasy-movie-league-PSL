@@ -1,56 +1,17 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Users, Wallet, Zap, Film, Crown } from "lucide-react";
+import { Trophy, Users, Wallet, Zap, Film, Crown, ShoppingBag, BarChart2, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import { getLoginUrl } from "@/const";
-import MobileNav from "@/components/MobileNav";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const { user, loading } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b border-border bg-card/30 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Porn Star League" className="h-8 w-8" />
-              <span className="text-2xl font-bold text-foreground">
-                Porn Star League
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-4">
-              <Link href="/performers">
-                <Button variant="ghost">Performers</Button>
-              </Link>
-              <Link href="/tournaments">
-                <Button variant="ghost">Tournaments</Button>
-              </Link>
-              {user ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button variant="outline">Dashboard</Button>
-                  </Link>
-                  <Link href="/my-nfts">
-                    <Button className="gap-2">
-                      <Wallet className="h-4 w-4" />
-                      My NFTs
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <Button onClick={() => (window.location.href = getLoginUrl())}>
-                  Sign In
-              </Button>
-              )}
-            </div>
-            {/* Mobile Navigation */}
-            <MobileNav />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="container py-20">
@@ -185,6 +146,38 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
+      </section>
+
+      {/* Explore Section */}
+      <section className="container py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold mb-3">Explore the Platform</h2>
+          <p className="text-muted-foreground">Everything you need to compete, collect, and win</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { href: "/performers", icon: Users, title: "Performer Directory", desc: "Browse all performers, view profiles, stats, and NFT cards.", color: "text-purple-500", bg: "bg-purple-500/10" },
+            { href: "/tournaments", icon: Trophy, title: "Tournaments", desc: "Browse active and upcoming competitions. Enter with your NFT roster.", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+            { href: "/leaderboard", icon: BarChart2, title: "Leaderboard", desc: "Top players and performers ranked by points. Weekly and all-time views.", color: "text-cyan-500", bg: "bg-cyan-500/10" },
+            { href: "/marketplace", icon: ShoppingBag, title: "Marketplace", desc: "Buy, sell, and trade Performer NFT cards on the open market.", color: "text-green-500", bg: "bg-green-500/10" },
+            { href: "/rules", icon: BookOpen, title: "Rules & Scoring", desc: "Learn how scoring works, badge bonuses, and tournament eligibility.", color: "text-blue-500", bg: "bg-blue-500/10" },
+            { href: "/activity", icon: Zap, title: "Activity Feed", desc: "Stay up to date with new tournaments, scene results, and badge assignments.", color: "text-orange-500", bg: "bg-orange-500/10" },
+          ].map(({ href, icon: Icon, title, desc, color, bg }) => (
+            <Link key={href} href={href}>
+              <Card className="cursor-pointer hover:border-primary/50 transition-all h-full">
+                <CardContent className="p-5 flex gap-4">
+                  <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`h-5 w-5 ${color}`} />
+                  </div>
+                  <div>
+                    <p className="font-semibold mb-1">{title}</p>
+                    <p className="text-sm text-muted-foreground">{desc}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* CTA Section */}

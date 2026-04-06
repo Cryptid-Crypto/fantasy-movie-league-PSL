@@ -1,135 +1,244 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Film, Users, Zap, Trophy } from "lucide-react";
-import { useLocation } from "wouter";
+import { Badge } from "@/components/ui/badge";
+import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
-import { MoviesManager } from "@/components/admin/MoviesManager";
-import { PerformersManager } from "@/components/admin/PerformersManager";
-import { ActionsManager } from "@/components/admin/ActionsManager";
-import { TournamentsManager } from "@/components/admin/TournamentsManager";
+import Navbar from "@/components/Navbar";
+import { trpc } from "@/lib/trpc";
+import {
+  Film, Users, Zap, Trophy, Sparkles, BarChart2,
+  Shield, ArrowRight, Settings, History, Plus
+} from "lucide-react";
+
+const MODULE_CARDS = [
+  {
+    title: "Movie & Scene Manager",
+    description: "Add movies, link performers to scenes, log scene actions and assign scoring.",
+    icon: Film,
+    href: "/admin/movies",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    badge: "Content",
+  },
+  {
+    title: "Performer Manager",
+    description: "Manage performer profiles, portraits, badges, and NFT card generation.",
+    icon: Users,
+    href: "/admin",
+    tabTarget: "performers",
+    color: "text-purple-500",
+    bg: "bg-purple-500/10",
+    badge: "Roster",
+  },
+  {
+    title: "Create Competition",
+    description: "Set up a new tournament with custom roster requirements, entry fees, and prize pools.",
+    icon: Plus,
+    href: "/admin/tournaments/create",
+    color: "text-green-500",
+    bg: "bg-green-500/10",
+    badge: "New",
+    highlight: true,
+  },
+  {
+    title: "Tournament Manager",
+    description: "View, edit, and manage all active, upcoming, and past tournaments.",
+    icon: Trophy,
+    href: "/admin",
+    tabTarget: "tournaments",
+    color: "text-yellow-500",
+    bg: "bg-yellow-500/10",
+    badge: "Events",
+  },
+  {
+    title: "NFT Studio",
+    description: "Generate and manage performer NFT cards. Assign badges and regenerate artwork.",
+    icon: Sparkles,
+    href: "/nft-studio",
+    color: "text-pink-500",
+    bg: "bg-pink-500/10",
+    badge: "NFTs",
+  },
+  {
+    title: "Action Types & Scoring",
+    description: "Define action types and their point values used for tournament scoring.",
+    icon: Zap,
+    href: "/admin",
+    tabTarget: "actions",
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+    badge: "Scoring",
+  },
+  {
+    title: "Leaderboard",
+    description: "View the current player and performer rankings across all tournaments.",
+    icon: BarChart2,
+    href: "/leaderboard",
+    color: "text-cyan-500",
+    bg: "bg-cyan-500/10",
+    badge: "Stats",
+  },
+  {
+    title: "User Transactions",
+    description: "Review player transaction history, entry fees, and prize payouts.",
+    icon: History,
+    href: "/admin",
+    tabTarget: "transactions",
+    color: "text-slate-500",
+    bg: "bg-slate-500/10",
+    badge: "Finance",
+  },
+];
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
+  const { data: performers } = trpc.performers.list.useQuery();
+  const { data: tournaments } = trpc.tournaments.list.useQuery();
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
       </div>
     );
   }
 
   if (!user) {
-    // Not logged in - redirect to login
     window.location.href = getLoginUrl();
     return null;
   }
 
-  if (user.role !== 'admin') {
-    // Logged in but not admin - redirect to home
-    setLocation('/');
+  if (user.role !== "admin") {
+    setLocation("/");
     return null;
   }
 
+  const activeTournaments = (tournaments ?? []).filter(
+    (t: any) => new Date(t.startDate) <= new Date() && new Date(t.endDate) >= new Date()
+  );
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Manage platform content and tournaments</p>
-            </div>
-            <Button variant="outline" onClick={() => window.location.href = '/'}>
-              Back to Home
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Navbar />
 
       <div className="container py-8">
-        <Tabs defaultValue="movies" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-            <TabsTrigger value="movies" className="gap-2">
-              <Film className="h-4 w-4" />
-              <span className="hidden sm:inline">Movies</span>
-            </TabsTrigger>
-            <TabsTrigger value="performers" className="gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Performers</span>
-            </TabsTrigger>
-            <TabsTrigger value="actions" className="gap-2">
-              <Zap className="h-4 w-4" />
-              <span className="hidden sm:inline">Actions</span>
-            </TabsTrigger>
-            <TabsTrigger value="tournaments" className="gap-2">
-              <Trophy className="h-4 w-4" />
-              <span className="hidden sm:inline">Tournaments</span>
-            </TabsTrigger>
-          </TabsList>
+        <div className="max-w-6xl mx-auto space-y-8">
 
-          <TabsContent value="movies" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Movie Management</CardTitle>
-                <CardDescription>
-                  Add and manage movies, scenes, and performer actions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <MoviesManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <Shield className="h-7 w-7 text-primary" />
+                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                <Badge variant="outline" className="text-primary border-primary">Admin</Badge>
+              </div>
+              <p className="text-muted-foreground">Manage all platform content, tournaments, and NFTs.</p>
+            </div>
+            <Link href="/">
+              <Button variant="outline" className="gap-2">
+                <ArrowRight className="h-4 w-4 rotate-180" />
+                Back to Site
+              </Button>
+            </Link>
+          </div>
 
-          <TabsContent value="performers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Performer Management</CardTitle>
-                <CardDescription>
-                  Manage performer profiles and NFT contracts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PerformersManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: "Performers", value: performers?.length ?? 0, icon: Users, href: "/performers" },
+              { label: "Tournaments", value: tournaments?.length ?? 0, icon: Trophy, href: "/tournaments" },
+              { label: "Active Now", value: activeTournaments.length, icon: Zap, href: "/tournaments" },
+              { label: "NFTs Generated", value: performers?.filter((p: any) => p.imageUrl).length ?? 0, icon: Sparkles, href: "/nft-studio" },
+            ].map(({ label, value, icon: Icon, href }) => (
+              <Link key={label} href={href}>
+                <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+                  <CardContent className="pt-4 pb-3 flex items-center gap-3">
+                    <Icon className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-2xl font-bold">{value}</p>
+                      <p className="text-xs text-muted-foreground">{label}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
 
-          <TabsContent value="actions" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Action Types</CardTitle>
-                <CardDescription>
-                  Define action types and their point values for scoring
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ActionsManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Module Cards */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Management Modules</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {MODULE_CARDS.map(({ title, description, icon: Icon, href, color, bg, badge, highlight }) => (
+                <Link key={title} href={href}>
+                  <Card className={`cursor-pointer hover:border-primary/50 transition-all h-full ${highlight ? "border-primary/40 bg-primary/5" : ""}`}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}>
+                          <Icon className={`h-5 w-5 ${color}`} />
+                        </div>
+                        <Badge variant="outline" className="text-xs">{badge}</Badge>
+                      </div>
+                      <CardTitle className="text-base mt-2">{title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <CardDescription className="text-xs leading-relaxed">{description}</CardDescription>
+                      <div className={`flex items-center gap-1 mt-3 text-xs font-medium ${color}`}>
+                        Open <ArrowRight className="h-3 w-3" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
 
-          <TabsContent value="tournaments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tournament Management</CardTitle>
-                <CardDescription>
-                  Create and manage tournaments with NFT-gated entry
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TournamentsManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          {/* Legacy Tabs Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Quick Management
+              </CardTitle>
+              <CardDescription>
+                Direct access to management panels. For dedicated pages, use the module cards above.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/admin/movies">
+                  <Button variant="outline" className="gap-2">
+                    <Film className="h-4 w-4" />
+                    Movies & Scenes
+                  </Button>
+                </Link>
+                <Link href="/admin/tournaments/create">
+                  <Button className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Create Tournament
+                  </Button>
+                </Link>
+                <Link href="/nft-studio">
+                  <Button variant="outline" className="gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    NFT Studio
+                  </Button>
+                </Link>
+                <Link href="/leaderboard">
+                  <Button variant="outline" className="gap-2">
+                    <BarChart2 className="h-4 w-4" />
+                    Leaderboard
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

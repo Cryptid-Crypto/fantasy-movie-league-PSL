@@ -617,3 +617,54 @@
 - [x] Ensure vibrant colors, strong contrast, glamorous aesthetic
 - [x] Composite official PSL logo onto clothing
 - [x] Upload corrected portrait and update database
+
+## Module Restructure — Full Navigation Overhaul
+
+### Phase 1: Navigation & Routing
+- [ ] Update App.tsx with all new routes
+- [ ] Restructure top nav (public: Performers, Tournaments, Leaderboard, Marketplace, Rules, Activity)
+- [ ] Update mobile nav with all new sections
+- [ ] Add admin sidebar with links to all sub-modules
+
+### Phase 2: Player Sign-Up / Onboarding & Player Profile
+- [ ] Create /signup onboarding page (username, email, age verification 18+, wallet connect, rules intro)
+- [ ] Sign-up/sign-in modal with social login, password strength indicator, remember me, ToS acceptance
+- [ ] Create /profile (My Player Profile) — stats, owned NFTs, tournament history, win/loss, wallet, achievements
+
+### Phase 3: Admin Movie & Scene Manager + Competition Creator
+- [ ] Move movie management to dedicated /admin/movies page
+- [ ] Add scene description fields (scene type, performers, actions, scoring)
+- [ ] Add performer-to-scene linking UI on dedicated page
+- [ ] Create /admin/tournaments/create — Competition Creator page
+- [ ] Competition Creator: name, entry fee, roster size, start/end dates, prize pool, eligibility rules, draft/publish workflow
+
+### Phase 4: NFT Studio & Marketplace
+- [ ] Create /nft-studio page — generate performer NFT cards, assign badges, view card gallery
+- [ ] Create /marketplace page — browse, buy, sell, trade performer NFTs
+- [ ] Marketplace: listing cards, price display, trade history, filter by performer/badge/rarity
+
+### Phase 5: Leaderboard, Rules & Activity Feed
+- [ ] Create /leaderboard page — top players by points, top performers by scene scores, weekly/all-time toggle
+- [ ] Create /rules page — scoring rules, action point values, badge bonuses, tournament eligibility
+- [ ] Create /activity page — recent events feed (new tournaments, scene results, NFT trades, badge unlocks)
+
+### Phase 6: Admin Dashboard & Polish
+- [ ] Refine /admin dashboard with cards/links to all sub-modules
+- [ ] Add user transaction history section in admin
+- [ ] Verify all routes work correctly end-to-end
+- [ ] Save checkpoint and publish
+
+## Module Restructure (April 2026)
+- [x] Shared Navbar component with all navigation links (Performers, Tournaments, Leaderboard, Marketplace, Rules, Activity, My NFTs, My Profile, Admin)
+- [x] Rules & Scoring Center page (/rules) — 4-tab layout: Overview, Scoring, Tournaments, NFTs & Badges
+- [x] Activity Feed page (/activity) — live events from tournaments and badge assignments
+- [x] NFT Studio page (/nft-studio) — admin card management with bulk actions
+- [x] Admin Movie & Scene Manager dedicated page (/admin/movies)
+- [x] Admin Create Competition page (/admin/tournaments/create) — full form with roster builder and live preview
+- [x] Redesigned Admin Dashboard with module cards linking to all sub-sections
+- [x] Player Profile page (/profile)
+- [x] Player Sign-Up / Onboarding page (/signup)
+- [x] Leaderboard page (/leaderboard)
+- [x] Marketplace page (/marketplace)
+- [x] Home page updated with Explore section linking all modules
+- [x] App.tsx updated with all new routes
