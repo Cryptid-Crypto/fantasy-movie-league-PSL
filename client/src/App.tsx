@@ -30,6 +30,7 @@ import PlayerProfile from "./pages/PlayerProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminMovies from "./pages/AdminMovies";
 import AdminCreateTournament from "./pages/AdminCreateTournament";
+import AdminPerformers from "./pages/AdminPerformers";
 import NFTStudio from "./pages/NFTStudio";
 
 function Router() {
@@ -57,6 +58,7 @@ function Router() {
       {/* Admin */}
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/movies" component={AdminMovies} />
+      <Route path="/admin/performers" component={AdminPerformers} />
       <Route path="/admin/tournaments/create" component={AdminCreateTournament} />
       <Route path="/nft-studio" component={NFTStudio} />
 

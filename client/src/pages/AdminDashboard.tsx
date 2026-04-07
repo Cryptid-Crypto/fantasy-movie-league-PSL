@@ -25,8 +25,7 @@ const MODULE_CARDS = [
     title: "Performer Manager",
     description: "Manage performer profiles, portraits, badges, and NFT card generation.",
     icon: Users,
-    href: "/admin",
-    tabTarget: "performers",
+    href: "/admin/performers",
     color: "text-purple-500",
     bg: "bg-purple-500/10",
     badge: "Roster",
@@ -211,6 +210,12 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-3">
+                <Link href="/admin/performers">
+                  <Button variant="outline" className="gap-2">
+                    <Users className="h-4 w-4" />
+                    Performers
+                  </Button>
+                </Link>
                 <Link href="/admin/movies">
                   <Button variant="outline" className="gap-2">
                     <Film className="h-4 w-4" />

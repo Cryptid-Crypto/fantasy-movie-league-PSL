@@ -668,3 +668,16 @@
 - [x] Marketplace page (/marketplace)
 - [x] Home page updated with Explore section linking all modules
 - [x] App.tsx updated with all new routes
+
+## Bug Fixes
+- [ ] Fix Add Scene component not working in Admin Movie & Scene Manager
+
+## Multiple Performer Types Feature
+- [ ] Add MILF to performer type enum in schema
+- [ ] Create performerTypes junction table (performer can have many types)
+- [ ] Migrate existing single performerType field to new junction table
+- [ ] Update db.ts helpers to read/write multiple types
+- [ ] Update tRPC procedures for multi-type create/update
+- [ ] Update admin performer forms to use multi-select type picker
+- [ ] Update performer profile pages to display all types as badges
+- [ ] Update tournament roster requirements to support multi-type filtering
