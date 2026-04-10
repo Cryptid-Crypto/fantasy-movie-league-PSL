@@ -266,3 +266,90 @@ export const transactions = mysqlTable("transactions", {
 
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = typeof transactions.$inferInsert;
+
+/**
+ * Platform-native NFT cards (minted by admin, owned by players)
+ * These are the canonical NFT records on the platform.
+ * Blockchain minting is optional and tracked separately.
+ */
+export const nftCards = mysqlTable("nftCards", {
+  id: int("id").autoincrement().primaryKey(),
+  performerId: int("performerId").notNull().references(() => performers.id, { onDelete: "cascade" }),
+  ownerId: int("ownerId").references(() => users.id, { onDelete: "set null" }), // null = unowned (in platform treasury)
+  serialNumber: int("serialNumber").notNull(), // e.g. #001 of this performer
+  rarity: mysqlEnum("rarity", ["Common", "Rare", "Epic", "Legendary"]).default("Common").notNull(),
+  cardImageUrl: text("cardImageUrl"), // The generated NFT card artwork URL
+  mintedAt: timestamp("mintedAt").defaultNow().notNull(),
+  mintedBy: int("mintedBy").references(() => users.id, { onDelete: "set null" }), // admin who minted
+  onChainTokenId: varchar("onChainTokenId", { length: 78 }), // Polygon token ID if minted on-chain
+  onChainContractAddress: varchar("onChainContractAddress", { length: 42 }),
+  isLocked: boolean("isLocked").default(false).notNull(), // locked while in active tournament
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  uniqueSerial: unique().on(table.performerId, table.serialNumber),
+}));
+
+export type NftCard = typeof nftCards.$inferSelect;
+export type InsertNftCard = typeof nftCards.$inferInsert;
+
+/**
+ * NFT marketplace listings — cards listed for sale by their owners
+ */
+export const nftListings = mysqlTable("nftListings", {
+  id: int("id").autoincrement().primaryKey(),
+  nftCardId: int("nftCardId").notNull().references(() => nftCards.id, { onDelete: "cascade" }),
+  sellerId: int("sellerId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  priceCredits: int("priceCredits").notNull(), // Price in PSL platform credits
+  status: mysqlEnum("status", ["active", "sold", "cancelled"]).default("active").notNull(),
+  buyerId: int("buyerId").references(() => users.id, { onDelete: "set null" }), // set when sold
+  soldAt: timestamp("soldAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NftListing = typeof nftListings.$inferSelect;
+export type InsertNftListing = typeof nftListings.$inferInsert;
+
+/**
+ * Platform credit ledger — tracks PSL credit balance changes per user
+ * Credits are earned via tournament prizes, purchased, or spent on marketplace
+ */
+export const creditLedger = mysqlTable("creditLedger", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: int("amount").notNull(), // positive = credit, negative = debit
+  type: mysqlEnum("type", [
+    "admin_grant",      // admin gives credits to a user
+    "tournament_prize", // won a tournament
+    "nft_sale",         // sold an NFT on marketplace
+    "nft_purchase",     // bought an NFT on marketplace
+    "tournament_entry", // paid entry fee
+    "refund",           // refunded entry fee
+  ]).notNull(),
+  description: text("description"),
+  relatedNftCardId: int("relatedNftCardId").references(() => nftCards.id, { onDelete: "set null" }),
+  relatedListingId: int("relatedListingId").references(() => nftListings.id, { onDelete: "set null" }),
+  relatedTournamentId: int("relatedTournamentId").references(() => tournaments.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CreditLedger = typeof creditLedger.$inferSelect;
+export type InsertCreditLedger = typeof creditLedger.$inferInsert;
+
+/**
+ * NFT transfer history — full audit trail of ownership changes
+ */
+export const nftTransferHistory = mysqlTable("nftTransferHistory", {
+  id: int("id").autoincrement().primaryKey(),
+  nftCardId: int("nftCardId").notNull().references(() => nftCards.id, { onDelete: "cascade" }),
+  fromUserId: int("fromUserId").references(() => users.id, { onDelete: "set null" }), // null = minted from treasury
+  toUserId: int("toUserId").references(() => users.id, { onDelete: "set null" }),
+  transferType: mysqlEnum("transferType", ["mint", "marketplace_sale", "admin_transfer", "tournament_reward"]).notNull(),
+  priceCredits: int("priceCredits"), // price paid if marketplace_sale
+  listingId: int("listingId").references(() => nftListings.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type NftTransferHistory = typeof nftTransferHistory.$inferSelect;
+export type InsertNftTransferHistory = typeof nftTransferHistory.$inferInsert;

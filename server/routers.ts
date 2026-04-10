@@ -427,9 +427,11 @@ export const appRouter = router({
     enter: protectedProcedure
       .input(z.object({
         tournamentId: z.number(),
+        // Accept either platform card IDs or legacy blockchain token IDs
         roster: z.array(z.object({
           performerId: z.number(),
-          nftTokenId: z.string(),
+          nftCardId: z.number().optional(),   // platform-native NFT card ID
+          nftTokenId: z.string().optional(),  // legacy blockchain token ID
         })),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -444,18 +446,30 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Roster cannot be empty' });
         }
         
-        // Get user's NFTs to verify ownership
-        const userNfts = await db.getUserNfts(ctx.user.id);
-        const userNftMap = new Map(userNfts.map(nft => [`${nft.performerId}-${nft.tokenId}`, nft]));
+        // Get user's platform NFT cards
+        const userPlatformCards = await db.getUserOwnedNftCards(ctx.user.id);
+        const platformCardMap = new Map(userPlatformCards.map((c: any) => [c.id, c]));
         
-        // Verify NFT ownership for all performers in roster
+        // Verify platform NFT card ownership for all performers in roster
+        const rosterPerformerTypes = new Map<string | null, number>();
         for (const performer of input.roster) {
-          const key = `${performer.performerId}-${performer.nftTokenId}`;
-          if (!userNftMap.has(key)) {
-            throw new TRPCError({ 
-              code: 'FORBIDDEN', 
-              message: `You do not own NFT #${performer.nftTokenId} for performer ID ${performer.performerId}` 
-            });
+          if (performer.nftCardId) {
+            const card = platformCardMap.get(performer.nftCardId);
+            if (!card) {
+              throw new TRPCError({ 
+                code: 'FORBIDDEN', 
+                message: `You do not own NFT card #${performer.nftCardId}` 
+              });
+            }
+            if (card.isLocked) {
+              throw new TRPCError({ 
+                code: 'BAD_REQUEST', 
+                message: `NFT card #${performer.nftCardId} is already locked in another tournament` 
+              });
+            }
+            // Track performer type from card
+            const performerType = (card as any).performerType || null;
+            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
           }
         }
         
@@ -463,15 +477,6 @@ export const appRouter = router({
         const requirements = await db.getTournamentRosterRequirements(input.tournamentId);
         
         if (requirements && requirements.length > 0) {
-          // Build a map of performer types in the roster
-          const rosterPerformerTypes = new Map<string | null, number>();
-          
-          for (const performer of input.roster) {
-            const nft = userNftMap.get(`${performer.performerId}-${performer.nftTokenId}`);
-            const performerType = nft?.performerType || null;
-            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
-          }
-          
           // Validate each requirement
           const unmetRequirements: string[] = [];
           
@@ -480,12 +485,10 @@ export const appRouter = router({
             const requiredCount = req.requiredCount;
             
             if (requiredType === null) {
-              // "Any Type" requirement - check total roster size
               if (input.roster.length < requiredCount) {
                 unmetRequirements.push(`${requiredCount} Any Type (you have ${input.roster.length})`);
               }
             } else {
-              // Specific type requirement
               const actualCount = rosterPerformerTypes.get(requiredType) || 0;
               if (actualCount < requiredCount) {
                 unmetRequirements.push(`${requiredCount} ${requiredType} (you have ${actualCount})`);
@@ -508,13 +511,21 @@ export const appRouter = router({
           totalScore: 0,
         });
         
-        // Add all performers to the entry
+        // Add all performers to the entry and lock platform cards
+        const { getDb } = await import('./db');
+        const drizzleDb = await getDb();
         for (const performer of input.roster) {
           await db.addPerformerToEntry({
             entryId,
             performerId: performer.performerId,
-            nftTokenId: performer.nftTokenId,
+            nftTokenId: performer.nftTokenId ?? performer.nftCardId?.toString() ?? '0',
           });
+          // Lock the platform card so it can't be traded while in tournament
+          if (performer.nftCardId && drizzleDb) {
+            const { nftCards } = await import('../drizzle/schema');
+            const { eq } = await import('drizzle-orm');
+            await drizzleDb.update(nftCards).set({ isLocked: true }).where(eq(nftCards.id, performer.nftCardId));
+          }
         }
         
         return { id: entryId };
@@ -653,10 +664,155 @@ export const appRouter = router({
         
         return { success: true };
       }),
-    list: protectedProcedure.query(async ({ ctx }) => {
+     list: protectedProcedure.query(async ({ ctx }) => {
       return db.getUserNfts(ctx.user.id);
     }),
   }),
-});
 
+  // ============ PLATFORM NFT CARD PROCEDURES ============
+  nftPlatform: router({
+    /** Admin: mint new NFT cards for a performer */
+    mint: protectedProcedure
+      .input(z.object({
+        performerId: z.number(),
+        rarity: z.enum(["Common", "Rare", "Epic", "Legendary"]),
+        count: z.number().min(1).max(100).default(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        // Use the performer's existing card image URL
+        const performer = await db.getPerformerById(input.performerId);
+        const cardImageUrl = performer?.imageUrl ?? undefined;
+        const minted = await db.mintNftCard({
+          performerId: input.performerId,
+          rarity: input.rarity,
+          cardImageUrl,
+          mintedBy: ctx.user.id,
+          count: input.count,
+        });
+        return { success: true, minted };
+      }),
+
+    /** Admin: assign a card from treasury to a specific user */
+    assignToUser: protectedProcedure
+      .input(z.object({
+        cardId: z.number(),
+        userId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        await db.assignNftCardToUser(input.cardId, input.userId, ctx.user.id);
+        return { success: true };
+      }),
+
+    /** Admin: grant PSL credits to a user */
+    grantCredits: protectedProcedure
+      .input(z.object({
+        userId: z.number(),
+        amount: z.number().min(1),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        await db.adjustUserCredits({
+          userId: input.userId,
+          amount: input.amount,
+          type: "admin_grant",
+          description: input.description ?? `Admin credit grant`,
+        });
+        return { success: true };
+      }),
+
+    /** Admin: get all minted NFT cards */
+    getAllCards: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      return db.getAllNftCards();
+    }),
+
+    /** Admin: get treasury (unowned) cards */
+    getTreasury: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      return db.getTreasuryNftCards();
+    }),
+
+    /** Get cards for a specific performer */
+    getByPerformer: protectedProcedure
+      .input(z.object({ performerId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getNftCardsByPerformer(input.performerId);
+      }),
+
+    /** Get current user's owned NFT cards */
+    myCards: protectedProcedure.query(async ({ ctx }) => {
+      return db.getUserOwnedNftCards(ctx.user.id);
+    }),
+
+    /** Get a single NFT card by ID */
+    getCard: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getNftCardById(input.cardId);
+      }),
+
+    /** Get current user's PSL credit balance */
+    myBalance: protectedProcedure.query(async ({ ctx }) => {
+      const balance = await db.getUserCreditBalance(ctx.user.id);
+      return { balance };
+    }),
+
+    /** Get current user's credit transaction history */
+    myCreditHistory: protectedProcedure.query(async ({ ctx }) => {
+      return db.getUserCreditHistory(ctx.user.id);
+    }),
+
+    /** List a card for sale on the marketplace */
+    listForSale: protectedProcedure
+      .input(z.object({
+        cardId: z.number(),
+        priceCredits: z.number().min(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const listingId = await db.createNftListing({
+          nftCardId: input.cardId,
+          sellerId: ctx.user.id,
+          priceCredits: input.priceCredits,
+        });
+        return { success: true, listingId };
+      }),
+
+    /** Cancel an active marketplace listing */
+    cancelListing: protectedProcedure
+      .input(z.object({ listingId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.cancelNftListing(input.listingId, ctx.user.id);
+        return { success: true };
+      }),
+
+    /** Buy an NFT from the marketplace */
+    buy: protectedProcedure
+      .input(z.object({ listingId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.buyNftListing(input.listingId, ctx.user.id);
+        return { success: true };
+      }),
+
+    /** Get all active marketplace listings */
+    getListings: protectedProcedure
+      .input(z.object({
+        performerType: z.string().optional(),
+        rarity: z.string().optional(),
+        search: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return db.getActiveNftListings(input ?? {});
+      }),
+
+    /** Get NFT transfer history for a card */
+    getTransferHistory: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getNftTransferHistory(input.cardId);
+      }),
+  }),
+});
 export type AppRouter = typeof appRouter;

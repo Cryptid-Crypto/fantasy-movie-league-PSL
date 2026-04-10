@@ -25,6 +25,13 @@ import {
   InsertTournamentEntryPerformer,
   userNftInventory,
   InsertUserNftInventory,
+  nftCards,
+  InsertNftCard,
+  NftCard,
+  nftListings,
+  InsertNftListing,
+  creditLedger,
+  nftTransferHistory,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -976,4 +983,417 @@ export async function regeneratePerformerCard(performerId: number) {
     console.error("Error regenerating card:", error);
     throw new Error(`Failed to regenerate card: ${error.message}`);
   }
+}
+
+// ============ PLATFORM NFT CARD FUNCTIONS ============
+
+/** Mint a new NFT card for a performer. Returns the new card. */
+export async function mintNftCard(data: {
+  performerId: number;
+  rarity: "Common" | "Rare" | "Epic" | "Legendary";
+  cardImageUrl?: string;
+  mintedBy: number;
+  count?: number; // how many copies to mint (default 1)
+}): Promise<NftCard[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Find the current max serial number for this performer
+  const existing = await db
+    .select({ serialNumber: nftCards.serialNumber })
+    .from(nftCards)
+    .where(eq(nftCards.performerId, data.performerId))
+    .orderBy(desc(nftCards.serialNumber))
+    .limit(1);
+
+  const startSerial = existing.length > 0 ? existing[0].serialNumber + 1 : 1;
+  const count = data.count ?? 1;
+  const minted: NftCard[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const [result] = await db.insert(nftCards).values({
+      performerId: data.performerId,
+      serialNumber: startSerial + i,
+      rarity: data.rarity,
+      cardImageUrl: data.cardImageUrl,
+      mintedBy: data.mintedBy,
+      ownerId: null, // unowned — in treasury
+    });
+    const newCard = await db
+      .select()
+      .from(nftCards)
+      .where(eq(nftCards.id, (result as any).insertId))
+      .limit(1);
+    if (newCard[0]) {
+      // Record mint transfer
+      await db.insert(nftTransferHistory).values({
+        nftCardId: newCard[0].id,
+        fromUserId: null,
+        toUserId: null,
+        transferType: "mint",
+      });
+      minted.push(newCard[0]);
+    }
+  }
+  return minted;
+}
+
+/** Get all NFT cards for a performer (with owner info) */
+export async function getNftCardsByPerformer(performerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      ownerId: nftCards.ownerId,
+      ownerName: users.name,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      isLocked: nftCards.isLocked,
+      mintedAt: nftCards.mintedAt,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .leftJoin(users, eq(nftCards.ownerId, users.id))
+    .where(eq(nftCards.performerId, performerId))
+    .orderBy(nftCards.serialNumber);
+}
+
+/** Get all NFT cards owned by a user */
+export async function getUserOwnedNftCards(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      isLocked: nftCards.isLocked,
+      mintedAt: nftCards.mintedAt,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .where(eq(nftCards.ownerId, userId))
+    .orderBy(desc(nftCards.mintedAt));
+}
+
+/** Get a single NFT card by ID */
+export async function getNftCardById(cardId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const rows = await db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      ownerId: nftCards.ownerId,
+      ownerName: users.name,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      isLocked: nftCards.isLocked,
+      mintedAt: nftCards.mintedAt,
+      onChainTokenId: nftCards.onChainTokenId,
+      onChainContractAddress: nftCards.onChainContractAddress,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .leftJoin(users, eq(nftCards.ownerId, users.id))
+    .where(eq(nftCards.id, cardId))
+    .limit(1);
+
+  return rows[0] ?? null;
+}
+
+/** Admin: assign an NFT card to a user (transfer from treasury or another user) */
+export async function assignNftCardToUser(cardId: number, toUserId: number, adminId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const card = await getNftCardById(cardId);
+  if (!card) throw new Error("Card not found");
+
+  const fromUserId = card.ownerId;
+  await db.update(nftCards).set({ ownerId: toUserId }).where(eq(nftCards.id, cardId));
+
+  await db.insert(nftTransferHistory).values({
+    nftCardId: cardId,
+    fromUserId: fromUserId ?? null,
+    toUserId,
+    transferType: "admin_transfer",
+  });
+}
+
+// ============ CREDIT LEDGER FUNCTIONS ============
+
+/** Get a user's current PSL credit balance */
+export async function getUserCreditBalance(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const rows = await db
+    .select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+    .from(creditLedger)
+    .where(eq(creditLedger.userId, userId));
+
+  return Number(rows[0]?.total ?? 0);
+}
+
+/** Add or deduct credits for a user */
+export async function adjustUserCredits(data: {
+  userId: number;
+  amount: number;
+  type: "admin_grant" | "tournament_prize" | "nft_sale" | "nft_purchase" | "tournament_entry" | "refund";
+  description?: string;
+  relatedNftCardId?: number;
+  relatedListingId?: number;
+  relatedTournamentId?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(creditLedger).values({
+    userId: data.userId,
+    amount: data.amount,
+    type: data.type,
+    description: data.description,
+    relatedNftCardId: data.relatedNftCardId,
+    relatedListingId: data.relatedListingId,
+    relatedTournamentId: data.relatedTournamentId,
+  });
+}
+
+/** Get credit transaction history for a user */
+export async function getUserCreditHistory(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(creditLedger)
+    .where(eq(creditLedger.userId, userId))
+    .orderBy(desc(creditLedger.createdAt))
+    .limit(50);
+}
+
+// ============ NFT MARKETPLACE FUNCTIONS ============
+
+/** List an NFT card for sale */
+export async function createNftListing(data: {
+  nftCardId: number;
+  sellerId: number;
+  priceCredits: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Verify ownership
+  const card = await getNftCardById(data.nftCardId);
+  if (!card) throw new Error("Card not found");
+  if (card.ownerId !== data.sellerId) throw new Error("You do not own this card");
+  if (card.isLocked) throw new Error("This card is locked in an active tournament");
+
+  // Check no active listing exists
+  const existing = await db
+    .select()
+    .from(nftListings)
+    .where(and(eq(nftListings.nftCardId, data.nftCardId), eq(nftListings.status, "active")))
+    .limit(1);
+  if (existing.length > 0) throw new Error("This card is already listed for sale");
+
+  const [result] = await db.insert(nftListings).values({
+    nftCardId: data.nftCardId,
+    sellerId: data.sellerId,
+    priceCredits: data.priceCredits,
+    status: "active",
+  });
+
+  return (result as any).insertId as number;
+}
+
+/** Cancel an active listing */
+export async function cancelNftListing(listingId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const listing = await db
+    .select()
+    .from(nftListings)
+    .where(eq(nftListings.id, listingId))
+    .limit(1);
+  if (!listing[0]) throw new Error("Listing not found");
+  if (listing[0].sellerId !== userId) throw new Error("You do not own this listing");
+  if (listing[0].status !== "active") throw new Error("Listing is not active");
+
+  await db.update(nftListings).set({ status: "cancelled" }).where(eq(nftListings.id, listingId));
+}
+
+/** Buy an NFT from the marketplace */
+export async function buyNftListing(listingId: number, buyerId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const listing = await db
+    .select()
+    .from(nftListings)
+    .where(eq(nftListings.id, listingId))
+    .limit(1);
+  if (!listing[0]) throw new Error("Listing not found");
+  if (listing[0].status !== "active") throw new Error("Listing is no longer available");
+  if (listing[0].sellerId === buyerId) throw new Error("You cannot buy your own listing");
+
+  const price = listing[0].priceCredits;
+  const sellerId = listing[0].sellerId;
+  const cardId = listing[0].nftCardId;
+
+  // Check buyer balance
+  const buyerBalance = await getUserCreditBalance(buyerId);
+  if (buyerBalance < price) throw new Error("Insufficient PSL credits");
+
+  // Deduct from buyer
+  await adjustUserCredits({
+    userId: buyerId,
+    amount: -price,
+    type: "nft_purchase",
+    description: `Purchased NFT card #${cardId}`,
+    relatedNftCardId: cardId,
+    relatedListingId: listingId,
+  });
+
+  // Credit seller (platform takes 5% fee)
+  const sellerAmount = Math.floor(price * 0.95);
+  await adjustUserCredits({
+    userId: sellerId,
+    amount: sellerAmount,
+    type: "nft_sale",
+    description: `Sold NFT card #${cardId} (5% platform fee deducted)`,
+    relatedNftCardId: cardId,
+    relatedListingId: listingId,
+  });
+
+  // Transfer ownership
+  await db.update(nftCards).set({ ownerId: buyerId }).where(eq(nftCards.id, cardId));
+
+  // Mark listing as sold
+  await db.update(nftListings).set({
+    status: "sold",
+    buyerId,
+    soldAt: new Date(),
+  }).where(eq(nftListings.id, listingId));
+
+  // Record transfer history
+  await db.insert(nftTransferHistory).values({
+    nftCardId: cardId,
+    fromUserId: sellerId,
+    toUserId: buyerId,
+    transferType: "marketplace_sale",
+    priceCredits: price,
+    listingId,
+  });
+}
+
+/** Get all active marketplace listings with card and performer info */
+export async function getActiveNftListings(filters?: {
+  performerType?: string;
+  rarity?: string;
+  search?: string;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({
+      listingId: nftListings.id,
+      priceCredits: nftListings.priceCredits,
+      listedAt: nftListings.createdAt,
+      cardId: nftCards.id,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      performerId: performers.id,
+      performerName: performers.name,
+      performerType: performers.performerType,
+      performerImageUrl: performers.imageUrl,
+      sellerName: users.name,
+      sellerId: nftListings.sellerId,
+    })
+    .from(nftListings)
+    .leftJoin(nftCards, eq(nftListings.nftCardId, nftCards.id))
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .leftJoin(users, eq(nftListings.sellerId, users.id))
+    .where(eq(nftListings.status, "active"))
+    .orderBy(desc(nftListings.createdAt));
+
+  return rows;
+}
+
+/** Get all NFT cards in the platform treasury (unowned) */
+export async function getTreasuryNftCards() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      mintedAt: nftCards.mintedAt,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .where(sql`${nftCards.ownerId} IS NULL`)
+    .orderBy(desc(nftCards.mintedAt));
+}
+
+/** Get NFT transfer history for a card */
+export async function getNftTransferHistory(cardId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(nftTransferHistory)
+    .where(eq(nftTransferHistory.nftCardId, cardId))
+    .orderBy(desc(nftTransferHistory.createdAt));
+}
+
+/** Get all minted NFT cards (admin view) */
+export async function getAllNftCards() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      ownerId: nftCards.ownerId,
+      ownerName: users.name,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      isLocked: nftCards.isLocked,
+      mintedAt: nftCards.mintedAt,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .leftJoin(users, eq(nftCards.ownerId, users.id))
+    .orderBy(desc(nftCards.mintedAt));
 }
