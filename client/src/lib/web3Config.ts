@@ -1,6 +1,7 @@
 import { http, createConfig } from 'wagmi';
 import { polygon, polygonAmoy } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
+import type { Abi } from 'viem';
 import TournamentEscrowAbi from '@/abis/TournamentEscrow.json';
 
 // Configure Wagmi for Polygon network
@@ -29,7 +30,7 @@ export const NFT_CONTRACT_ADDRESSES = {
 };
 
 // TournamentEscrow contract ABI (see contracts/TournamentEscrow.sol)
-export const TOURNAMENT_ESCROW_ABI = TournamentEscrowAbi;
+export const TOURNAMENT_ESCROW_ABI = TournamentEscrowAbi as Abi;
 
 // TournamentEscrow deployed contract addresses per chain.
 // TODO: Replace the zero addresses with the real deployed contract
