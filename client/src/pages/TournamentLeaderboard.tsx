@@ -1,5 +1,6 @@
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,8 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trophy, Medal, ArrowLeft, User, Crown } from "lucide-react";
+import { Trophy, Medal, ArrowLeft, User, Crown, Coins, RefreshCw } from "lucide-react";
 import { Link } from "wouter";
+import { toast } from "sonner";
 import { TournamentRosterRequirements } from "@/components/TournamentRosterRequirements";
 
 export default function TournamentLeaderboard() {
@@ -28,6 +30,28 @@ export default function TournamentLeaderboard() {
     { tournamentId },
     { enabled: tournamentId > 0 }
   );
+
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
+  const distributePrizesMutation = trpc.admin.tournaments.distributePrizes.useMutation({
+    onSuccess: (data) => {
+      toast.success(
+        `Prizes distributed to ${data.winners.length} winner(s)! Tx: ${data.txHash.slice(0, 10)}...`
+      );
+    },
+    onError: (e) => toast.error(`Failed to distribute prizes: ${e.message}`),
+  });
+
+  const handleDistributePrizes = () => {
+    if (
+      window.confirm(
+        "Distribute prizes for this tournament? This triggers an on-chain payout and cannot be undone."
+      )
+    ) {
+      distributePrizesMutation.mutate({ tournamentId });
+    }
+  };
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Crown className="h-5 w-5 text-yellow-500" />;
@@ -133,10 +157,31 @@ export default function TournamentLeaderboard() {
         {/* Leaderboard */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-primary" />
-              Leaderboard
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                Leaderboard
+              </CardTitle>
+              {isAdmin && leaderboard && leaderboard.length > 0 && (
+                <Button
+                  onClick={handleDistributePrizes}
+                  disabled={distributePrizesMutation.isPending}
+                  className="gap-2"
+                >
+                  {distributePrizesMutation.isPending ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Distributing...
+                    </>
+                  ) : (
+                    <>
+                      <Coins className="h-4 w-4" />
+                      Distribute Prizes
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {leaderboard && leaderboard.length > 0 ? (
