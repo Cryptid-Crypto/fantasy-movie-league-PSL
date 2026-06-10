@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, unique } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, unique, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -168,6 +168,7 @@ export const tournaments = mysqlTable("tournaments", {
   entryFee: decimal("entryFee", { precision: 18, scale: 8 }).default("0"), // In MATIC or PSL token
   paymentTokenAddress: varchar("paymentTokenAddress", { length: 42 }), // Token contract address (null = native MATIC)
   prizePool: decimal("prizePool", { precision: 18, scale: 8 }).default("0"), // Total prize pool accumulated
+  prizeSplitBps: json("prizeSplitBps").$type<number[]>(), // Per-rank prize split in basis points (e.g. [5000,3000,2000]); null = default 50/30/20
   escrowContractAddress: varchar("escrowContractAddress", { length: 42 }), // Smart contract holding funds
   payoutComplete: boolean("payoutComplete").default(false).notNull(), // Whether winners have been paid
   status: mysqlEnum("status", ["upcoming", "active", "completed"]).default("upcoming").notNull(),

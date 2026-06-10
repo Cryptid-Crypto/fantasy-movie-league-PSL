@@ -19,12 +19,15 @@ prize-distribution feature added by the prize-distribution implementation plan
 
 - Entries are read via `db.getTournamentEntries(tournamentId)` (already ordered
   by `totalScore` descending).
-- The top 3 finishers receive a **50% / 30% / 20%** split, expressed in
-  basis points (`5000 / 3000 / 2000`).
+- Each tournament can define its own **prize split** via the `prizeSplitBps`
+  column (a JSON array of basis points, e.g. `[5000, 3000, 2000]`). Admins set
+  this on the create-tournament page as a comma-separated percentage list
+  (e.g. `50, 30, 20`) that must sum to 100%. When no split is configured the
+  default **50% / 30% / 20%** is used.
 - `TournamentEscrow.distributePrizes` reverts unless the percentages sum to
-  **exactly 10000 bps**. When fewer than 3 entries exist, the helper
-  (`computePrizeSplitBps`) proportionally rescales the split and absorbs any
-  rounding remainder into the top finisher so the total is always 10000.
+  **exactly 10000 bps**. When fewer finishers exist than configured ranks, the
+  helper (`computePrizeSplitBps`) proportionally rescales the split and absorbs
+  any rounding remainder into the top finisher so the total is always 10000.
 - Each winner's payout wallet is resolved from `users.walletAddress`. If a
   winner has no wallet on file, distribution aborts with a clear error before
   any on-chain call is made.
@@ -95,24 +98,20 @@ TOURNAMENT_ESCROW_ADDRESS=0x...
 - `server/admin.tournaments.distributePrizes.test.ts`
   - rejects a non-admin caller with `FORBIDDEN`
   - invokes the (mocked) chain helper for an admin caller — no real chain call
+- `server/prizeDistributionUtils.test.ts`
+  - `computePrizeSplitBps` returns the default 50/30/20 split, normalizes to
+    exactly 10000 bps for fewer finishers, and honours/​rescales custom splits
 - `client/src/lib/prizeDistribution.test.ts`
   - throws `'Wallet not connected'` when no injected wallet is present
 
-> Note: the project's `vitest.config.ts` `include` glob currently only covers
-> `server/**/*.test.ts`, so the **client** test is not picked up by the default
-> `pnpm test` run. To include client tests in CI, broaden the glob (and add a
-> jsdom environment for client code):
-> ```ts
-> // vitest.config.ts
-> test: {
->   include: ['server/**/*.test.ts', 'client/**/*.test.{ts,tsx}'],
->   environment: 'node', // or per-file jsdom for client
-> }
-> ```
+> The `vitest.config.ts` `include` glob now covers both `server/**/*.test.ts`
+> and `client/**/*.test.{ts,tsx}` (with a `jsdom` environment for client code,
+> via the `jsdom` dev dependency), so `pnpm test` runs server and client tests
+> together.
 
 ## Follow-up enhancements (not yet implemented)
 
-- Make the prize split configurable per tournament (admin setting) instead of
-  the hard-coded 50/30/20.
 - Optional backend cron to auto-trigger distribution when a tournament ends.
 - Friendlier error surfacing of on-chain revert reasons.
+- A live preview on the create-tournament page that renders the entered split
+  as per-rank amounts against the projected prize pool.

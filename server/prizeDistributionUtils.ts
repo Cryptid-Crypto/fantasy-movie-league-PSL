@@ -59,16 +59,24 @@ function readBlockchainEnv() {
  * Computes integer basis-point percentages for the top `count` finishers,
  * guaranteeing the result sums to EXACTLY 10000.
  *
- * When there are fewer than 3 winners we proportionally rescale the default
- * [50,30,20] split across however many finishers exist, then absorb any
- * rounding remainder into the first (top) finisher so the on-chain
+ * `baseSplit` is the desired per-rank weighting (defaults to [50,30,20] →
+ * [5000,3000,2000]). It does NOT need to sum to 10000 — the function scales
+ * whatever weighting is supplied across however many finishers exist and
+ * absorbs any rounding remainder into the top finisher(s) so the on-chain
  * `totalPercentage == 10000` invariant always holds.
  */
-export function computePrizeSplitBps(count: number): number[] {
+export function computePrizeSplitBps(
+  count: number,
+  baseSplit: readonly number[] = DEFAULT_PRIZE_SPLIT_BPS
+): number[] {
   if (count <= 0) return [];
 
-  const base = DEFAULT_PRIZE_SPLIT_BPS.slice(0, count);
+  // Use as many of the supplied weights as we have finishers for.
+  const base = baseSplit.slice(0, count);
   const baseSum = base.reduce((acc, v) => acc + v, 0);
+  if (baseSum <= 0) {
+    throw new Error("Prize split weights must sum to a positive value");
+  }
 
   // Scale each slice proportionally to fill the full 10000 bps pool.
   const scaled = base.map((v) => Math.floor((v * 10000) / baseSum));
@@ -115,13 +123,22 @@ export async function distributeTournamentPrizes(
     throw new Error(`No entries found for tournament ${tournamentId}`);
   }
 
-  // 2. Take the top finishers (default top 3) and compute prize percentages
-  //    that sum to exactly 10000 basis points.
+  // 1b. Load the tournament so we can honour its configured prize split
+  //     (falls back to the default 50/30/20 when none is set).
+  const tournament = await db.getTournamentById(tournamentId);
+  const configuredSplit = tournament?.prizeSplitBps;
+  const baseSplit =
+    Array.isArray(configuredSplit) && configuredSplit.length > 0
+      ? configuredSplit
+      : DEFAULT_PRIZE_SPLIT_BPS;
+
+  // 2. Take the top finishers (one per configured rank) and compute prize
+  //    percentages that sum to exactly 10000 basis points.
   const ranked = [...entries].sort(
     (a, b) => (b.totalScore ?? 0) - (a.totalScore ?? 0)
   );
-  const topCount = Math.min(DEFAULT_PRIZE_SPLIT_BPS.length, ranked.length);
-  const splitBps = computePrizeSplitBps(topCount);
+  const topCount = Math.min(baseSplit.length, ranked.length);
+  const splitBps = computePrizeSplitBps(topCount, baseSplit);
   const topEntries = ranked.slice(0, topCount);
 
   // 3. Resolve each winner's wallet address.

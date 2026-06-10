@@ -14,6 +14,16 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next({ ctx });
 });
 
+// Per-tournament prize split, expressed in basis points (10000 = 100%).
+// Must contain only positive integers that sum to exactly 10000, matching the
+// on-chain TournamentEscrow.distributePrizes requirement.
+const prizeSplitBpsSchema = z
+  .array(z.number().int().positive())
+  .min(1)
+  .refine((arr) => arr.reduce((a, b) => a + b, 0) === 10000, {
+    message: 'Prize split must sum to exactly 10000 basis points (100%)',
+  });
+
 export const appRouter = router({
   system: systemRouter,
   
@@ -287,6 +297,7 @@ export const appRouter = router({
           endDate: z.date(),
           requiredNftContractAddress: z.string().optional(),
           entryFee: z.string().optional(),
+          prizeSplitBps: prizeSplitBpsSchema.optional(),
           rosterRequirements: z.array(z.object({
             performerType: z.string().nullable(), // null means "Any Type"
             requiredCount: z.number(),
@@ -318,6 +329,7 @@ export const appRouter = router({
           endDate: z.date().optional(),
           requiredNftContractAddress: z.string().optional(),
           entryFee: z.string().optional(),
+          prizeSplitBps: prizeSplitBpsSchema.optional(),
           status: z.enum(['upcoming', 'active', 'completed']).optional(),
         }))
         .mutation(async ({ input }) => {

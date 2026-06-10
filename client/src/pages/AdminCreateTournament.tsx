@@ -32,6 +32,7 @@ export default function AdminCreateTournament() {
     endDate: "",
     entryFee: "",
     prizePool: "",
+    prizeSplit: "50, 30, 20",
     maxEntries: "",
     status: "draft" as "draft" | "active" | "upcoming",
   });
@@ -71,12 +72,39 @@ export default function AdminCreateTournament() {
       toast.error("Please fill in all required fields.");
       return;
     }
+
+    // Parse the prize split (entered as percentages, e.g. "50, 30, 20") into
+    // basis points. Must be positive numbers summing to exactly 100%.
+    let prizeSplitBps: number[] | undefined;
+    const rawSplit = form.prizeSplit.trim();
+    if (rawSplit) {
+      const parts = rawSplit
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0)
+        .map((p) => Number(p));
+      if (parts.some((n) => !Number.isFinite(n) || n <= 0)) {
+        toast.error("Prize split must be a comma-separated list of positive percentages (e.g. 50, 30, 20).");
+        return;
+      }
+      const totalPct = parts.reduce((a, b) => a + b, 0);
+      if (Math.round(totalPct) !== 100) {
+        toast.error(`Prize split must sum to 100% (currently ${totalPct}%).`);
+        return;
+      }
+      // Convert to basis points and absorb any rounding remainder into the top rank.
+      prizeSplitBps = parts.map((p) => Math.floor((p / 100) * 10000));
+      const remainder = 10000 - prizeSplitBps.reduce((a, b) => a + b, 0);
+      if (remainder !== 0) prizeSplitBps[0] += remainder;
+    }
+
     createTournament.mutate({
       name: form.name,
       description: form.description,
       startDate: new Date(form.startDate),
       endDate: new Date(form.endDate),
       entryFee: form.entryFee || undefined,
+      prizeSplitBps,
       rosterRequirements: rosterRequirements.map(r => ({
         performerType: r.performerType === "Any Type" ? null : r.performerType,
         requiredCount: r.count,
@@ -246,13 +274,19 @@ export default function AdminCreateTournament() {
                     />
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded-lg p-4 text-sm">
-                  <p className="font-medium mb-2">Default Prize Distribution</p>
-                  <div className="space-y-1 text-muted-foreground">
-                    <div className="flex justify-between"><span>🥇 1st Place</span><span>50%</span></div>
-                    <div className="flex justify-between"><span>🥈 2nd Place</span><span>30%</span></div>
-                    <div className="flex justify-between"><span>🥉 3rd Place</span><span>20%</span></div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prizeSplit">Prize Split (%)</Label>
+                  <Input
+                    id="prizeSplit"
+                    type="text"
+                    placeholder="50, 30, 20"
+                    value={form.prizeSplit}
+                    onChange={(e) => setForm({ ...form, prizeSplit: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Comma-separated percentages for the top finishers (1st, 2nd, 3rd, …).
+                    Must sum to 100%. Leave as <span className="font-mono">50, 30, 20</span> for the default split.
+                  </p>
                 </div>
               </CardContent>
             </Card>
