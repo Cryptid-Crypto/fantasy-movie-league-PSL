@@ -331,6 +331,14 @@ export const appRouter = router({
           await db.calculateTournamentScores(input.tournamentId);
           return { success: true };
         }),
+      distributePrizes: adminProcedure
+        .input(z.object({ tournamentId: z.number() }))
+        .mutation(async ({ input }) => {
+          // Lazy import so ethers / chain libs aren't loaded unless invoked,
+          // matching the dynamic-import pattern used elsewhere in this file.
+          const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
+          return distributeTournamentPrizes(input.tournamentId);
+        }),
     }),
   }),
 
