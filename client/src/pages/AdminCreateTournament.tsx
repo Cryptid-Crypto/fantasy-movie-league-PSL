@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +66,43 @@ export default function AdminCreateTournament() {
   };
 
   const totalRosterSize = rosterRequirements.reduce((sum, r) => sum + r.count, 0);
+
+  // Live preview of the prize split: parse the comma-separated percentages and,
+  // when a prize pool is set, show the MATIC amount each rank would receive.
+  const prizePreview = useMemo(() => {
+    const raw = form.prizeSplit.trim();
+    if (!raw) return { valid: false, error: "", rows: [] as { rank: number; pct: number; amount: number | null }[], total: 0 };
+
+    const parts = raw
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0)
+      .map((p) => Number(p));
+
+    if (parts.length === 0 || parts.some((n) => !Number.isFinite(n) || n <= 0)) {
+      return { valid: false, error: "Enter positive percentages, e.g. 50, 30, 20", rows: [], total: 0 };
+    }
+
+    const total = parts.reduce((a, b) => a + b, 0);
+    const pool = Number(form.prizePool);
+    const hasPool = Number.isFinite(pool) && pool > 0;
+
+    const rows = parts.map((pct, i) => ({
+      rank: i + 1,
+      pct,
+      amount: hasPool ? (pct / 100) * pool : null,
+    }));
+
+    return {
+      valid: Math.round(total) === 100,
+      error: Math.round(total) === 100 ? "" : `Currently ${total}% — must total 100%`,
+      rows,
+      total,
+    };
+  }, [form.prizeSplit, form.prizePool]);
+
+  const rankMedal = (rank: number) =>
+    rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
 
   const handleSubmit = (status: "draft" | "active" | "upcoming") => {
     if (!form.name || !form.startDate || !form.endDate) {
@@ -288,6 +325,40 @@ export default function AdminCreateTournament() {
                     Must sum to 100%. Leave as <span className="font-mono">50, 30, 20</span> for the default split.
                   </p>
                 </div>
+
+                {/* Live prize-split preview */}
+                {prizePreview.rows.length > 0 && (
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium">Prize Distribution Preview</p>
+                      {prizePreview.valid ? (
+                        <span className="text-xs text-green-600">Totals 100% ✓</span>
+                      ) : (
+                        <span className="text-xs text-destructive">{prizePreview.error}</span>
+                      )}
+                    </div>
+                    <div className="space-y-1 text-muted-foreground">
+                      {prizePreview.rows.map((row) => (
+                        <div key={row.rank} className="flex justify-between">
+                          <span>{rankMedal(row.rank)} {row.rank === 1 ? "1st" : row.rank === 2 ? "2nd" : row.rank === 3 ? "3rd" : `${row.rank}th`} Place</span>
+                          <span>
+                            {row.pct}%
+                            {row.amount !== null && (
+                              <span className="ml-2 font-medium text-foreground">
+                                {row.amount.toLocaleString(undefined, { maximumFractionDigits: 4 })} MATIC
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {!form.prizePool && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Enter a prize pool above to see per-rank MATIC amounts.
+                      </p>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 

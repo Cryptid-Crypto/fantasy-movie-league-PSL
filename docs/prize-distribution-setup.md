@@ -47,6 +47,14 @@ ADMIN_PRIVATE_KEY=0x...
 
 # Address of the deployed TournamentEscrow contract
 TOURNAMENT_ESCROW_ADDRESS=0x...
+
+# --- Optional: automatic payout scheduler ---
+# When true, the server runs a background job that auto-distributes prizes for
+# tournaments whose endDate has passed (and that aren't already paid out).
+# Requires the three vars above to also be set. Default: disabled.
+ENABLE_AUTO_PAYOUT=false
+# How often the scheduler checks for ended tournaments (ms). Default: 300000 (5 min).
+AUTO_PAYOUT_INTERVAL_MS=300000
 ```
 
 > Security: `ADMIN_PRIVATE_KEY` controls real funds in the escrow. Store it only
@@ -109,9 +117,28 @@ TOURNAMENT_ESCROW_ADDRESS=0x...
 > via the `jsdom` dev dependency), so `pnpm test` runs server and client tests
 > together.
 
+## Automatic payout scheduler
+
+`server/autoPayoutScheduler.ts` runs an opt-in background job (started from
+`server/_core/index.ts` on server boot). On each tick it:
+
+1. Selects tournaments where `endDate <= now` AND `payoutComplete = false`.
+2. Calls `distributeTournamentPrizes(id)` for each.
+3. On success, marks the tournament `payoutComplete = true, status = 'completed'`
+   so it's never paid out twice (idempotent across restarts and overlapping ticks).
+4. On failure (no entries, missing wallet, empty pool), logs a warning and leaves
+   the tournament open so it can be retried on a later tick or distributed manually.
+
+It is **disabled by default**. Enable with `ENABLE_AUTO_PAYOUT=true` plus the
+three blockchain env vars; tune the cadence with `AUTO_PAYOUT_INTERVAL_MS`. An
+overlap guard prevents a slow tick from starting a second concurrent run, and
+the timer is `unref()`-ed so it never keeps the process alive on its own.
+
+Tested in `server/autoPayoutScheduler.test.ts` (no eligible rows, multi-payout
++ completion marking, skip-on-failure isolation).
+
 ## Follow-up enhancements (not yet implemented)
 
-- Optional backend cron to auto-trigger distribution when a tournament ends.
 - Friendlier error surfacing of on-chain revert reasons.
-- A live preview on the create-tournament page that renders the entered split
-  as per-rank amounts against the projected prize pool.
+- Per-tournament override of the auto-payout cadence / a manual "pay out now
+  that it's ended" shortcut in the admin UI.
