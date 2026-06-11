@@ -345,6 +345,10 @@ export const appRouter = router({
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
           await db.updateTournament(id, data);
+          // If admin manually marks tournament completed, unlock cards
+          if (data.status === 'completed') {
+            await db.unlockTournamentCards(id);
+          }
           return { success: true };
         }),
       calculateScores: adminProcedure
@@ -373,6 +377,8 @@ export const appRouter = router({
             const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
             const result = await distributeTournamentPrizes(input.tournamentId);
             await db.updateTournament(input.tournamentId, { status: 'completed' });
+            // Unlock cards locked by this tournament's entries
+            await db.unlockTournamentCards(input.tournamentId);
             return result;
           } catch (err) {
             // Release the claim so a fixable failure (e.g. missing wallet)

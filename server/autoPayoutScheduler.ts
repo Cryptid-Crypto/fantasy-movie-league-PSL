@@ -2,6 +2,7 @@ import { and, eq, lte } from "drizzle-orm";
 import { getDb } from "./db";
 import { tournaments } from "../drizzle/schema";
 import { distributeTournamentPrizes } from "./prizeDistributionUtils";
+import { unlockTournamentCards } from "./db";
 
 /**
  * Auto-distribute prizes for tournaments whose end date has passed.
@@ -64,6 +65,8 @@ export async function runAutoPayoutTick(now: Date = new Date()): Promise<{
         .update(tournaments)
         .set({ payoutComplete: true, status: "completed" })
         .where(eq(tournaments.id, t.id));
+      // Unlock all cards locked by this tournament's entries
+      await unlockTournamentCards(t.id);
       succeeded += 1;
       console.log(
         `[auto-payout] Tournament ${t.id} ("${t.name}") paid out. Tx: ${result.txHash}, winners: ${result.winners.length}`

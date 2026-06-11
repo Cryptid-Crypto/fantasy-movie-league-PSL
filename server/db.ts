@@ -474,6 +474,34 @@ export async function markTournamentPayoutFailed(tournamentId: number): Promise<
     .where(eq(tournaments.id, tournamentId));
 }
 
+/**
+ * Unlocks all platform NFT cards locked by entries of the given tournament.
+ * entryPerformers.nftTokenId stores the platform card id as a string for
+ * platform-native entries; legacy blockchain token ids are ignored.
+ * Returns the number of cards unlocked.
+ */
+export async function unlockTournamentCards(tournamentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const entries = await getTournamentEntries(tournamentId);
+  if (entries.length === 0) return 0;
+
+  const cardIds: number[] = [];
+  for (const entry of entries) {
+    const roster = await getEntryPerformers(entry.id);
+    for (const slot of roster) {
+      const id = Number(slot.nftTokenId);
+      if (Number.isInteger(id) && id > 0) cardIds.push(id);
+    }
+  }
+  if (cardIds.length === 0) return 0;
+
+  const { inArray } = await import("drizzle-orm");
+  await db.update(nftCards).set({ isLocked: false }).where(inArray(nftCards.id, cardIds));
+  return cardIds.length;
+}
+
 // ============ TOURNAMENT ROSTER REQUIREMENTS FUNCTIONS ============
 
 export async function createTournamentRosterRequirement(requirement: InsertTournamentRosterRequirement) {
