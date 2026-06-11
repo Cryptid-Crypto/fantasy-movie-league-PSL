@@ -33,6 +33,9 @@ import AdminCreateTournament from "./pages/AdminCreateTournament";
 import AdminPerformers from "./pages/AdminPerformers";
 import NFTStudio from "./pages/NFTStudio";
 
+// Components
+import { AgeGate } from "@/components/AgeGate";
+
 function Router() {
   return (
     <Switch>
@@ -77,7 +80,9 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <InstallPrompt />
-            <Router />
+            <AgeGate>
+              <Router />
+            </AgeGate>
           </TooltipProvider>
         </Web3Provider>
       </ThemeProvider>
