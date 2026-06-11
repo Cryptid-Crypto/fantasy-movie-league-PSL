@@ -449,6 +449,59 @@ export async function updateTournament(id: number, data: Partial<InsertTournamen
   await db.update(tournaments).set(data).where(eq(tournaments.id, id));
 }
 
+/**
+ * Atomically claims a tournament for payout by flipping payoutComplete
+ * false→true. Returns true if this caller won the claim. The flag is the
+ * mutex: concurrent calls (double-click, scheduler overlap) get false.
+ */
+export async function claimTournamentPayout(tournamentId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const [result] = await db
+    .update(tournaments)
+    .set({ payoutComplete: true })
+    .where(and(eq(tournaments.id, tournamentId), eq(tournaments.payoutComplete, false)));
+  return (result?.affectedRows ?? 0) > 0;
+}
+
+/** Releases a payout claim after a failed distribution so it can be retried. */
+export async function markTournamentPayoutFailed(tournamentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .update(tournaments)
+    .set({ payoutComplete: false })
+    .where(eq(tournaments.id, tournamentId));
+}
+
+/**
+ * Unlocks all platform NFT cards locked by entries of the given tournament.
+ * entryPerformers.nftTokenId stores the platform card id as a string for
+ * platform-native entries; legacy blockchain token ids are ignored.
+ * Returns the number of cards unlocked.
+ */
+export async function unlockTournamentCards(tournamentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const entries = await getTournamentEntries(tournamentId);
+  if (entries.length === 0) return 0;
+
+  const cardIds: number[] = [];
+  for (const entry of entries) {
+    const roster = await getEntryPerformers(entry.id);
+    for (const slot of roster) {
+      const id = Number(slot.nftTokenId);
+      if (Number.isInteger(id) && id > 0) cardIds.push(id);
+    }
+  }
+  if (cardIds.length === 0) return 0;
+
+  const { inArray } = await import("drizzle-orm");
+  await db.update(nftCards).set({ isLocked: false }).where(inArray(nftCards.id, cardIds));
+  return cardIds.length;
+}
+
 // ============ TOURNAMENT ROSTER REQUIREMENTS FUNCTIONS ============
 
 export async function createTournamentRosterRequirement(requirement: InsertTournamentRosterRequirement) {
@@ -1074,6 +1127,7 @@ export async function getUserOwnedNftCards(userId: number) {
       id: nftCards.id,
       performerId: nftCards.performerId,
       performerName: performers.name,
+      performerType: performers.performerType,
       performerImageUrl: performers.imageUrl,
       serialNumber: nftCards.serialNumber,
       rarity: nftCards.rarity,
@@ -1240,67 +1294,82 @@ export async function cancelNftListing(listingId: number, userId: number) {
   await db.update(nftListings).set({ status: "cancelled" }).where(eq(nftListings.id, listingId));
 }
 
-/** Buy an NFT from the marketplace */
+/** Buy an NFT from the marketplace.
+ *
+ * Runs as a single DB transaction so a crash mid-way can't lose credits or
+ * strand a half-transferred card. The active→sold claim is an atomic
+ * conditional UPDATE (WHERE status='active'): of two concurrent buyers, only
+ * one can flip the row, the other sees affectedRows=0 and the whole
+ * transaction rolls back — no double-sale.
+ */
 export async function buyNftListing(listingId: number, buyerId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const listing = await db
-    .select()
-    .from(nftListings)
-    .where(eq(nftListings.id, listingId))
-    .limit(1);
-  if (!listing[0]) throw new Error("Listing not found");
-  if (listing[0].status !== "active") throw new Error("Listing is no longer available");
-  if (listing[0].sellerId === buyerId) throw new Error("You cannot buy your own listing");
+  await db.transaction(async (tx) => {
+    const listing = await tx
+      .select()
+      .from(nftListings)
+      .where(eq(nftListings.id, listingId))
+      .limit(1);
+    if (!listing[0]) throw new Error("Listing not found");
+    if (listing[0].sellerId === buyerId)
+      throw new Error("You cannot buy your own listing");
 
-  const price = listing[0].priceCredits;
-  const sellerId = listing[0].sellerId;
-  const cardId = listing[0].nftCardId;
+    const price = listing[0].priceCredits;
+    const sellerId = listing[0].sellerId;
+    const cardId = listing[0].nftCardId;
 
-  // Check buyer balance
-  const buyerBalance = await getUserCreditBalance(buyerId);
-  if (buyerBalance < price) throw new Error("Insufficient PSL credits");
+    // ATOMIC CLAIM — WHERE status='active' is the mutex; only one
+    // concurrent buyer can flip active→sold.
+    const [claim] = await tx
+      .update(nftListings)
+      .set({ status: "sold", buyerId, soldAt: new Date() })
+      .where(and(eq(nftListings.id, listingId), eq(nftListings.status, "active")));
+    if (!claim || claim.affectedRows === 0)
+      throw new Error("Listing is no longer available");
 
-  // Deduct from buyer
-  await adjustUserCredits({
-    userId: buyerId,
-    amount: -price,
-    type: "nft_purchase",
-    description: `Purchased NFT card #${cardId}`,
-    relatedNftCardId: cardId,
-    relatedListingId: listingId,
-  });
+    // Balance check INSIDE the transaction.
+    const balRows = await tx
+      .select({ total: sql<number>`COALESCE(SUM(${creditLedger.amount}), 0)` })
+      .from(creditLedger)
+      .where(eq(creditLedger.userId, buyerId));
+    const buyerBalance = Number(balRows[0]?.total ?? 0);
+    if (buyerBalance < price) throw new Error("Insufficient PSL credits");
 
-  // Credit seller (platform takes 5% fee)
-  const sellerAmount = Math.floor(price * 0.95);
-  await adjustUserCredits({
-    userId: sellerId,
-    amount: sellerAmount,
-    type: "nft_sale",
-    description: `Sold NFT card #${cardId} (5% platform fee deducted)`,
-    relatedNftCardId: cardId,
-    relatedListingId: listingId,
-  });
+    // Deduct from buyer
+    await tx.insert(creditLedger).values({
+      userId: buyerId,
+      amount: -price,
+      type: "nft_purchase",
+      description: `Purchased NFT card #${cardId}`,
+      relatedNftCardId: cardId,
+      relatedListingId: listingId,
+    });
 
-  // Transfer ownership
-  await db.update(nftCards).set({ ownerId: buyerId }).where(eq(nftCards.id, cardId));
+    // Credit seller (platform takes 5% fee)
+    const sellerAmount = Math.floor(price * 0.95);
+    await tx.insert(creditLedger).values({
+      userId: sellerId,
+      amount: sellerAmount,
+      type: "nft_sale",
+      description: `Sold NFT card #${cardId} (5% platform fee deducted)`,
+      relatedNftCardId: cardId,
+      relatedListingId: listingId,
+    });
 
-  // Mark listing as sold
-  await db.update(nftListings).set({
-    status: "sold",
-    buyerId,
-    soldAt: new Date(),
-  }).where(eq(nftListings.id, listingId));
+    // Transfer ownership
+    await tx.update(nftCards).set({ ownerId: buyerId }).where(eq(nftCards.id, cardId));
 
-  // Record transfer history
-  await db.insert(nftTransferHistory).values({
-    nftCardId: cardId,
-    fromUserId: sellerId,
-    toUserId: buyerId,
-    transferType: "marketplace_sale",
-    priceCredits: price,
-    listingId,
+    // Record transfer history
+    await tx.insert(nftTransferHistory).values({
+      nftCardId: cardId,
+      fromUserId: sellerId,
+      toUserId: buyerId,
+      transferType: "marketplace_sale",
+      priceCredits: price,
+      listingId,
+    });
   });
 }
 

@@ -35,9 +35,19 @@ export const appRouter = router({
       return { success: true } as const;
     }),
     updateWallet: protectedProcedure
-      .input(z.object({ walletAddress: z.string() }))
+      .input(z.object({ walletAddress: z.string().min(1) }))
       .mutation(async ({ ctx, input }) => {
-        await db.updateUserWallet(ctx.user.id, input.walletAddress);
+        const { normalizeWalletAddress } = await import("./walletUtils");
+        let checksummed: string;
+        try {
+          checksummed = normalizeWalletAddress(input.walletAddress);
+        } catch {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid wallet address. Provide a valid EVM (0x…) address.",
+          });
+        }
+        await db.updateUserWallet(ctx.user.id, checksummed);
         return { success: true };
       }),
   }),
@@ -335,6 +345,10 @@ export const appRouter = router({
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
           await db.updateTournament(id, data);
+          // If admin manually marks tournament completed, unlock cards
+          if (data.status === 'completed') {
+            await db.unlockTournamentCards(id);
+          }
           return { success: true };
         }),
       calculateScores: adminProcedure
@@ -346,10 +360,32 @@ export const appRouter = router({
       distributePrizes: adminProcedure
         .input(z.object({ tournamentId: z.number() }))
         .mutation(async ({ input }) => {
-          // Lazy import so ethers / chain libs aren't loaded unless invoked,
-          // matching the dynamic-import pattern used elsewhere in this file.
-          const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
-          return distributeTournamentPrizes(input.tournamentId);
+          // Atomic claim — same payoutComplete guard the auto-payout
+          // scheduler relies on. Prevents double distribution from
+          // double-clicks or scheduler overlap.
+          const claimed = await db.claimTournamentPayout(input.tournamentId);
+          if (!claimed) {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message:
+                'Prizes for this tournament have already been distributed (or distribution is in progress).',
+            });
+          }
+          try {
+            // Lazy import so ethers / chain libs aren't loaded unless invoked,
+            // matching the dynamic-import pattern used elsewhere in this file.
+            const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
+            const result = await distributeTournamentPrizes(input.tournamentId);
+            await db.updateTournament(input.tournamentId, { status: 'completed' });
+            // Unlock cards locked by this tournament's entries
+            await db.unlockTournamentCards(input.tournamentId);
+            return result;
+          } catch (err) {
+            // Release the claim so a fixable failure (e.g. missing wallet)
+            // can be retried after correction.
+            await db.markTournamentPayoutFailed(input.tournamentId);
+            throw err;
+          }
         }),
     }),
   }),
@@ -447,12 +483,11 @@ export const appRouter = router({
     enter: protectedProcedure
       .input(z.object({
         tournamentId: z.number(),
-        // Accept either platform card IDs or legacy blockchain token IDs
         roster: z.array(z.object({
           performerId: z.number(),
-          nftCardId: z.number().optional(),   // platform-native NFT card ID
-          nftTokenId: z.string().optional(),  // legacy blockchain token ID
-        })),
+          nftCardId: z.number(),             // platform card = the ownership proof
+          nftTokenId: z.string().optional(), // legacy blockchain token ID (display only)
+        })).min(1),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check if user already entered
@@ -468,29 +503,39 @@ export const appRouter = router({
         
         // Get user's platform NFT cards
         const userPlatformCards = await db.getUserOwnedNftCards(ctx.user.id);
-        const platformCardMap = new Map(userPlatformCards.map((c: any) => [c.id, c]));
+        const platformCardMap = new Map(userPlatformCards.map((c) => [c.id, c]));
         
-        // Verify platform NFT card ownership for all performers in roster
+        // Reject duplicate cards within a single roster
+        const cardIds = input.roster.map((s) => s.nftCardId);
+        if (new Set(cardIds).size !== cardIds.length) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Duplicate NFT cards in roster' });
+        }
+        
+        // Verify platform NFT card ownership for every slot in the roster
         const rosterPerformerTypes = new Map<string | null, number>();
-        for (const performer of input.roster) {
-          if (performer.nftCardId) {
-            const card = platformCardMap.get(performer.nftCardId);
-            if (!card) {
-              throw new TRPCError({ 
-                code: 'FORBIDDEN', 
-                message: `You do not own NFT card #${performer.nftCardId}` 
-              });
-            }
-            if (card.isLocked) {
-              throw new TRPCError({ 
-                code: 'BAD_REQUEST', 
-                message: `NFT card #${performer.nftCardId} is already locked in another tournament` 
-              });
-            }
-            // Track performer type from card
-            const performerType = (card as any).performerType || null;
-            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
+        for (const slot of input.roster) {
+          const card = platformCardMap.get(slot.nftCardId);
+          if (!card) {
+            throw new TRPCError({ 
+              code: 'FORBIDDEN', 
+              message: `You do not own NFT card #${slot.nftCardId}` 
+            });
           }
+          if (card.isLocked) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `NFT card #${slot.nftCardId} is already locked in another tournament` 
+            });
+          }
+          if (card.performerId !== slot.performerId) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `NFT card #${slot.nftCardId} does not match performer ${slot.performerId}` 
+            });
+          }
+          // Track performer type from card
+          const performerType = card.performerType ?? null;
+          rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
         }
         
         // Get tournament roster requirements

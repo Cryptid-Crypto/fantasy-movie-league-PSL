@@ -33,6 +33,10 @@ import AdminCreateTournament from "./pages/AdminCreateTournament";
 import AdminPerformers from "./pages/AdminPerformers";
 import NFTStudio from "./pages/NFTStudio";
 
+// Components
+import { AgeGate } from "@/components/AgeGate";
+import { RequireAdmin } from "@/components/RequireAdmin";
+
 function Router() {
   return (
     <Switch>
@@ -56,11 +60,11 @@ function Router() {
       <Route path="/profile" component={PlayerProfile} />
 
       {/* Admin */}
-      <Route path="/admin" component={AdminDashboard} />
-      <Route path="/admin/movies" component={AdminMovies} />
-      <Route path="/admin/performers" component={AdminPerformers} />
-      <Route path="/admin/tournaments/create" component={AdminCreateTournament} />
-      <Route path="/nft-studio" component={NFTStudio} />
+      <Route path="/admin" component={() => <RequireAdmin><AdminDashboard /></RequireAdmin>} />
+      <Route path="/admin/movies" component={() => <RequireAdmin><AdminMovies /></RequireAdmin>} />
+      <Route path="/admin/performers" component={() => <RequireAdmin><AdminPerformers /></RequireAdmin>} />
+      <Route path="/admin/tournaments/create" component={() => <RequireAdmin><AdminCreateTournament /></RequireAdmin>} />
+      <Route path="/nft-studio" component={() => <RequireAdmin><NFTStudio /></RequireAdmin>} />
 
       {/* Fallback */}
       <Route path="/404" component={NotFound} />
@@ -77,7 +81,9 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <InstallPrompt />
-            <Router />
+            <AgeGate>
+              <Router />
+            </AgeGate>
           </TooltipProvider>
         </Web3Provider>
       </ThemeProvider>
