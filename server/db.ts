@@ -449,6 +449,31 @@ export async function updateTournament(id: number, data: Partial<InsertTournamen
   await db.update(tournaments).set(data).where(eq(tournaments.id, id));
 }
 
+/**
+ * Atomically claims a tournament for payout by flipping payoutComplete
+ * false→true. Returns true if this caller won the claim. The flag is the
+ * mutex: concurrent calls (double-click, scheduler overlap) get false.
+ */
+export async function claimTournamentPayout(tournamentId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const [result] = await db
+    .update(tournaments)
+    .set({ payoutComplete: true })
+    .where(and(eq(tournaments.id, tournamentId), eq(tournaments.payoutComplete, false)));
+  return (result?.affectedRows ?? 0) > 0;
+}
+
+/** Releases a payout claim after a failed distribution so it can be retried. */
+export async function markTournamentPayoutFailed(tournamentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .update(tournaments)
+    .set({ payoutComplete: false })
+    .where(eq(tournaments.id, tournamentId));
+}
+
 // ============ TOURNAMENT ROSTER REQUIREMENTS FUNCTIONS ============
 
 export async function createTournamentRosterRequirement(requirement: InsertTournamentRosterRequirement) {

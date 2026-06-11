@@ -356,10 +356,30 @@ export const appRouter = router({
       distributePrizes: adminProcedure
         .input(z.object({ tournamentId: z.number() }))
         .mutation(async ({ input }) => {
-          // Lazy import so ethers / chain libs aren't loaded unless invoked,
-          // matching the dynamic-import pattern used elsewhere in this file.
-          const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
-          return distributeTournamentPrizes(input.tournamentId);
+          // Atomic claim — same payoutComplete guard the auto-payout
+          // scheduler relies on. Prevents double distribution from
+          // double-clicks or scheduler overlap.
+          const claimed = await db.claimTournamentPayout(input.tournamentId);
+          if (!claimed) {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message:
+                'Prizes for this tournament have already been distributed (or distribution is in progress).',
+            });
+          }
+          try {
+            // Lazy import so ethers / chain libs aren't loaded unless invoked,
+            // matching the dynamic-import pattern used elsewhere in this file.
+            const { distributeTournamentPrizes } = await import('./prizeDistributionUtils');
+            const result = await distributeTournamentPrizes(input.tournamentId);
+            await db.updateTournament(input.tournamentId, { status: 'completed' });
+            return result;
+          } catch (err) {
+            // Release the claim so a fixable failure (e.g. missing wallet)
+            // can be retried after correction.
+            await db.markTournamentPayoutFailed(input.tournamentId);
+            throw err;
+          }
         }),
     }),
   }),
