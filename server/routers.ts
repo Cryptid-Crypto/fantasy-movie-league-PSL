@@ -477,12 +477,11 @@ export const appRouter = router({
     enter: protectedProcedure
       .input(z.object({
         tournamentId: z.number(),
-        // Accept either platform card IDs or legacy blockchain token IDs
         roster: z.array(z.object({
           performerId: z.number(),
-          nftCardId: z.number().optional(),   // platform-native NFT card ID
-          nftTokenId: z.string().optional(),  // legacy blockchain token ID
-        })),
+          nftCardId: z.number(),             // platform card = the ownership proof
+          nftTokenId: z.string().optional(), // legacy blockchain token ID (display only)
+        })).min(1),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check if user already entered
@@ -498,29 +497,39 @@ export const appRouter = router({
         
         // Get user's platform NFT cards
         const userPlatformCards = await db.getUserOwnedNftCards(ctx.user.id);
-        const platformCardMap = new Map(userPlatformCards.map((c: any) => [c.id, c]));
+        const platformCardMap = new Map(userPlatformCards.map((c) => [c.id, c]));
         
-        // Verify platform NFT card ownership for all performers in roster
+        // Reject duplicate cards within a single roster
+        const cardIds = input.roster.map((s) => s.nftCardId);
+        if (new Set(cardIds).size !== cardIds.length) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Duplicate NFT cards in roster' });
+        }
+        
+        // Verify platform NFT card ownership for every slot in the roster
         const rosterPerformerTypes = new Map<string | null, number>();
-        for (const performer of input.roster) {
-          if (performer.nftCardId) {
-            const card = platformCardMap.get(performer.nftCardId);
-            if (!card) {
-              throw new TRPCError({ 
-                code: 'FORBIDDEN', 
-                message: `You do not own NFT card #${performer.nftCardId}` 
-              });
-            }
-            if (card.isLocked) {
-              throw new TRPCError({ 
-                code: 'BAD_REQUEST', 
-                message: `NFT card #${performer.nftCardId} is already locked in another tournament` 
-              });
-            }
-            // Track performer type from card
-            const performerType = (card as any).performerType || null;
-            rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
+        for (const slot of input.roster) {
+          const card = platformCardMap.get(slot.nftCardId);
+          if (!card) {
+            throw new TRPCError({ 
+              code: 'FORBIDDEN', 
+              message: `You do not own NFT card #${slot.nftCardId}` 
+            });
           }
+          if (card.isLocked) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `NFT card #${slot.nftCardId} is already locked in another tournament` 
+            });
+          }
+          if (card.performerId !== slot.performerId) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `NFT card #${slot.nftCardId} does not match performer ${slot.performerId}` 
+            });
+          }
+          // Track performer type from card
+          const performerType = card.performerType ?? null;
+          rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
         }
         
         // Get tournament roster requirements

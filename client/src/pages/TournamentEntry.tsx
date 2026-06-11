@@ -14,7 +14,7 @@ export default function TournamentEntry() {
   const tournamentId = params?.id ? parseInt(params.id) : 0;
   const { user } = useAuth();
 
-  const [selectedRoster, setSelectedRoster] = useState<Array<{ performerId: number; nftTokenId: string }>>([]);
+  const [selectedRoster, setSelectedRoster] = useState<Array<{ performerId: number; nftCardId: number; nftTokenId?: string }>>([]);
   const [isEditMode, setIsEditMode] = useState(false);
 
   const { data: tournament, isLoading: tournamentLoading } = trpc.tournaments.getById.useQuery(
@@ -27,7 +27,8 @@ export default function TournamentEntry() {
     { enabled: tournamentId > 0 }
   );
 
-  const { data: userNfts, isLoading: nftsLoading } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
+  // Platform NFT cards are the ownership proof required for tournament entry
+  const { data: myCards, isLoading: nftsLoading } = trpc.nftPlatform.myCards.useQuery(undefined, { enabled: !!user });
 
   // Check if user has existing entry - always call hook, condition is stable
   const { data: existingEntry } = trpc.tournaments.getUserEntry.useQuery(
@@ -49,6 +50,7 @@ export default function TournamentEntry() {
       setSelectedRoster(
         existingRoster.map((ep) => ({
           performerId: ep.performerId,
+          nftCardId: parseInt(ep.nftTokenId, 10) || 0,
           nftTokenId: ep.nftTokenId,
         }))
       );
@@ -93,8 +95,8 @@ export default function TournamentEntry() {
       } else {
         // Specific type requirement
         const matchingPerformers = selectedRoster.filter((selected) => {
-          const nft = userNfts?.find((n) => n.performerId === selected.performerId);
-          return nft?.performerType === performerType;
+          const card = myCards?.find((c) => c.id === selected.nftCardId);
+          return card?.performerType === performerType;
         });
 
         if (matchingPerformers.length < requiredCount) {
@@ -108,13 +110,13 @@ export default function TournamentEntry() {
 
   const { valid: isRosterValid, unmet: unmetRequirements } = validateRoster();
 
-  const togglePerformer = (performerId: number, nftTokenId: string) => {
-    const isSelected = selectedRoster.some((p) => p.performerId === performerId);
+  const toggleCard = (performerId: number, nftCardId: number) => {
+    const isSelected = selectedRoster.some((p) => p.nftCardId === nftCardId);
 
     if (isSelected) {
-      setSelectedRoster(selectedRoster.filter((p) => p.performerId !== performerId));
+      setSelectedRoster(selectedRoster.filter((p) => p.nftCardId !== nftCardId));
     } else {
-      setSelectedRoster([...selectedRoster, { performerId, nftTokenId }]);
+      setSelectedRoster([...selectedRoster, { performerId, nftCardId }]);
     }
   };
 
@@ -127,12 +129,18 @@ export default function TournamentEntry() {
     if (isEditMode) {
       updateMutation.mutate({
         tournamentId,
-        roster: selectedRoster,
+        roster: selectedRoster.map((s) => ({
+          performerId: s.performerId,
+          nftTokenId: s.nftTokenId ?? String(s.nftCardId),
+        })),
       });
     } else {
       enterMutation.mutate({
         tournamentId,
-        roster: selectedRoster,
+        roster: selectedRoster.map((s) => ({
+          performerId: s.performerId,
+          nftCardId: s.nftCardId,
+        })),
       });
     }
   };
@@ -220,8 +228,8 @@ export default function TournamentEntry() {
                           selectedCount = selectedRoster.length;
                         } else {
                           selectedCount = selectedRoster.filter((selected) => {
-                            const nft = userNfts?.find((n) => n.performerId === selected.performerId);
-                            return nft?.performerType === req.performerType;
+                            const card = myCards?.find((c) => c.id === selected.nftCardId);
+                            return card?.performerType === req.performerType;
                           }).length;
                         }
 
@@ -285,23 +293,29 @@ export default function TournamentEntry() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Your Performer NFTs</CardTitle>
-                <CardDescription>Select performers to build your roster</CardDescription>
+                <CardTitle>Your Performer NFT Cards</CardTitle>
+                <CardDescription>Select cards to build your roster</CardDescription>
               </CardHeader>
               <CardContent>
-                {userNfts && userNfts.length > 0 ? (
+                {myCards && myCards.length > 0 ? (
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {userNfts.map((nft) => {
-                      const isSelected = selectedRoster.some((p) => p.performerId === nft.performerId);
+                    {myCards.map((card) => {
+                      const isSelected = selectedRoster.some((p) => p.nftCardId === card.id);
+                      const isLockedElsewhere = card.isLocked && !isSelected;
 
                       return (
                         <div
-                          key={nft.id}
-                          onClick={() => togglePerformer(nft.performerId, nft.tokenId)}
-                          className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                            isSelected
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:border-primary/50 hover:bg-muted/50"
+                          key={card.id}
+                          onClick={() => {
+                            if (isLockedElsewhere) return;
+                            toggleCard(card.performerId, card.id);
+                          }}
+                          className={`relative p-4 rounded-lg border-2 transition-all ${
+                            isLockedElsewhere
+                              ? "border-border opacity-50 cursor-not-allowed"
+                              : isSelected
+                              ? "border-primary bg-primary/10 cursor-pointer"
+                              : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
                           }`}
                         >
                           {isSelected && (
@@ -313,10 +327,10 @@ export default function TournamentEntry() {
                           )}
 
                           <div className="flex items-center gap-3">
-                            {nft.performerImage ? (
+                            {card.performerImageUrl ? (
                               <img
-                                src={nft.performerImage}
-                                alt={nft.performerName || "Performer"}
+                                src={card.performerImageUrl}
+                                alt={card.performerName || "Performer"}
                                 className="w-16 h-16 rounded-full object-cover"
                               />
                             ) : (
@@ -326,11 +340,14 @@ export default function TournamentEntry() {
                             )}
 
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold truncate">{nft.performerName}</h3>
-                              <p className="text-sm text-muted-foreground font-mono">#{nft.tokenId}</p>
-                              {nft.performerType && (
+                              <h3 className="font-semibold truncate">{card.performerName}</h3>
+                              <p className="text-sm text-muted-foreground font-mono">#{card.serialNumber}</p>
+                              {isLockedElsewhere && (
+                                <p className="text-xs text-muted-foreground">Locked in a tournament</p>
+                              )}
+                              {card.performerType && (
                                 <Badge variant="secondary" className="mt-1 text-xs">
-                                  {nft.performerType}
+                                  {card.performerType}
                                 </Badge>
                               )}
                             </div>

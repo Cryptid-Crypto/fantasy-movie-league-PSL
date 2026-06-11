@@ -1099,6 +1099,7 @@ export async function getUserOwnedNftCards(userId: number) {
       id: nftCards.id,
       performerId: nftCards.performerId,
       performerName: performers.name,
+      performerType: performers.performerType,
       performerImageUrl: performers.imageUrl,
       serialNumber: nftCards.serialNumber,
       rarity: nftCards.rarity,
