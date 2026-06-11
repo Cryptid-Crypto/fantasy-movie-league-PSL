@@ -35,9 +35,19 @@ export const appRouter = router({
       return { success: true } as const;
     }),
     updateWallet: protectedProcedure
-      .input(z.object({ walletAddress: z.string() }))
+      .input(z.object({ walletAddress: z.string().min(1) }))
       .mutation(async ({ ctx, input }) => {
-        await db.updateUserWallet(ctx.user.id, input.walletAddress);
+        const { normalizeWalletAddress } = await import("./walletUtils");
+        let checksummed: string;
+        try {
+          checksummed = normalizeWalletAddress(input.walletAddress);
+        } catch {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid wallet address. Provide a valid EVM (0x…) address.",
+          });
+        }
+        await db.updateUserWallet(ctx.user.id, checksummed);
         return { success: true };
       }),
   }),
