@@ -339,6 +339,25 @@ export type CreditLedger = typeof creditLedger.$inferSelect;
 export type InsertCreditLedger = typeof creditLedger.$inferInsert;
 
 /**
+ * Card pack types available for purchase
+ */
+export const packTypes = mysqlTable("packTypes", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  priceUsdCents: int("priceUsdCents").notNull(), // $5 = 500 cents
+  cardCount: int("cardCount").notNull().default(8),
+  rareCount: int("rareCount").notNull().default(1),
+  uncommonCount: int("uncommonCount").notNull().default(2),
+  commonCount: int("commonCount").notNull().default(5),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PackType = typeof packTypes.$inferSelect;
+export type InsertPackType = typeof packTypes.$inferInsert;
+
+/**
  * NFT transfer history — full audit trail of ownership changes
  */
 export const nftTransferHistory = mysqlTable("nftTransferHistory", {

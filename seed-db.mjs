@@ -337,7 +337,84 @@ for (const requirement of rosterRequirements) {
 }
 console.log(`✅ Created ${rosterRequirements.length} roster requirements\n`);
 
-await connection.end();
+// Insert Pack Types
+console.log('Creating pack types...');
+const packTypes = [
+  {
+    name: 'Starter Pack',
+    description: 'Perfect for new collectors! Contains 1 Rare, 2 Uncommon, and 5 Common cards.',
+    priceUsdCents: 500, // $5
+    cardCount: 8,
+    rareCount: 1,
+    uncommonCount: 2,
+    commonCount: 5,
+    isActive: true,
+  },
+];
+
+for (const pack of packTypes) {
+  await db.insert(schema.packTypes).values(pack);
+}
+console.log(`✅ Created ${packTypes.length} pack types\n`);
+
+// Insert Treasury NFT Cards (unowned cards for packs)
+console.log('Creating treasury NFT cards...');
+const rarities = ['Common', 'Rare', 'Epic', 'Legendary'] as const;
+const treasuryCards = [];
+
+// Create 50 cards per rarity per performer for treasury
+for (const performer of performerResults) {
+  // 8 Common cards per performer
+  for (let i = 0; i < 8; i++) {
+    const result = await db.insert(schema.nftCards).values({
+      performerId: performer.id,
+      serialNumber: i + 1,
+      rarity: 'Common',
+      cardImageUrl: performer.imageUrl,
+    });
+    treasuryCards.push(result);
+  }
+  // 3 Rare cards per performer
+  for (let i = 0; i < 3; i++) {
+    const result = await db.insert(schema.nftCards).values({
+      performerId: performer.id,
+      serialNumber: i + 1,
+      rarity: 'Rare',
+      cardImageUrl: performer.imageUrl,
+    });
+    treasuryCards.push(result);
+  }
+  // 2 Epic cards per performer
+  for (let i = 0; i < 2; i++) {
+    const result = await db.insert(schema.nftCards).values({
+      performerId: performer.id,
+      serialNumber: i + 1,
+      rarity: 'Epic',
+      cardImageUrl: performer.imageUrl,
+    });
+    treasuryCards.push(result);
+  }
+  // 1 Legendary card per performer
+  const result = await db.insert(schema.nftCards).values({
+    performerId: performer.id,
+    serialNumber: 1,
+    rarity: 'Legendary',
+    cardImageUrl: performer.imageUrl,
+  });
+  treasuryCards.push(result);
+}
+
+// Record mint transfers for all cards
+for (const card of treasuryCards) {
+  await db.insert(schema.nftTransferHistory).values({
+    nftCardId: Number(card[0].insertId),
+    fromUserId: null,
+    toUserId: null,
+    transferType: 'mint',
+  });
+}
+
+console.log(`✅ Created ${treasuryCards.length} treasury NFT cards\n`);
 
 console.log('🎉 Database seeding completed successfully!\n');
 console.log('Summary:');
@@ -348,4 +425,8 @@ console.log(`  - ${moviePerformerData.length} movie-performer relationships`);
 console.log(`  - ${sceneResults.length} scenes`);
 console.log(`  - ${actionData.length} performer actions`);
 console.log(`  - ${tournamentResults.length} tournaments`);
+console.log(`  - ${packTypes.length} pack types`);
+console.log(`  - ${treasuryCards.length} treasury NFT cards`);
 console.log('\n✨ Your platform is now populated with sample data!');
+
+await connection.end();

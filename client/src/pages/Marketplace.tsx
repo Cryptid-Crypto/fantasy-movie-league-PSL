@@ -74,6 +74,12 @@ export default function Marketplace() {
                   <span className="font-bold text-primary">{balance.toLocaleString()} PSL</span>
                 </div>
               )}
+              <Link href="/marketplace/packs">
+                <Button variant="outline" className="gap-2">
+                  <ShoppingBag className="h-4 w-4" />
+                  Card Packs
+                </Button>
+              </Link>
               <Link href="/my-nfts">
                 <Button variant="outline" className="gap-2">
                   <Sparkles className="h-4 w-4" />

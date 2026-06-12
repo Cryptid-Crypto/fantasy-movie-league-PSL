@@ -3,6 +3,7 @@ import { polygon, polygonAmoy } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 import type { Abi } from 'viem';
 import TournamentEscrowAbi from '@/abis/TournamentEscrow.json';
+import USDCAbi from '@/abis/USDC.json';
 
 // Configure Wagmi for Polygon network
 export const config = createConfig({
@@ -39,3 +40,12 @@ export const TOURNAMENT_ESCROW_ADDRESSES: Record<number, `0x${string}`> = {
   [POLYGON_MAINNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: mainnet (Polygon) deployment
   [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: testnet (Amoy) deployment
 };
+
+// USDC contract addresses on Polygon
+export const USDC_ADDRESSES: Record<number, `0x${string}`> = {
+  [POLYGON_MAINNET_CHAIN_ID]: '0x3c499c54429d6fdea5ed2121d3a1eb9f9cdb5086', // Polygon USDC
+  [POLYGON_TESTNET_CHAIN_ID]: '0x7169D388206D3a326D93F4b1aE8716a34A7B9A3A', // Amoy testnet USDC
+};
+
+// USDC ABI
+export const USDC_ABI = USDCAbi as Abi;

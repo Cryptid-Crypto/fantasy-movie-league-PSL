@@ -5,6 +5,8 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
+import * as schema from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -386,6 +388,52 @@ export const appRouter = router({
             await db.markTournamentPayoutFailed(input.tournamentId);
             throw err;
           }
+        }),
+    }),
+
+    // Pack management
+    packs: router({
+      list: adminProcedure.query(async () => {
+        return db.getPackTypes();
+      }),
+      create: adminProcedure
+        .input(z.object({
+          name: z.string(),
+          description: z.string().optional(),
+          priceUsdCents: z.number(),
+          cardCount: z.number().default(8),
+          rareCount: z.number().default(1),
+          uncommonCount: z.number().default(2),
+          commonCount: z.number().default(5),
+          isActive: z.boolean().default(true),
+        }))
+        .mutation(async ({ input }) => {
+          // Insert pack type
+          const result = await db.insert(schema.packTypes).values(input);
+          return { id: Number(result[0].insertId) };
+        }),
+      update: adminProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          priceUsdCents: z.number().optional(),
+          cardCount: z.number().optional(),
+          rareCount: z.number().optional(),
+          uncommonCount: z.number().optional(),
+          commonCount: z.number().optional(),
+          isActive: z.boolean().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const { id, ...data } = input;
+          await db.update(schema.packTypes).set(data).where(eq(schema.packTypes.id, id));
+          return { success: true };
+        }),
+      delete: adminProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+          await db.delete(schema.packTypes).where(eq(schema.packTypes.id, input.id));
+          return { success: true };
         }),
     }),
   }),
@@ -877,6 +925,58 @@ export const appRouter = router({
       .input(z.object({ cardId: z.number() }))
       .query(async ({ input }) => {
         return db.getNftTransferHistory(input.cardId);
+      }),
+  }),
+
+  // ============ PACK PURCHASE ROUTER ===========
+  packs: router({
+    /** Get available pack types */
+    getAvailable: publicProcedure.query(async () => {
+      return db.getPackTypes();
+    }),
+
+    /** Get preview of treasury cards available for packs */
+    getTreasuryPreview: publicProcedure.query(async () => {
+      const [rare, uncommon, common] = await Promise.all([
+        db.getTreasuryCardsByRarity("Rare", 3),
+        db.getTreasuryCardsByRarity("Epic", 3),
+        db.getTreasuryCardsByRarity("Common", 3),
+      ]);
+      return { rare, uncommon, common };
+    }),
+
+    /** Purchase a pack (deducts PSL credits) */
+    purchase: protectedProcedure
+      .input(z.object({
+        packTypeId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Get pack price
+        const packs = await db.getPackTypes();
+        const pack = packs.find((p: any) => p.id === input.packTypeId);
+        if (!pack) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pack type not found' });
+        
+        const priceInCents = pack.priceUsdCents;
+        // Convert to PSL credits at fixed rate (1 USD = 1000 PSL)
+        const priceInPsl = priceInCents * 10;
+        
+        const balance = await db.getUserCreditBalance(ctx.user.id);
+        if (balance < priceInPsl) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Insufficient PSL credits' });
+        }
+        
+        // Purchase the pack
+        const { cardIds } = await db.purchasePack(input.packTypeId, ctx.user.id, "pending");
+        
+        // Record the transaction
+        await db.adjustUserCredits({
+          userId: ctx.user.id,
+          amount: -priceInPsl,
+          type: "nft_purchase",
+          description: `Purchased ${pack.name} pack`,
+        });
+        
+        return { cardIds, packName: pack.name };
       }),
   }),
 });

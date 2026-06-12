@@ -17,6 +17,7 @@ import TournamentLeaderboard from "./pages/TournamentLeaderboard";
 import TournamentEntry from "./pages/TournamentEntry";
 import Leaderboard from "./pages/Leaderboard";
 import Marketplace from "./pages/Marketplace";
+import PackShop from "./pages/PackShop";
 import Rules from "./pages/Rules";
 import ActivityFeed from "./pages/ActivityFeed";
 import Signup from "./pages/Signup";
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/tournaments/:id" component={TournamentLeaderboard} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/marketplace" component={Marketplace} />
+      <Route path="/marketplace/packs" component={PackShop} />
       <Route path="/rules" component={Rules} />
       <Route path="/activity" component={ActivityFeed} />
 

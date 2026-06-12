@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
   users,
+  packTypes,
   performers,
   InsertPerformer,
   movies,
@@ -1465,4 +1466,88 @@ export async function getAllNftCards() {
     .leftJoin(performers, eq(nftCards.performerId, performers.id))
     .leftJoin(users, eq(nftCards.ownerId, users.id))
     .orderBy(desc(nftCards.mintedAt));
+}
+
+// ============ PACK PURCHASE FUNCTIONS ===========
+
+import type { PackType } from "../drizzle/schema";
+
+/** Get all available pack types */
+export async function getPackTypes(): Promise<PackType[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(packTypes).where(eq(packTypes.isActive, true));
+}
+
+/** Get available treasury cards by rarity for pack generation */
+export async function getTreasuryCardsByRarity(rarity: "Common" | "Rare" | "Epic" | "Legendary", limit: number): Promise<any[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get random cards from treasury (unowned cards)
+  const cards = await db
+    .select({
+      id: nftCards.id,
+      performerId: nftCards.performerId,
+      performerName: performers.name,
+      performerImageUrl: performers.imageUrl,
+      serialNumber: nftCards.serialNumber,
+      rarity: nftCards.rarity,
+      cardImageUrl: nftCards.cardImageUrl,
+      isLocked: nftCards.isLocked,
+      mintedAt: nftCards.mintedAt,
+    })
+    .from(nftCards)
+    .leftJoin(performers, eq(nftCards.performerId, performers.id))
+    .where(and(eq(nftCards.rarity, rarity), sql`${nftCards.ownerId} IS NULL`))
+    .orderBy(sql`RAND()`)
+    .limit(limit);
+  
+  return cards;
+}
+
+/** Purchase pack: select random cards based on pack configuration and assign to user */
+export async function purchasePack(
+  packTypeId: number,
+  userId: number,
+  txHash: string
+): Promise<{ cardIds: number[]; totalCostCents: number }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Get pack configuration
+  const packType = await db.select().from(packTypes).where(eq(packTypes.id, packTypeId)).limit(1);
+  if (!packType[0]) throw new Error("Pack type not found");
+  
+  const pack = packType[0];
+  const cardIds: number[] = [];
+  
+  // Get random cards for each rarity tier
+  // Note: "uncommonCount" maps to "Epic" rarity tier in the schema
+  const rareCards = await getTreasuryCardsByRarity("Rare", pack.rareCount);
+  const uncommonCards = await getTreasuryCardsByRarity("Epic", pack.uncommonCount);
+  const commonCards = await getTreasuryCardsByRarity("Common", pack.commonCount);
+  
+  // Check if we have enough cards in treasury
+  if (rareCards.length < pack.rareCount || uncommonCards.length < pack.uncommonCount || commonCards.length < pack.commonCount) {
+    throw new Error("Not enough cards in treasury to fulfill pack");
+  }
+  
+  // Assign cards to user and lock them
+  for (const card of [...rareCards, ...uncommonCards, ...commonCards]) {
+    await db.update(nftCards).set({ ownerId: userId }).where(eq(nftCards.id, card.id));
+    cardIds.push(card.id);
+    
+    // Record transfer
+    await db.insert(nftTransferHistory).values({
+      nftCardId: card.id,
+      fromUserId: null,
+      toUserId: userId,
+      transferType: "admin_transfer",
+      priceCredits: 0, // Will be updated via transaction record
+    });
+  }
+  
+  return { cardIds, totalCostCents: pack.priceUsdCents };
 }
