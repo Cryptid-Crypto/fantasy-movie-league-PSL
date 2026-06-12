@@ -408,9 +408,8 @@ export const appRouter = router({
           isActive: z.boolean().default(true),
         }))
         .mutation(async ({ input }) => {
-          // Insert pack type
-          const result = await db.insert(schema.packTypes).values(input);
-          return { id: Number(result[0].insertId) };
+          const id = await db.createPackType(input);
+          return { id };
         }),
       update: adminProcedure
         .input(z.object({
@@ -426,13 +425,13 @@ export const appRouter = router({
         }))
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
-          await db.update(schema.packTypes).set(data).where(eq(schema.packTypes.id, id));
+          await db.updatePackType(id, data);
           return { success: true };
         }),
       delete: adminProcedure
         .input(z.object({ id: z.number() }))
         .mutation(async ({ input }) => {
-          await db.delete(schema.packTypes).where(eq(schema.packTypes.id, input.id));
+          await db.deletePackType(input.id);
           return { success: true };
         }),
     }),

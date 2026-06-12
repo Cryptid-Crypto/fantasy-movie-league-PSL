@@ -1551,3 +1551,59 @@ export async function purchasePack(
   
   return { cardIds, totalCostCents: pack.priceUsdCents };
 }
+
+/** Create a new pack type (admin) */
+export async function createPackType(input: {
+  name: string;
+  description?: string;
+  priceUsdCents: number;
+  cardCount?: number;
+  rareCount?: number;
+  uncommonCount?: number;
+  commonCount?: number;
+  isActive?: boolean;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  const result = await db.insert(packTypes).values({
+    name: input.name,
+    description: input.description,
+    priceUsdCents: input.priceUsdCents,
+    cardCount: input.cardCount ?? 8,
+    rareCount: input.rareCount ?? 1,
+    uncommonCount: input.uncommonCount ?? 2,
+    commonCount: input.commonCount ?? 5,
+    isActive: input.isActive ?? true,
+  });
+  return Number((result as any)[0]?.insertId ?? 0);
+}
+
+/** Update an existing pack type (admin) */
+export async function updatePackType(id: number, data: Partial<{
+  name: string;
+  description: string;
+  priceUsdCents: number;
+  cardCount: number;
+  rareCount: number;
+  uncommonCount: number;
+  commonCount: number;
+  isActive: boolean;
+}>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.update(packTypes).set(data).where(eq(packTypes.id, id));
+}
+
+/** Delete a pack type (admin) */
+export async function deletePackType(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.delete(packTypes).where(eq(packTypes.id, id));
+}
+
+/** Get all pack types including inactive ones (admin) */
+export async function getAllPackTypes(): Promise<PackType[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(packTypes);
+}
