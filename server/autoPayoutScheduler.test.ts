@@ -33,6 +33,9 @@ const fakeDb = {
 
 vi.mock("./db", () => ({
   getDb: () => Promise.resolve(fakeDb),
+  // unlockTournamentCards is called after each successful distribution;
+  // stub it out so it doesn't hit the real DB in unit tests.
+  unlockTournamentCards: vi.fn().mockResolvedValue(0),
 }));
 
 import { runAutoPayoutTick } from "./autoPayoutScheduler";
