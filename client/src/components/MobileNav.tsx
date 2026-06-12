@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Menu, Trophy, Users, Wallet, LayoutDashboard, X,
-  BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles
+  BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles, Package
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -20,6 +20,7 @@ export default function MobileNav() {
     { href: "/tournaments", label: "Tournaments", icon: Trophy },
     { href: "/leaderboard", label: "Leaderboard", icon: BarChart2 },
     { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+    { href: "/marketplace/packs", label: "Pack Shop", icon: Package },
     { href: "/rules", label: "Rules & Scoring", icon: BookOpen },
   ];
 

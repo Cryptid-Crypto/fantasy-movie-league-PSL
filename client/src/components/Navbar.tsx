@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import MobileNav from "@/components/MobileNav";
-import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle } from "lucide-react";
+import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle, Package } from "lucide-react";
 
 export default function Navbar() {
   const { user } = useAuth();
@@ -14,6 +14,7 @@ export default function Navbar() {
     { href: "/tournaments", label: "Tournaments", icon: Trophy },
     { href: "/leaderboard", label: "Leaderboard", icon: BarChart2 },
     { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+    { href: "/marketplace/packs", label: "Pack Shop", icon: Package },
     { href: "/rules", label: "Rules", icon: BookOpen },
   ];
 
