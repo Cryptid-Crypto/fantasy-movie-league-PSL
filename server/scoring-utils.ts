@@ -1,45 +1,32 @@
-import * as db from "./db";
-
 /**
- * Recalculates scores for all active tournaments that include the given movie's release date
+ * Calculates the score for a performer in a specific scene based on their actions
+ * @param performerId The ID of the performer
+ * @param sceneId The ID of the scene
+ * @param sceneActions Array of action IDs the performer performed in the scene
+ * @param allActions Array of all available actions with their point values
+ * @returns Total points scored by the performer in the scene
  */
-export async function recalculateScoresForMovie(movieId: number) {
-  const movie = await db.getMovieById(movieId);
-  if (!movie || !movie.releaseDate) return;
-  
-  // Find all tournaments that this movie falls within
-  const allTournaments = await db.getAllTournaments();
-  const affectedTournaments = allTournaments.filter(t => {
-    if (!t.startDate || !t.endDate) return false;
-    const releaseDate = new Date(movie.releaseDate!);
-    return releaseDate >= new Date(t.startDate) && releaseDate <= new Date(t.endDate);
+export function calculateScoreForPerformerInScene(
+  performerId: number,
+  sceneId: number,
+  sceneActions: { actionId: number }[],
+  allActions: { id: number; name: string; points: number }[]
+): number {
+  // Create a map for quick lookup of action points
+  const actionPointsMap = new Map<number, number>();
+  allActions.forEach(action => {
+    actionPointsMap.set(action.id, action.points);
   });
-  
-  // Recalculate scores for each affected tournament
-  for (const tournament of affectedTournaments) {
-    console.log(`[Scoring] Recalculating scores for tournament ${tournament.id} (${tournament.name}) after movie update`);
-    await db.calculateTournamentScores(tournament.id);
-  }
-  
-  console.log(`[Scoring] Updated ${affectedTournaments.length} tournament(s) after movie ${movieId} change`);
-}
 
-/**
- * Recalculates scores for all active tournaments
- */
-export async function recalculateAllActiveTournamentScores() {
-  const tournaments = await db.getAllTournaments();
-  const now = new Date();
-  
-  const activeTournaments = tournaments.filter(t => {
-    if (!t.startDate || !t.endDate) return false;
-    return new Date(t.startDate) <= now && new Date(t.endDate) >= now;
-  });
-  
-  for (const tournament of activeTournaments) {
-    console.log(`[Scoring] Recalculating scores for active tournament ${tournament.id} (${tournament.name})`);
-    await db.calculateTournamentScores(tournament.id);
+  // Sum up points for all actions in the scene
+  let totalPoints = 0;
+  for (const sceneAction of sceneActions) {
+    const points = actionPointsMap.get(sceneAction.actionId);
+    if (points !== undefined) {
+      totalPoints += points;
+    }
+    // Unknown action IDs are ignored (treated as 0 points)
   }
-  
-  console.log(`[Scoring] Updated ${activeTournaments.length} active tournament(s)`);
+
+  return totalPoints;
 }
