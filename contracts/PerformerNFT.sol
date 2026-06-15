@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title PerformerNFT
@@ -16,9 +16,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * to compete with a specific performer in fantasy tournaments.
  */
 contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
-    using Counters for Counters.Counter;
     
-    Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     
     // Performer metadata
     string public performerName;
@@ -68,11 +67,11 @@ contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
      */
     function mint(address to, string memory uri) public payable {
         require(mintingEnabled, "Minting is currently disabled");
-        require(_tokenIdCounter.current() < maxSupply, "Max supply reached");
+        require(_tokenIdCounter < maxSupply, "Max supply reached");
         require(msg.value >= mintPrice, "Insufficient payment");
         
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter;
+        _tokenIdCounter++;
         
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -87,11 +86,11 @@ contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
      * @param baseUri Base URI for metadata (will append tokenId)
      */
     function batchMint(address to, uint256 amount, string memory baseUri) public onlyOwner {
-        require(_tokenIdCounter.current() + amount <= maxSupply, "Exceeds max supply");
+        require(_tokenIdCounter + amount <= maxSupply, "Exceeds max supply");
         
         for (uint256 i = 0; i < amount; i++) {
-            uint256 tokenId = _tokenIdCounter.current();
-            _tokenIdCounter.increment();
+            uint256 tokenId = _tokenIdCounter;
+            _tokenIdCounter++;
             
             _safeMint(to, tokenId);
             _setTokenURI(tokenId, string(abi.encodePacked(baseUri, Strings.toString(tokenId))));
@@ -143,7 +142,7 @@ contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
      * @dev Get total number of minted tokens
      */
     function totalSupply() public view returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
     
     /**
@@ -154,7 +153,7 @@ contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
         uint256[] memory tokenIds = new uint256[](tokenCount);
         uint256 index = 0;
         
-        for (uint256 i = 0; i < _tokenIdCounter.current(); i++) {
+        for (uint256 i = 0; i < _tokenIdCounter; i++) {
             if (_ownerOf(i) == owner) {
                 tokenIds[index] = i;
                 index++;
@@ -171,9 +170,5 @@ contract PerformerNFT is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
     
     function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Royalty) returns (bool) {
         return super.supportsInterface(interfaceId);
-    }
-    
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage, ERC721Royalty) {
-        super._burn(tokenId);
     }
 }
