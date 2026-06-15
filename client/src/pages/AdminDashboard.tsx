@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import {
   Film, Users, Zap, Trophy, Sparkles, BarChart2,
-  Shield, ArrowRight, Settings, History, Plus
+  Shield, ArrowRight, Settings, History, Plus, LogOut
 } from "lucide-react";
 
 const MODULE_CARDS = [
@@ -96,6 +96,9 @@ export default function AdminDashboard() {
 
   const { data: performers } = trpc.performers.list.useQuery();
   const { data: tournaments } = trpc.tournaments.list.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => { window.location.href = "/"; },
+  });
 
   if (loading) {
     return (
@@ -139,12 +142,23 @@ export default function AdminDashboard() {
               </div>
               <p className="text-muted-foreground">Manage all platform content, tournaments, and NFTs.</p>
             </div>
-            <Link href="/">
-              <Button variant="outline" className="gap-2">
-                <ArrowRight className="h-4 w-4 rotate-180" />
-                Back to Site
+            <div className="flex gap-2">
+              <Link href="/">
+                <Button variant="outline" className="gap-2">
+                  <ArrowRight className="h-4 w-4 rotate-180" />
+                  Back to Site
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="h-4 w-4" />
+                {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
               </Button>
-            </Link>
+            </div>
           </div>
 
           {/* Quick Stats */}
