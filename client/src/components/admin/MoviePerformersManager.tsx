@@ -47,9 +47,10 @@ const PERFORMER_TYPES = [
   "Rising Star",
   "Hall of Fame",
   "Specialist",
+  "MILF",
 ] as const;
 
-type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist";
+type PerformerType = "Legend" | "Anal Queen" | "Super Slut" | "Extreme" | "Girl Next Door" | "Rising Star" | "Hall of Fame" | "Specialist" | "MILF";
 
 interface MoviePerformersManagerProps {
   movieId: number;

@@ -65,7 +65,7 @@ export const appRouter = router({
           bio: z.string().optional(),
           imageUrl: z.string().optional(),
           nftContractAddress: z.string().optional(),
-          performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist"]).optional(),
+          performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist", "MILF"]).optional(),
         }))
         .mutation(async ({ input }) => {
           const id = await db.createPerformer(input);
@@ -82,7 +82,7 @@ export const appRouter = router({
           bio: z.string().optional(),
           imageUrl: z.string().optional(),
           nftContractAddress: z.string().optional(),
-          performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist"]).optional(),
+          performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist", "MILF"]).optional(),
         }))
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
