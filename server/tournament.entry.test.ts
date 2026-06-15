@@ -8,6 +8,7 @@ import type { TrpcContext } from './_core/context';
 // in ./db keeps its real implementation.
 const getUserTournamentEntry = vi.fn(async () => null as unknown);
 const getUserOwnedNftCards = vi.fn(async () => [] as unknown[]);
+const getTournamentById = vi.fn(async () => ({ id: 1, status: 'upcoming', title: 'Test' }));
 const getTournamentRosterRequirements = vi.fn(async () => [] as unknown[]);
 const enterTournament = vi.fn(async () => 555);
 const addPerformerToEntry = vi.fn(async () => 1);
@@ -22,6 +23,7 @@ vi.mock('./db', async (importOriginal) => ({
     (getUserTournamentEntry as any)(...args),
   getUserOwnedNftCards: (...args: unknown[]) =>
     (getUserOwnedNftCards as any)(...args),
+  getTournamentById: (...args: unknown[]) => (getTournamentById as any)(...args),
   getTournamentRosterRequirements: (...args: unknown[]) =>
     (getTournamentRosterRequirements as any)(...args),
   enterTournament: (...args: unknown[]) => (enterTournament as any)(...args),

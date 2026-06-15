@@ -1,0 +1,515 @@
+# Task 6: Mobile Responsive Design Testing with Playwright
+
+## Objective
+Implement comprehensive end-to-end mobile responsive testing using Playwright to verify that all pages render correctly across different mobile devices (iPhone, Pixel, iPad) with proper touch interactions, navigation, and layout.
+
+## Current State
+- ✅ Mobile optimization complete (hamburger menu, responsive grids, touch-friendly CSS)
+- ✅ 20 frontend pages exist
+- ✅ 14 existing frontend test files (.test.tsx) using Vitest + jsdom
+- ❌ Playwright not yet installed
+- ❌ No E2E mobile testing infrastructure
+
+## Pages Requiring Mobile Testing
+
+### Core Pages (Priority 1)
+1. **Home.tsx** - Landing page with hero section, recent tournaments
+2. **Performers.tsx** - Performer cards grid (responsive 1→2→3→4→5 columns)
+3. **PerformerProfile.tsx** - Individual performer details, NFT cards, statistics
+4. **Tournaments.tsx** - Tournament listings, entry forms
+5. **Dashboard.tsx** - User dashboard, portfolio view
+6. **Marketplace.tsx** - NFT trading, listings grid
+
+### Admin Pages (Priority 2)
+7. **AdminDashboard.tsx** - Admin controls, statistics
+8. **AdminMovies.tsx** - Movie management
+9. **AdminPerformers.tsx** - Performer management
+10. **AdminCreateTournament.tsx** - Tournament creation form
+
+### User Pages (Priority 2)
+11. **Signup.tsx** - Registration form
+12. **PlayerProfile.tsx** - User profile, earnings history
+13. **MyNFTs.tsx** - NFT collection view
+14. **Leaderboard.tsx** - Rankings table
+15. **Rules.tsx** - Game rules, documentation
+
+### Other Pages (Priority 3)
+16. **NFTStudio.tsx** - NFT minting interface
+17. **PerformerStatistics.tsx** - Performance analytics
+18. **ActivityFeed.tsx** - Recent activity log
+19. **NotFound.tsx** - 404 page
+20. **ComponentShowcase.tsx** - UI component library (internal)
+
+## Test Devices Configuration
+
+### Mobile Devices
+- **iPhone SE** (375x667) - Smallest mobile viewport
+- **iPhone 13 Pro** (390x844) - Modern iPhone
+- **Pixel 5** (393x851) - Android reference
+- **iPhone 12 Pro Max** (428x926) - Large mobile
+
+### Tablets
+- **iPad Mini** (768x1024) - Small tablet
+- **iPad Pro 11** (834x1194) - Medium tablet
+- **iPad Pro 12.9** (1024x1366) - Large tablet
+
+### Desktop (Reference)
+- **Desktop Chrome** (1280x720) - Standard desktop
+- **Desktop Chrome HiDPI** (1920x1080) - High-DPI desktop
+
+## Test Scenarios
+
+### Scenario 1: Layout Verification ([all pages])
+```
+For each viewport size:
+- Render page
+- Take screenshot
+- Verify no horizontal scroll
+- Verify all critical elements visible
+- Verify grid columns match expected breakpoints
+```
+
+### Scenario 2: Navigation Testing ([core + admin pages])
+```
+Mobile (<768px):
+- Hamburger menu visible
+- Desktop nav hidden
+- Click hamburger → drawer open
+- Verify all nav links present
+- Close drawer → click outside or X button
+
+Desktop (≥768px):
+- Desktop nav visible
+- Hamburger menu hidden
+- All nav links clickable
+```
+
+### Scenario 3: Touch Interaction Testing ([performer, tournament pages])
+```
+For mobile viewports:
+- Tap performer card → profile page
+- Tap tournament → details/entry flow
+- Tap buttons → 44x44px minimum size
+- Verify no accidental taps
+- Test swipe gestures if applicable
+```
+
+### Scenario 4: Form Testing ([signup, admin pages])
+```
+- Input fields full-width on mobile
+- Font-size ≥16px (no iOS zoom)
+- Submit buttons full-width on mobile
+- Form validation displays inline
+```
+
+### Scenario 5: Image & Media Testing ([performer, marketplace pages])
+```
+- Images scale correctly
+- No overflow
+- Lazy loading (if implemented) works
+- Touch to zoom (if applicable)
+```
+
+## Implementation Plan
+
+### Step 1: Install Playwright
+```bash
+cd /home/sherman3/fantasy-movie-league-PSL
+pnpm add -D @playwright/test
+npx playwright install
+```
+
+### Step 2: Create Playwright Configuration
+File: `playwright.config.ts`
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:5173',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    {
+      name: 'Mobile - iPhone SE',
+      use: { ...devices['iPhone SE'] },
+    },
+    {
+      name: 'Mobile - iPhone 13 Pro',
+      use: { ...devices['iPhone 13 Pro'] },
+    },
+    {
+      name: 'Mobile - Pixel 5',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Tablet - iPad Mini',
+      use: { ...devices['iPad Mini'] },
+    },
+    {
+      name: 'Tablet - iPad Pro 11',
+      use: { ...devices['iPad Pro 11'] },
+    },
+    {
+      name: 'Desktop Chrome',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
+  webServer: {
+    command: 'pnpm dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+
+### Step 3: Add Package.json Scripts
+```json
+"test:e2e": "playwright test",
+"test:e2e:ui": "playwright test --ui",
+"test:e2e:headed": "playwright test --headed",
+"test:e2e:mobile": "playwright test --project='Mobile - iPhone SE'",
+"test:e2e:report": "playwright show-report"
+```
+
+### Step 4: Create Test Structure
+```
+tests/
+└── e2e/
+    ├── home.spec.ts
+    ├── performers.spec.ts
+    ├── performer-profile.spec.ts
+    ├── tournaments.spec.ts
+    ├── dashboard.spec.ts
+    ├── marketplace.spec.ts
+    ├── signup.spec.ts
+    ├── admin-dashboard.spec.ts
+    ├── admin-movies.spec.ts
+    ├── admin-performers.spec.ts
+    ├── admin-create-tournament.spec.ts
+    ├── player-profile.spec.ts
+    ├── my-nfts.spec.ts
+    ├── leaderboard.spec.ts
+    └── rules.spec.ts
+```
+
+### Step 5: Write Test Examples
+
+**Example 1: Responsive Layout Test (Home Page)**
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Home Page - Mobile Responsive', () => {
+  test('should display single column layout on mobile', async ({ page }) => {
+    await page.goto('/');
+    
+    // Verify hero section
+    await expect(page.locator('h1')).toBeVisible();
+    
+    // Verify tournament grid is single column on mobile
+    const tournamentCards = page.locator('[data-testid="tournament-card"]');
+    const cardCount = await tournamentCards.count();
+    
+    if (cardCount > 0) {
+      const firstCard = tournamentCards.first();
+      const box = await firstCard.boundingBox();
+      expect(box?.width).toBeGreaterThan(300); // Full width on mobile
+    }
+    
+    // Take screenshot for visual regression
+    await page.screenshot({ 
+      path: `tests/screenshots/home-${page.viewportSize()?.width}.png`,
+      fullPage: true 
+    });
+  });
+
+  test('should show hamburger menu on mobile', async ({ page }) => {
+    await page.goto('/');
+    
+    const hamburger = page.locator('[data-testid="hamburger-menu"]');
+    await expect(hamburger).toBeVisible();
+    
+    await hamburger.click();
+    
+    // Verify drawer opens
+    const drawer = page.locator('[data-testid="mobile-nav-drawer"]');
+    await expect(drawer).toBeVisible();
+    
+    // Verify nav links present
+    await expect(page.locator('a[href="/performers"]')).toBeVisible();
+    await expect(page.locator('a[href="/tournaments"]')).toBeVisible();
+  });
+});
+```
+
+**Example 2: Performer Cards Grid Test**
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Performers Page - Grid Layout', () => {
+  test('should have responsive grid columns', async ({ page }) => {
+    await page.goto('/performers');
+    
+    const grid = page.locator('[data-testid="performers-grid"]');
+    const performerCards = page.locator('[data-testid="performer-card"]');
+    
+    const cardCount = await performerCards.count();
+    expect(cardCount).toBeGreaterThan(0);
+    
+    // Verify grid layout
+    const gridStyles = await grid.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+      return {
+        gridTemplateColumns: styles.gridTemplateColumns,
+        gap: styles.gap,
+      };
+    });
+    
+    // On mobile (<640px), expect 1 column
+    if (page.viewportSize()?.width && page.viewportSize()!.width < 640) {
+      expect(gridStyles.gridTemplateColumns).toContain('1fr');
+    }
+    
+    // Tap first card
+    await performerCards.first().click();
+    
+    // Should navigate to profile
+    await expect(page).toHaveURL(/\/performers\/\d+/);
+  });
+});
+```
+
+**Example 3: Touch Interaction Test**
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Touch Interactions', () => {
+  test('performer card tap should work', async ({ page }) => {
+    await page.goto('/performers');
+    
+    const card = page.locator('[data-testid="performer-card"]').first();
+    
+    // Verify card has minimum touch target size
+    const box = await card.boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+    
+    // Tap card
+    await card.tap();
+    
+    // Should navigate
+    await expect(page.url()).toContain('/performers/');
+  });
+
+  test('buttons should be touch-friendly', async ({ page }) => {
+    await page.goto('/tournaments');
+    
+    const buttons = page.locator('button');
+    const buttonCount = await buttons.count();
+    
+    for (let i = 0; i < Math.min(buttonCount, 5); i++) {
+      const button = buttons.nth(i);
+      const box = await button.boundingBox();
+      
+      if (box) {
+        // Minimum 44x44px for touch targets
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+    }
+  });
+});
+```
+
+### Step 6: Run Tests
+```bash
+# Run all E2E tests
+pnpm test:e2e
+
+# Run only mobile tests
+pnpm test:e2e:mobile
+
+# Run with UI (watch mode)
+pnpm test:e2e:ui
+
+# Run with visible browser
+pnpm test:e2e:headed
+
+# View HTML report
+pnpm test:e2e:report
+```
+
+### Step 7: Generate Test Report
+```bash
+npx playwright show-report
+```
+
+## Expected Commands and Verification
+
+### Prerequisites
+```bash
+cd /home/sherman3/fantasy-movie-league-PSL
+pnpm install  # Ensure all dependencies installed
+```
+
+### Setup
+```bash
+# Step 1: Install Playwright
+pnpm add -D @playwright/test
+
+# Verify installation
+cat package.json | grep playwright
+grep "playwright" package.json
+
+# Step 2: Install browsers
+npx playwright install chromium firefox webkit
+
+# Verify installation
+ls node_modules/.cache/ms-playwright/
+```
+
+### Configuration
+```bash
+# Step 3: Create config file
+echo "Playwright config created"
+cat playwright.config.ts
+
+# Step 4: Verify package.json scripts
+cat package.json | grep -A 5 '"test:e2e"'
+```
+
+### Test Execution
+```bash
+# Step 5: Create test directory structure
+mkdir -p tests/e2e
+echo "Test structure created"
+ls tests/e2e/
+
+# Step 6: Write test files
+echo "Writing test files..."
+# [Write home.spec.ts, performers.spec.ts, etc.]
+
+# Step 7: Run tests
+pnpm test:e2e
+
+# Expected output:
+# ✓  home.spec.ts:3:5 › Home Page - Mobile Responsive (2 tests)
+# ✓  performers.spec.ts:3:5 › Performers Page - Grid Layout (1 test)
+# ...
+# Running X tests using Y workers
+# X passed (Zm)
+
+# Step 8: Generate report
+pnpm test:e2e:report
+
+# Expected: Browser opens with HTML report showing test results
+```
+
+### Verification Commands
+```bash
+# Check all pages tested
+grep -r "page.goto" tests/e2e/ | wc -l
+# Expected: 15-20 (one per page)
+
+# Check device coverage
+grep -r "devices\[" playwright.config.ts
+# Expected: 6-9 device configurations
+
+# Check screenshot generation
+ls tests/screenshots/ | wc -l
+# Expected: Multiple screenshots per device per test
+
+# Check no horizontal scroll
+grep -r "horizontal scroll" tests/e2e/
+# Expected: Tests verify no horizontal overflow
+```
+
+## Test Coverage Matrix
+
+| Page | Layout | Navigation | Touch | Forms | Images |
+|------|--------|------------|-------|-------|--------|
+| Home | ✓ | ✓ | | | |
+| Performers | ✓ | ✓ | ✓ | | ✓ |
+| PerformerProfile | ✓ | ✓ | ✓ | | ✓ |
+| Tournaments | ✓ | ✓ | ✓ | | |
+| Dashboard | ✓ | ✓ | | | |
+| Marketplace | ✓ | ✓ | ✓ | | ✓ |
+| Signup | ✓ | ✓ | | ✓ | |
+| Admin* | ✓ | ✓ | | ✓ | |
+| PlayerProfile | ✓ | ✓ | | | ✓ |
+| MyNFTs | ✓ | ✓ | | | ✓ |
+| Leaderboard | ✓ | ✓ | | | |
+| Rules | ✓ | ✓ | | | |
+
+## Acceptance Criteria
+
+1. ✅ Playwright installed and configured
+2. ✅ All 20 pages have E2E tests
+3. ✅ Tests run across 6+ device emulators
+4. ✅ Each test verifies:
+   - Layout correctness (no horizontal scroll)
+   - Responsive grid behavior
+   - Navigation functionality
+   - Touch interaction success
+   - Form validation (where applicable)
+5. ✅ Screenshots generated for visual regression
+6. ✅ HTML test report accessible
+7. ✅ All tests pass on CI/CD
+8. ✅ Documentation in tests/README.md
+
+## Troubleshooting
+
+### Common Issues
+```bash
+# Issue: Playwright browsers not found
+npx playwright install
+
+# Issue: Test timeout
+# Solution: Increase timeout in playwright.config.ts
+# timeout: 60000,
+
+# Issue: Dev server not starting
+# Solution: Check webServer command in config
+# command: 'pnpm dev',
+
+# Issue: Tests fail locally but pass in CI
+# Solution: Add retries
+# retries: 2,
+```
+
+### Debug Mode
+```bash
+# Run with headed browser (visible)
+pnpm test:e2e:headed
+
+# Run with UI mode (interactive)
+pnpm test:e2e:ui
+
+# Run single test file
+npx playwright test tests/e2e/home.spec.ts
+
+# Run with debug info
+DEBUG=pw:api pnpm test:e2e
+```
+
+## Next Steps After Implementation
+
+1. Add visual regression testing with `expect(page).toHaveScreenshot()`
+2. Set up CI/CD integration (GitHub Actions)
+3. Add accessibility testing with `@axe-core/playwright`
+4. Add performance testing with Chrome DevTools Protocol
+5. Add API testing for tRPC endpoints
+6. Add database integration testing
+
+## References
+
+- [Playwright Documentation](https://playwright.dev/docs/intro)
+- [Playwright Test API](https://playwright.dev/docs/api/class-test)
+- [Device Emulation](https://playwright.dev/docs/emulation)
+- [Mobile Testing Best Practices](https://playwright.dev/docs/mobile-testing)

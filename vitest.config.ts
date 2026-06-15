@@ -23,5 +23,7 @@ export default defineConfig({
     environmentMatchGlobs: [
       ["client/**", "jsdom"],
     ],
+    globals: true,
+    setupFiles: ["./vitest.setup.tsx"],
   },
 });

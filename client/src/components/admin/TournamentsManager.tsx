@@ -35,6 +35,7 @@ const PERFORMER_TYPES = [
   "Rising Star",
   "Hall of Fame",
   "Specialist",
+  "MILF",
 ];
 
 type RosterRequirement = {
