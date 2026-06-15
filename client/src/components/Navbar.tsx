@@ -3,11 +3,22 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import MobileNav from "@/components/MobileNav";
-import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle, Package } from "lucide-react";
+import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle, Package, LogOut, ChevronDown } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const { user } = useAuth();
   const [location] = useLocation();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => { window.location.href = "/"; },
+  });
 
   const navLinks = [
     { href: "/performers", label: "Performers", icon: Users },
@@ -60,19 +71,43 @@ export default function Navbar() {
                     My NFTs
                   </Button>
                 </Link>
-                <Link href="/profile">
-                  <Button className="gap-2">
-                    <UserCircle className="h-4 w-4" />
-                    My Profile
-                  </Button>
-                </Link>
-                {user.role === "admin" && (
-                  <Link href="/admin">
-                    <Button variant="ghost" size="icon" title="Admin">
-                      <LayoutDashboard className="h-4 w-4" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="gap-2">
+                      <UserCircle className="h-4 w-4" />
+                      {user.name || "My Account"}
+                      <ChevronDown className="h-3 w-3" />
                     </Button>
-                  </Link>
-                )}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <UserCircle className="h-4 w-4 mr-2" /> My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/my-nfts" className="cursor-pointer">
+                        <Wallet className="h-4 w-4 mr-2" /> My NFTs
+                      </Link>
+                    </DropdownMenuItem>
+                    {user.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin" className="cursor-pointer">
+                          <LayoutDashboard className="h-4 w-4 mr-2" /> Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                      onClick={() => logoutMutation.mutate()}
+                      disabled={logoutMutation.isPending}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <>

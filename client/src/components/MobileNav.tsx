@@ -4,14 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Menu, Trophy, Users, Wallet, LayoutDashboard, X,
-  BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles, Package
+  BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles, Package, LogOut
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => { window.location.href = "/"; },
+  });
 
   const closeSheet = () => setOpen(false);
 
@@ -106,9 +110,20 @@ export default function MobileNav() {
           {/* Footer CTA */}
           <div className="p-4 border-t border-border">
             {user ? (
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Signed in as</p>
-                <p className="font-medium truncate">{user.name}</p>
+              <div className="space-y-2">
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-0.5">Signed in as</p>
+                  <p className="font-medium text-sm truncate">{user.name}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full h-11 gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                  onClick={() => { closeSheet(); logoutMutation.mutate(); }}
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="h-4 w-4" />
+                  {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
+                </Button>
               </div>
             ) : (
               <div className="space-y-2">
