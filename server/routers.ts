@@ -490,13 +490,27 @@ export const appRouter = router({
         })).min(1),
       }))
       .mutation(async ({ ctx, input }) => {
-        // Check if user already entered
+        // 1. Check tournament exists
+        const tournament = await db.getTournamentById(input.tournamentId);
+        if (!tournament) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Tournament not found' });
+        }
+        
+        // 2. Check tournament is accepting entries (only upcoming status)
+        if (tournament.status !== 'upcoming') {
+          throw new TRPCError({ 
+            code: 'BAD_REQUEST', 
+            message: `Tournament is not accepting entries (status: ${tournament.status})` 
+          });
+        }
+        
+        // 3. Check if user already entered
         const existing = await db.getUserTournamentEntry(input.tournamentId, ctx.user.id);
         if (existing) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already entered this tournament' });
         }
         
-        // Validate roster is not empty
+        // 4. Validate roster is not empty
         if (!input.roster || input.roster.length === 0) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Roster cannot be empty' });
         }
@@ -538,11 +552,33 @@ export const appRouter = router({
           rosterPerformerTypes.set(performerType, (rosterPerformerTypes.get(performerType) || 0) + 1);
         }
         
-        // Get tournament roster requirements
+        // 6. Reject duplicate performers in roster (user might own 2 cards for same performer)
+        const performerIds = input.roster.map((s) => s.performerId);
+        if (new Set(performerIds).size !== performerIds.length) {
+          throw new TRPCError({ 
+            code: 'BAD_REQUEST', 
+            message: 'Duplicate performer in roster — each performer can only be selected once' 
+          });
+        }
+        
+        // 7. Get tournament roster requirements
         const requirements = await db.getTournamentRosterRequirements(input.tournamentId);
         
         if (requirements && requirements.length > 0) {
-          // Validate each requirement
+          // Calculate total required roster size
+          const requiredSize = requirements.reduce(
+            (sum, req) => sum + req.requiredCount, 0
+          );
+          
+          // Validate total roster size matches requirements
+          if (input.roster.length !== requiredSize) {
+            throw new TRPCError({ 
+              code: 'BAD_REQUEST', 
+              message: `Roster must have exactly ${requiredSize} performers (you submitted ${input.roster.length})` 
+            });
+          }
+          
+          // Validate each requirement (exact count)
           const unmetRequirements: string[] = [];
           
           for (const req of requirements) {
@@ -550,12 +586,14 @@ export const appRouter = router({
             const requiredCount = req.requiredCount;
             
             if (requiredType === null) {
+              // "Any Type" requirement: total roster size must be >= requiredCount
+              // (already checked by total size above if it's the only req)
               if (input.roster.length < requiredCount) {
                 unmetRequirements.push(`${requiredCount} Any Type (you have ${input.roster.length})`);
               }
             } else {
               const actualCount = rosterPerformerTypes.get(requiredType) || 0;
-              if (actualCount < requiredCount) {
+              if (actualCount !== requiredCount) {
                 unmetRequirements.push(`${requiredCount} ${requiredType} (you have ${actualCount})`);
               }
             }

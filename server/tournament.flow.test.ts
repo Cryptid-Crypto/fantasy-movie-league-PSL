@@ -6,6 +6,7 @@ import type { TrpcContext } from './_core/context';
 // Mock the db helpers used by tournament flow
 const getUserTournamentEntry = vi.fn();
 const getUserOwnedNftCards = vi.fn();
+const getTournamentById = vi.fn();
 const getTournamentRosterRequirements = vi.fn();
 const enterTournament = vi.fn();
 const addPerformerToEntry = vi.fn();
@@ -31,6 +32,7 @@ vi.mock('./db', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./db')>()),
   getUserTournamentEntry: (...args: unknown[]) => (getUserTournamentEntry as any)(...args),
   getUserOwnedNftCards: (...args: unknown[]) => (getUserOwnedNftCards as any)(...args),
+  getTournamentById: (...args: unknown[]) => (getTournamentById as any)(...args),
   getTournamentRosterRequirements: (...args: unknown[]) => (getTournamentRosterRequirements as any)(...args),
   enterTournament: (...args: unknown[]) => (enterTournament as any)(...args),
   addPerformerToEntry: (...args: unknown[]) => (addPerformerToEntry as any)(...args),
@@ -93,6 +95,7 @@ describe('tournament flow integration', () => {
     // Reset all mocks and set return values
     getUserTournamentEntry.mockReset().mockResolvedValue(null);
     getUserOwnedNftCards.mockReset().mockResolvedValue([]);
+    getTournamentById.mockReset().mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test Tournament' });
     getTournamentRosterRequirements.mockReset().mockResolvedValue([]);
     enterTournament.mockReset().mockResolvedValue(555);
     addPerformerToEntry.mockReset().mockResolvedValue(1);
