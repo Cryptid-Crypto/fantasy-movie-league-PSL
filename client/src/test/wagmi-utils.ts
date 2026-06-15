@@ -13,6 +13,7 @@
  * @module test/wagmi-utils
  */
 import React, { ReactNode } from 'react';
+import { vi } from 'vitest';
 import { render, RenderOptions } from '@testing-library/react';
 import {
   mockUseAccount,

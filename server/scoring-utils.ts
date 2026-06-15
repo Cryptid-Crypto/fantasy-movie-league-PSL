@@ -9,7 +9,7 @@ import {
 } from "../drizzle/schema";
 
 // Import the helper functions we need from db.ts
-import { getEntryPerformers, updateTournamentEntryScore } from "./db";
+import { getEntryPerformers, updateTournamentEntryScore, getDb } from "./db";
 
 /**
  * Calculates the score for a performer in a specific scene based on their actions
@@ -54,9 +54,8 @@ export async function recalculateScoresForMovie(movieId: number): Promise<void> 
   if (!db) throw new Error("Database not available");
 
   // Get the movie to check if it has a release date
-  const movie = await db.query.movies.findFirst({
-    where: (movies, { eq }) => eq(movies.id, movieId),
-  });
+  const movieRows = await db.select().from(movies).where(eq(movies.id, movieId)).limit(1);
+  const movie = movieRows[0];
 
   if (!movie) {
     throw new Error(`Movie not found: ${movieId}`);
