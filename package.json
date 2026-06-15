@@ -10,6 +10,13 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:mobile": "playwright test --project='Mobile - iPhone SE' --project='Mobile - iPhone 13 Pro' --project='Mobile - Pixel 5'",
+    "test:e2e:tablet": "playwright test --project='Tablet - iPad Mini' --project='Tablet - iPad Pro 11'",
+    "test:e2e:desktop": "playwright test --project='Desktop Chrome'",
+    "test:e2e:report": "playwright show-report",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {
