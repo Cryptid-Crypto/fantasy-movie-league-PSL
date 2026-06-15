@@ -402,6 +402,7 @@ describe("API Type Safety & tRPC Validation Tests", () => {
     describe("tournaments.enter (input validation)", () => {
       const userCtx = createUserContext();
       beforeEach(() => {
+        mockDb.getTournamentById.mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test' });
         mockDb.getUserTournamentEntry.mockResolvedValue(null);
         mockDb.getUserOwnedNftCards.mockResolvedValue([]);
         mockDb.getTournamentRosterRequirements.mockResolvedValue([]);
@@ -1139,6 +1140,7 @@ describe("API Type Safety & tRPC Validation Tests", () => {
 
     describe("already entered tournament returns BAD_REQUEST", () => {
       it("rejects duplicate tournament entry", async () => {
+        mockDb.getTournamentById.mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test' });
         mockDb.getUserTournamentEntry.mockResolvedValue({ id: 5, userId: 42 });
         const caller = appRouter.createCaller(createUserContext());
         await expect(
@@ -1155,6 +1157,7 @@ describe("API Type Safety & tRPC Validation Tests", () => {
 
     describe("duplicate NFT cards in roster rejected", () => {
       it("rejects roster with duplicate card IDs", async () => {
+        mockDb.getTournamentById.mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test' });
         mockDb.getUserTournamentEntry.mockResolvedValue(null);
         mockDb.getUserOwnedNftCards.mockResolvedValue([
           { id: 10, performerId: 1, performerType: "Legend", isLocked: false },
@@ -1177,6 +1180,7 @@ describe("API Type Safety & tRPC Validation Tests", () => {
 
     describe("locked card rejection", () => {
       it("rejects NFT cards that are locked in another tournament", async () => {
+        mockDb.getTournamentById.mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test' });
         mockDb.getUserTournamentEntry.mockResolvedValue(null);
         mockDb.getUserOwnedNftCards.mockResolvedValue([
           { id: 10, performerId: 1, performerType: "Legend", isLocked: true },
@@ -1196,6 +1200,7 @@ describe("API Type Safety & tRPC Validation Tests", () => {
 
     describe("card ownership mismatch", () => {
       it("rejects when user does not own the card", async () => {
+        mockDb.getTournamentById.mockResolvedValue({ id: 1, status: 'upcoming', title: 'Test' });
         mockDb.getUserTournamentEntry.mockResolvedValue(null);
         mockDb.getUserOwnedNftCards.mockResolvedValue([]); // user owns nothing
         const caller = appRouter.createCaller(createUserContext());
