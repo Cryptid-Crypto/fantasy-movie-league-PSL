@@ -1,0 +1,12 @@
+{
+  "contract": "PSLToken",
+  "address": "0x67298C9de638c9aE7d4Bf4704Be95D00Ed6b1FF6",
+  "deployer": "0x6a1251E1833f2B12B1D8e9Ce61f12342f2f6f2FD",
+  "network": "polygonAmoy",
+  "chainId": "80002",
+  "timestamp": "2026-06-16T18:32:27.304Z",
+  "name": "PSL Token",
+  "symbol": "PSL",
+  "decimals": "18",
+  "totalSupply": "100000000000000000000000000"
+}

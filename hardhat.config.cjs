@@ -1,3 +1,4 @@
+require("dotenv").config();
 require("@nomicfoundation/hardhat-toolbox");
 
 const config = {
@@ -17,7 +18,7 @@ const config = {
       chainId: 80002,
     },
     polygon: {
-      url: process.env.POLYGON_RPC || "https://polygon-rpc.com/",
+      url: process.env.POLYGON_RPC || "https://polygon-bor-rpc.publicnode.com",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       chainId: 137,
     },

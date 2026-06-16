@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect, useBalance, useSwitchChain } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useSwitchChain, useReadContract } from 'wagmi';
 import { polygon, polygonAmoy } from 'wagmi/chains';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Wallet, LogOut, Copy, Check } from 'lucide-react';
 import { formatAddress, formatTokenAmount } from '@/lib/web3';
+import { PSL_TOKEN_ADDRESSES, PSL_TOKEN_ABI } from '@/lib/web3Config';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -20,6 +21,18 @@ export function WalletConnect() {
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const { data: balance } = useBalance({ address });
+
+  // PSL Token balance
+  const { data: pslBalance } = useReadContract({
+    address: chain?.id ? PSL_TOKEN_ADDRESSES[chain.id] : undefined,
+    abi: PSL_TOKEN_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address && chain?.id && PSL_TOKEN_ADDRESSES[chain.id] !== '0x0000000000000000000000000000000000000000',
+    },
+  });
+
   const [copied, setCopied] = useState(false);
 
   const copyAddress = () => {
@@ -86,16 +99,25 @@ export function WalletConnect() {
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             </button>
           </div>
-          
+
           {balance && (
             <div className="flex items-center justify-between mb-2">
-              <span className="text-muted-foreground">Balance:</span>
+              <span className="text-muted-foreground">{balance.symbol}:</span>
               <span className="font-medium">
                 {formatTokenAmount(balance.value)} {balance.symbol}
               </span>
             </div>
           )}
-          
+
+          {pslBalance !== undefined && pslBalance !== null && (
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-muted-foreground">PSL:</span>
+              <span className="font-medium text-purple-400">
+                {formatTokenAmount(pslBalance as bigint)} PSL
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Network:</span>
             <span className="font-medium">{chain?.name || 'Unknown'}</span>

@@ -172,6 +172,21 @@ export const mockUseSwitchChain = vi.fn().mockReturnValue({
 export const mockUseChainId = vi.fn().mockReturnValue(80002);
 
 /**
+ * Mock for wagmi's `useReadContract` hook (for ERC-20 reads like PSL balance).
+ * Default: returns no data (undefined).
+ */
+export const mockUseReadContract = vi.fn().mockReturnValue({
+  data: undefined,
+  error: null,
+  isError: false,
+  isLoading: false,
+  isPending: false,
+  isSuccess: false,
+  refetch: vi.fn(),
+  status: 'idle',
+});
+
+/**
  * Mock for wagmi's `useEnsName` hook (bonus: ENS resolution).
  */
 export const mockUseEnsName = vi.fn().mockReturnValue({
