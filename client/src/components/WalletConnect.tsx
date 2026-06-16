@@ -29,7 +29,7 @@ export function WalletConnect() {
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && chain?.id && PSL_TOKEN_ADDRESSES[chain.id] !== '0x0000000000000000000000000000000000000000',
+      enabled: !!address && !!chain?.id && PSL_TOKEN_ADDRESSES[chain.id] !== '0x0000000000000000000000000000000000000000',
     },
   });
 
