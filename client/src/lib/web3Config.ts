@@ -39,3 +39,78 @@ export const TOURNAMENT_ESCROW_ADDRESSES: Record<number, `0x${string}`> = {
   [POLYGON_MAINNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: mainnet (Polygon) deployment
   [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: testnet (Amoy) deployment
 };
+
+// PSL Token contract addresses per chain
+export const PSL_TOKEN_ADDRESSES: Record<number, `0x${string}`> = {
+  [POLYGON_MAINNET_CHAIN_ID]: '0xF171c26D2e93f7557259323F966491e7514d6B3c', // Deployed on Polygon mainnet
+  [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: deploy to Amoy testnet
+};
+
+// PSL Token ABI (ERC-20 standard)
+export const PSL_TOKEN_ABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', type: 'string' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', type: 'string' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ name: '', type: 'bool' }],
+    type: 'function',
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    name: 'transfer',
+    outputs: [{ name: '', type: 'bool' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+] as const;

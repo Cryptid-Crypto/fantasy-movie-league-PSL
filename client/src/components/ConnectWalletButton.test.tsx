@@ -27,6 +27,7 @@ import {
   mockUseDisconnect,
   mockUseBalance,
   mockUseSwitchChain,
+  mockUseReadContract,
   mockConnectFn,
   mockDisconnectFn,
   mockSwitchChainFn,
@@ -46,6 +47,7 @@ vi.mock('wagmi', () => ({
   useDisconnect: (...args: unknown[]) => mockUseDisconnect(...args),
   useBalance: (...args: unknown[]) => mockUseBalance(...args),
   useSwitchChain: (...args: unknown[]) => mockUseSwitchChain(...args),
+  useReadContract: (...args: unknown[]) => mockUseReadContract(...args),
   // Stubs required by client/src/lib/web3.ts (imported transitively)
   createConfig: vi.fn(() => ({})),
   http: vi.fn(() => ({})),
@@ -323,7 +325,7 @@ describe('WalletConnect (ConnectWalletButton)', () => {
     /** Test: balance is displayed (1.5 MATIC) */
     it('displays native token balance', () => {
       render(<WalletConnect />);
-      expect(screen.getByText('Balance:')).toBeInTheDocument();
+      expect(screen.getByText('MATIC:')).toBeInTheDocument();
       // formatTokenAmount(1500000000000000000n) should produce "1.5"
       expect(screen.getByText('1.5 MATIC')).toBeInTheDocument();
     });
