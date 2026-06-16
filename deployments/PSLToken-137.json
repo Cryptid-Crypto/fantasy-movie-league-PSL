@@ -1,0 +1,14 @@
+{
+  "contract": "PSLToken",
+  "address": "0xfbCCD389cd47580c4fE4007D86F846B46aDb1fB3",
+  "deployer": "0x4194F7396d8dE635E335311Bf7926f96C2ea79A4",
+  "recipient": "0x9b4C7569036c201aFF1d670625B6259e1135362b",
+  "network": "polygon",
+  "chainId": "137",
+  "timestamp": "2026-06-16T02:28:35.730Z",
+  "name": "PSL Token",
+  "symbol": "PSL",
+  "decimals": "18",
+  "totalSupply": "100000000000000000000000000",
+  "deployTxHash": "0xc0e0409a3a4c4ed4814c25e50372f954abb21b6bf13fe9a1e0010f0baf6271e3"
+}

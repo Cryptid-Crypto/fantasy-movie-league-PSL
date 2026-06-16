@@ -42,7 +42,7 @@ export const TOURNAMENT_ESCROW_ADDRESSES: Record<number, `0x${string}`> = {
 
 // PSL Token contract addresses per chain
 export const PSL_TOKEN_ADDRESSES: Record<number, `0x${string}`> = {
-  [POLYGON_MAINNET_CHAIN_ID]: '0xF171c26D2e93f7557259323F966491e7514d6B3c', // Deployed on Polygon mainnet
+  [POLYGON_MAINNET_CHAIN_ID]: '0xfbCCD389cd47580c4fE4007D86F846B46aDb1fB3', // Deployed on Polygon mainnet
   [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: deploy to Amoy testnet
 };
 
