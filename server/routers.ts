@@ -7,6 +7,9 @@ import { z } from "zod";
 import * as db from "./db";
 import * as schema from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
+import { sdk } from "./_core/sdk";
+import { randomUUID } from "crypto";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -31,6 +34,73 @@ export const appRouter = router({
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+
+    register: publicProcedure
+      .input(z.object({
+        username: z.string().min(3).max(32).regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+        email: z.string().email(),
+        password: z.string().min(8, "Password must be at least 8 characters"),
+        name: z.string().min(1).max(100),
+        ageVerified: z.boolean().refine(v => v === true, "You must be 18 or older to register"),
+        acceptedTerms: z.boolean().refine(v => v === true, "You must accept the terms of service"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if email already exists
+        const existingEmail = await db.getUserByEmail(input.email);
+        if (existingEmail) {
+          throw new TRPCError({ code: "CONFLICT", message: "An account with this email already exists" });
+        }
+        // Check if username already exists
+        const existingUsername = await db.getUserByUsername(input.username);
+        if (existingUsername) {
+          throw new TRPCError({ code: "CONFLICT", message: "This username is already taken" });
+        }
+        // Hash password
+        const passwordHash = await bcrypt.hash(input.password, 12);
+        // Create user with a unique openId
+        const openId = `custom_${randomUUID()}`;
+        const user = await db.createCustomUser({
+          openId,
+          username: input.username,
+          email: input.email,
+          passwordHash,
+          name: input.name,
+        });
+        if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create account" });
+        // Create session
+        const sessionToken = await sdk.signSession({ openId, appId: openId, name: input.name });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: 365 * 24 * 60 * 60 * 1000 });
+        return { success: true, user: { id: user.id, username: user.username, email: user.email, name: user.name, role: user.role } };
+      }),
+
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string().min(1),
+        rememberMe: z.boolean().optional().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Find user by email
+        const user = await db.getUserByEmail(input.email);
+        if (!user || !user.passwordHash) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+        }
+        // Verify password
+        const valid = await bcrypt.compare(input.password, user.passwordHash);
+        if (!valid) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+        }
+        // Create session
+        const expiresInMs = input.rememberMe ? 365 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+        const sessionToken = await sdk.signSession({ openId: user.openId, appId: user.openId, name: user.name || "" }, { expiresInMs });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: expiresInMs });
+        // Update last signed in
+        await db.upsertUser({ openId: user.openId, lastSignedIn: new Date() });
+        return { success: true, user: { id: user.id, username: user.username, email: user.email, name: user.name, role: user.role } };
+      }),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

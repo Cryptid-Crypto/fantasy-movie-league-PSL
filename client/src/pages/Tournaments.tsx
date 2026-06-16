@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Trophy, Calendar, Users, ArrowLeft, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
-import { getLoginUrl } from "@/const";
 import { TournamentRosterRequirements } from "@/components/TournamentRosterRequirements";
 
 export default function Tournaments() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user } = useAuth();
 
 
@@ -152,7 +153,7 @@ export default function Tournaments() {
                           )
                         ) : (
                           <Button
-                            onClick={() => (window.location.href = getLoginUrl())}
+                            onClick={openLogin}
                             className="w-full"
                           >
                             Sign In to Enter

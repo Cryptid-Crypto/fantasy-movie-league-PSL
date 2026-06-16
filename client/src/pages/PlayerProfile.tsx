@@ -1,11 +1,11 @@
 import { Link } from "wouter";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import {
@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 
 export default function PlayerProfile() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
   const { data: nfts } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
   const { data: tournaments } = trpc.tournaments.list.useQuery();
@@ -45,7 +46,7 @@ export default function PlayerProfile() {
               <Link href="/signup">
                 <Button variant="outline">Sign Up</Button>
               </Link>
-              <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+              <Button onClick={openLogin}>Sign In</Button>
             </div>
           </div>
         </div>

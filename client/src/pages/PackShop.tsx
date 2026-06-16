@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import PackOpeningAnimation from "@/components/PackOpeningAnimation";
 import { ShoppingBag, Coins, Sparkles, ChevronLeft } from "lucide-react";
 
@@ -18,6 +18,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export default function PackShop() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user } = useAuth();
   const [showAnimation, setShowAnimation] = useState(false);
   const [purchasedCards, setPurchasedCards] = useState<any[]>([]);
@@ -48,7 +49,7 @@ export default function PackShop() {
 
   const handlePurchase = (packTypeId: number) => {
     if (!user) {
-      window.location.href = getLoginUrl();
+      openLogin();
       return;
     }
     purchaseMutation.mutate({ packTypeId });

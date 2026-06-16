@@ -681,3 +681,19 @@
 - [ ] Update admin performer forms to use multi-select type picker
 - [ ] Update performer profile pages to display all types as badges
 - [ ] Update tournament roster requirements to support multi-type filtering
+
+## Custom Authentication System (Replace Manus OAuth)
+- [ ] Extend users table with passwordHash, emailVerified fields
+- [ ] Build register procedure (email, username, password, age verification)
+- [ ] Build login procedure (email + password, JWT session cookie)
+- [ ] Build logout procedure (clear session cookie)
+- [ ] Build me procedure (return current user from session)
+- [ ] Build custom Sign In page/modal with PSL branding
+- [ ] Build custom Sign Up page/modal with PSL branding
+- [ ] Add password strength indicator to sign up form
+- [ ] Add remember me option to sign in form
+- [ ] Add age verification checkbox (18+) to sign up form
+- [ ] Add terms of service acceptance to sign up form
+- [ ] Remove all Manus OAuth redirects from Navbar and pages
+- [ ] Update getLoginUrl references to point to custom /login page
+- [ ] Test register, login, logout, protected routes end-to-end

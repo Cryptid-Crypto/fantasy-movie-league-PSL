@@ -1,9 +1,9 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import {
@@ -91,6 +91,7 @@ const MODULE_CARDS = [
 ];
 
 export default function AdminDashboard() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
   }
 
   if (!user) {
-    window.location.href = getLoginUrl();
+    openLogin();
     return null;
   }
 

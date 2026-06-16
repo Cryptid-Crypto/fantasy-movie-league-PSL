@@ -7,10 +7,14 @@ import {
   BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles, Package, LogOut
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 
-export default function MobileNav() {
+interface MobileNavProps {
+  onOpenAuth?: () => void;
+  onOpenRegister?: () => void;
+}
+
+export default function MobileNav({ onOpenAuth, onOpenRegister }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const logoutMutation = trpc.auth.logout.useMutation({
@@ -113,7 +117,7 @@ export default function MobileNav() {
               <div className="space-y-2">
                 <div className="p-3 bg-muted rounded-lg">
                   <p className="text-xs text-muted-foreground mb-0.5">Signed in as</p>
-                  <p className="font-medium text-sm truncate">{user.name}</p>
+                  <p className="font-medium text-sm truncate">{user.name || (user as any).username}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -127,10 +131,17 @@ export default function MobileNav() {
               </div>
             ) : (
               <div className="space-y-2">
-                <Link href="/signup" onClick={closeSheet}>
-                  <Button variant="outline" className="w-full h-11">Sign Up</Button>
-                </Link>
-                <Button className="w-full h-11" onClick={() => { window.location.href = getLoginUrl(); }}>
+                <Button
+                  variant="outline"
+                  className="w-full h-11"
+                  onClick={() => { closeSheet(); onOpenRegister?.(); }}
+                >
+                  Sign Up
+                </Button>
+                <Button
+                  className="w-full h-11"
+                  onClick={() => { closeSheet(); onOpenAuth?.(); }}
+                >
                   Sign In
                 </Button>
               </div>

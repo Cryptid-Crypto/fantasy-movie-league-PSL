@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Shield, Trophy, ArrowLeft, Plus, Trash2, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ type RosterRequirement = {
 };
 
 export default function AdminCreateTournament() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -172,7 +173,7 @@ export default function AdminCreateTournament() {
             <h2 className="text-2xl font-bold">Admin Access Required</h2>
             <p className="text-muted-foreground">This page is only accessible to platform administrators.</p>
             {!user ? (
-              <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+              <Button onClick={openLogin}>Sign In</Button>
             ) : (
               <Link href="/"><Button variant="outline">Back to Home</Button></Link>
             )}

@@ -1,12 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Users, Wallet, Zap, Film, Crown, ShoppingBag, BarChart2, BookOpen } from "lucide-react";
 import { Link } from "wouter";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 
 export default function Home() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
 
   return (
@@ -48,7 +49,7 @@ export default function Home() {
               <>
                 <Button
                   size="lg"
-                  onClick={() => (window.location.href = getLoginUrl())}
+                  onClick={openLogin}
                   className="gap-2 w-full sm:w-auto"
                 >
                   Get Started
@@ -196,7 +197,7 @@ export default function Home() {
                 </Button>
               </Link>
             ) : (
-              <Button size="lg" onClick={() => (window.location.href = getLoginUrl())}>
+              <Button size="lg" onClick={openLogin}>
                 Get Started Now
               </Button>
             )}

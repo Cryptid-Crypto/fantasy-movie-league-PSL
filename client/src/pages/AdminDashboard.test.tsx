@@ -19,7 +19,18 @@ vi.mock("@/lib/trpc", () => ({
         useQuery: vi.fn(),
       },
     },
+    auth: {
+      logout: {
+        useMutation: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
+      },
+    },
+    useUtils: vi.fn(() => ({
+      auth: { me: { setData: vi.fn(), invalidate: vi.fn() } },
+    })),
   },
+}));
+vi.mock("@/contexts/AuthModalContext", () => ({
+  useAuthModal: vi.fn(() => ({ openLogin: vi.fn(), openRegister: vi.fn() })),
 }));
 vi.mock("@/components/Navbar", () => ({
   default: vi.fn(() => <nav data-testid="navbar" />),

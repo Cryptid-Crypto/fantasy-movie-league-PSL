@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import {
   ShoppingBag, Search, Filter, RefreshCw, Sparkles,
@@ -24,6 +24,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export default function Marketplace() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [rarityFilter, setRarityFilter] = useState("all");
@@ -209,7 +210,7 @@ export default function Marketplace() {
                         <Button
                           size="sm"
                           className="w-full h-8 text-xs"
-                          onClick={() => (window.location.href = getLoginUrl())}
+                          onClick={openLogin}
                         >
                           Sign In to Buy
                         </Button>

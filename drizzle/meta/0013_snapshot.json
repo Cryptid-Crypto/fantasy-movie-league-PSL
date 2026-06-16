@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "fcbe6c13-e45c-43bb-bdd6-edf183b66148",
-  "prevId": "68c9c341-78b1-43c7-9991-d9ca42bd5bf0",
+  "id": "f3ba4e22-bd73-402f-87db-dfadc4826b09",
+  "prevId": "775ed4f5-d345-4643-88b0-3edc89ab1bde",
   "tables": {
     "actions": {
       "name": "actions",
@@ -868,7 +868,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": 1
+          "default": 8
         },
         "rareCount": {
           "name": "rareCount",
@@ -876,7 +876,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": 0
+          "default": 1
         },
         "uncommonCount": {
           "name": "uncommonCount",
@@ -884,7 +884,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": 0
+          "default": 2
         },
         "commonCount": {
           "name": "commonCount",
@@ -892,7 +892,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": 0
+          "default": 5
         },
         "isActive": {
           "name": "isActive",
@@ -1926,9 +1926,23 @@
           "notNull": false,
           "autoincrement": false
         },
+        "username": {
+          "name": "username",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "email": {
           "name": "email",
           "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "passwordHash": {
+          "name": "passwordHash",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1996,6 +2010,12 @@
           "name": "users_openId_unique",
           "columns": [
             "openId"
+          ]
+        },
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "columns": [
+            "username"
           ]
         }
       },

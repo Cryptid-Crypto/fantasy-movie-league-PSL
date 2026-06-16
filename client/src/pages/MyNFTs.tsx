@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import {
   Sparkles, Wallet, Tag, RefreshCw, TrendingUp,
@@ -25,6 +25,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export default function MyNFTs() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
   const [listDialog, setListDialog] = useState<{ open: boolean; card?: any }>({ open: false });
   const [listPrice, setListPrice] = useState(100);
@@ -70,7 +71,7 @@ export default function MyNFTs() {
           <Wallet className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
           <p className="text-muted-foreground mb-6">Sign in to view your NFT collection and PSL credits.</p>
-          <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+          <Button onClick={openLogin}>Sign In</Button>
         </div>
       </div>
     );

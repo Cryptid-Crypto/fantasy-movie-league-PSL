@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
   users,
+  User,
   packTypes,
   performers,
   InsertPerformer,
@@ -125,8 +126,49 @@ export async function getUserByOpenId(openId: string) {
 export async function updateUserWallet(userId: number, walletAddress: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
   await db.update(users).set({ walletAddress }).where(eq(users.id, userId));
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserByUsername(username: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createCustomUser(data: {
+  openId: string;
+  username: string;
+  email: string;
+  passwordHash: string;
+  name: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(users).values({
+    openId: data.openId,
+    username: data.username,
+    email: data.email,
+    passwordHash: data.passwordHash,
+    name: data.name,
+    loginMethod: "email",
+    lastSignedIn: new Date(),
+  });
+  return getUserByEmail(data.email);
+}
+
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
 }
 
 // ============ PERFORMER FUNCTIONS ============

@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Wallet, Trophy, User, ArrowLeft, ArrowRight } from "lucide-react";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { Link, useLocation } from "wouter";
-import { getLoginUrl } from "@/const";
 
 export default function Dashboard() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -46,7 +47,7 @@ export default function Dashboard() {
             <CardDescription>Please sign in to view your dashboard</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => (window.location.href = getLoginUrl())} className="w-full">
+            <Button onClick={openLogin} className="w-full">
               Sign In
             </Button>
           </CardContent>

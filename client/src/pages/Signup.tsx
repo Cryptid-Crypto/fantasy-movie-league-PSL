@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthModal } from '@/contexts/AuthModalContext';
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
@@ -30,6 +30,7 @@ const features = [
 ];
 
 export default function Signup() {
+  const { openLogin, openRegister } = useAuthModal();
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
@@ -121,7 +122,7 @@ export default function Signup() {
                       <Button
                         variant="outline"
                         className="w-full h-12 gap-3"
-                        onClick={() => (window.location.href = getLoginUrl())}
+                        onClick={openLogin}
                       >
                         <Zap className="h-5 w-5 text-primary" />
                         Continue with Manus Account
@@ -325,7 +326,7 @@ export default function Signup() {
                       </Button>
                       <Button
                         className="flex-1 gap-2"
-                        onClick={() => (window.location.href = getLoginUrl())}
+                        onClick={openLogin}
                       >
                         <CheckCircle2 className="h-4 w-4" />
                         Get Started
