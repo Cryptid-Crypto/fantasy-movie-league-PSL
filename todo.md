@@ -683,17 +683,19 @@
 - [ ] Update tournament roster requirements to support multi-type filtering
 
 ## Custom Authentication System (Replace Manus OAuth)
-- [ ] Extend users table with passwordHash, emailVerified fields
-- [ ] Build register procedure (email, username, password, age verification)
-- [ ] Build login procedure (email + password, JWT session cookie)
-- [ ] Build logout procedure (clear session cookie)
-- [ ] Build me procedure (return current user from session)
-- [ ] Build custom Sign In page/modal with PSL branding
-- [ ] Build custom Sign Up page/modal with PSL branding
-- [ ] Add password strength indicator to sign up form
-- [ ] Add remember me option to sign in form
-- [ ] Add age verification checkbox (18+) to sign up form
-- [ ] Add terms of service acceptance to sign up form
-- [ ] Remove all Manus OAuth redirects from Navbar and pages
-- [ ] Update getLoginUrl references to point to custom /login page
-- [ ] Test register, login, logout, protected routes end-to-end
+- [x] Extend users table with passwordHash, emailVerified fields
+- [x] Build register procedure (email, username, password, age verification)
+- [x] Build login procedure (email + password, JWT session cookie)
+- [x] Build logout procedure (clear session cookie)
+- [x] Build me procedure (return current user from session)
+- [x] Build custom Sign In page/modal with PSL branding
+- [x] Build custom Sign Up page/modal with PSL branding
+- [x] Add password strength indicator to sign up form
+- [x] Add remember me option to sign in form
+- [x] Add age verification checkbox (18+) to sign up form
+- [x] Add terms of service acceptance to sign up form
+- [x] Remove all Manus OAuth redirects from Navbar and pages
+- [x] Update getLoginUrl references to point to custom /login page
+- [x] Fix AuthModal tab sync bug (Sign In vs Sign Up always shows correct tab)
+- [x] Bump service worker cache version to psl-v2 to force cache invalidation
+- [ ] Test register, login, logout, protected routes end-to-end on live site after re-publish

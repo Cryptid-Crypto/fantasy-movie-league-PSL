@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,10 @@ function getPasswordStrength(password: string): { score: number; label: string; 
 
 export function AuthModal({ open, onOpenChange, defaultTab = "login" }: AuthModalProps) {
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
+  // Sync tab with defaultTab when modal opens (so Sign In vs Sign Up always shows the right tab)
+  useEffect(() => {
+    if (open) setTab(defaultTab);
+  }, [open, defaultTab]);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
