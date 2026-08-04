@@ -33,6 +33,7 @@ const fakeDb = {
 
 vi.mock("./db", () => ({
   getDb: () => Promise.resolve(fakeDb),
+  unlockTournamentCards: () => Promise.resolve(),
 }));
 
 import { runAutoPayoutTick } from "./autoPayoutScheduler";

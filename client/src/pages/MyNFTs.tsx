@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import { toast } from "sonner";
 import {
   Sparkles, Wallet, Tag, RefreshCw, TrendingUp,
@@ -70,7 +70,7 @@ export default function MyNFTs() {
           <Wallet className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
           <p className="text-muted-foreground mb-6">Sign in to view your NFT collection and PSL credits.</p>
-          <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+          <LoginButton>Sign In</LoginButton>
         </div>
       </div>
     );

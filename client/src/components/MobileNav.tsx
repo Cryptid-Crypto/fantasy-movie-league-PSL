@@ -7,7 +7,7 @@ import {
   BarChart2, ShoppingBag, BookOpen, Bell, UserCircle, Film, Sparkles
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -114,9 +114,7 @@ export default function MobileNav() {
                 <Link href="/signup" onClick={closeSheet}>
                   <Button variant="outline" className="w-full h-11">Sign Up</Button>
                 </Link>
-                <Button className="w-full h-11" onClick={() => { window.location.href = getLoginUrl(); }}>
-                  Sign In
-                </Button>
+                <LoginButton className="w-full h-11">Sign In</LoginButton>
               </div>
             )}
           </div>

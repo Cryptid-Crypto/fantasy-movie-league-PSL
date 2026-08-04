@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import { trpc } from "@/lib/trpc";
 import { Shield, Trophy, ArrowLeft, Plus, Trash2, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -172,7 +172,7 @@ export default function AdminCreateTournament() {
             <h2 className="text-2xl font-bold">Admin Access Required</h2>
             <p className="text-muted-foreground">This page is only accessible to platform administrators.</p>
             {!user ? (
-              <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+              <LoginButton>Sign In</LoginButton>
             ) : (
               <Link href="/"><Button variant="outline">Back to Home</Button></Link>
             )}

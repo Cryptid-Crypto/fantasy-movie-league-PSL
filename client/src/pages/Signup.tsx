@@ -2,11 +2,9 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
@@ -14,6 +12,9 @@ import {
   Trophy, Wallet, Sparkles, Shield, CheckCircle2,
   ArrowRight, Star, Users, Zap
 } from "lucide-react";
+import { WalletConnect } from "@/components/WalletConnect";
+import { LoginDialog } from "@/components/LoginDialog";
+import { useAccount } from "wagmi";
 
 const steps = [
   { id: 1, title: "Create Account", description: "Set up your player identity" },
@@ -32,10 +33,11 @@ const features = [
 export default function Signup() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const { address: walletAddress } = useAccount();
   const [currentStep, setCurrentStep] = useState(1);
   const [ageVerified, setAgeVerified] = useState(false);
   const [tosAccepted, setTosAccepted] = useState(false);
-  const [form, setForm] = useState({ username: "", email: "" });
+  const [loginOpen, setLoginOpen] = useState(false);
 
   // Already logged in — redirect to profile
   if (user) {
@@ -107,7 +109,8 @@ export default function Signup() {
 
             {/* Right — Sign-up Form */}
             <div className="lg:col-span-3">
-              {/* Step 1: Account Details */}
+              {/* Step 1: Account Details (OAuth-only now — local username/email
+                   signup was a cosmetic stub that never created users in the DB) */}
               {currentStep === 1 && (
                 <Card>
                   <CardHeader>
@@ -115,48 +118,18 @@ export default function Signup() {
                     <CardDescription>Set up your player identity on Porn Star League</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-5">
-                    {/* OAuth Sign-in Options */}
                     <div className="space-y-3">
-                      <p className="text-sm font-medium text-muted-foreground text-center">Sign up with</p>
+                      <p className="text-sm font-medium text-muted-foreground text-center">Sign up with your wallet or email</p>
                       <Button
                         variant="outline"
                         className="w-full h-12 gap-3"
-                        onClick={() => (window.location.href = getLoginUrl())}
+                        disabled={!tosAccepted}
+                        onClick={() => setLoginOpen(true)}
                       >
                         <Zap className="h-5 w-5 text-primary" />
-                        Continue with Manus Account
+                        Continue with Wallet or Email
                       </Button>
-                    </div>
-
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-border" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">Or fill in details</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="username">Username</Label>
-                        <Input
-                          id="username"
-                          placeholder="Choose a unique username"
-                          value={form.username}
-                          onChange={(e) => setForm({ ...form, username: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={form.email}
-                          onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        />
-                      </div>
+                      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
                     </div>
 
                     <div className="flex items-start gap-3">
@@ -175,14 +148,10 @@ export default function Signup() {
                       </Label>
                     </div>
 
-                    <Button
-                      className="w-full h-12 gap-2"
-                      disabled={!tosAccepted}
-                      onClick={() => setCurrentStep(2)}
-                    >
-                      Continue
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Sign in with a Web3 wallet (MetaMask, WalletConnect…) or with a
+                      one-time code sent to your email — no password required.
+                    </p>
                   </CardContent>
                 </Card>
               )}
@@ -257,28 +226,27 @@ export default function Signup() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-5">
-                    <div className="grid gap-3">
-                      {["MetaMask", "WalletConnect", "Coinbase Wallet", "Trust Wallet"].map((wallet) => (
-                        <Button
-                          key={wallet}
-                          variant="outline"
-                          className="w-full h-14 justify-start gap-4 text-base"
-                          onClick={() => setCurrentStep(4)}
-                        >
-                          <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
-                            <Wallet className="h-4 w-4" />
-                          </div>
-                          {wallet}
-                        </Button>
-                      ))}
-                    </div>
+                    {walletAddress ? (
+                      <div className="text-center space-y-3">
+                        <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
+                        <p className="font-medium">Wallet Connected!</p>
+                        <p className="text-sm font-mono text-muted-foreground">
+                          {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center py-4">
+                        <WalletConnect />
+                      </div>
+                    )}
 
                     <div className="flex gap-3">
                       <Button variant="outline" className="flex-1" onClick={() => setCurrentStep(2)}>
                         Back
                       </Button>
-                      <Button variant="ghost" className="flex-1" onClick={() => setCurrentStep(4)}>
-                        Skip for now
+                      <Button className="flex-1 gap-2" onClick={() => setCurrentStep(4)}>
+                        {walletAddress ? "Continue" : "Skip for now"}
+                        <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
 
@@ -325,7 +293,7 @@ export default function Signup() {
                       </Button>
                       <Button
                         className="flex-1 gap-2"
-                        onClick={() => (window.location.href = getLoginUrl())}
+                        onClick={() => setLoginOpen(true)}
                       >
                         <CheckCircle2 className="h-4 w-4" />
                         Get Started

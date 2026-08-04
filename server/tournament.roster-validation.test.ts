@@ -38,7 +38,7 @@ function createTestContext(userId = 1): TrpcContext {
     openId: 'roster-validation-user',
     email: 'validation@example.com',
     name: 'Validation Test User',
-    loginMethod: 'manus',
+    loginMethod: "wallet",
     role: 'user',
     walletAddress: '0x0000000000000000000000000000000000000001',
     createdAt: new Date(),
@@ -104,13 +104,13 @@ describe('Tournament Roster Validation', () => {
 
   // ==================== Tournament Status ====================
   describe('Tournament status validation', () => {
-    it('rejects entry for active tournament', async () => {
+    it('rejects entry for completed tournament', async () => {
       getTournamentById.mockResolvedValue({
         id: 1,
-        name: 'Active Tournament',
-        status: 'active',
+        name: 'Completed Tournament',
+        status: 'completed',
         startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-12-31'),
+        endDate: new Date('2024-06-30'),
       });
       const caller = appRouter.createCaller(createTestContext());
 

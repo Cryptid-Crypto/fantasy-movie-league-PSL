@@ -24,9 +24,12 @@ export const POLYGON_TESTNET_CHAIN_ID = polygonAmoy.id;
 export const DEFAULT_CHAIN_ID = POLYGON_TESTNET_CHAIN_ID;
 
 // Mock NFT contract addresses (replace with actual deployed contracts)
+// TODO: Deploy the PerformerNFT contract to Polygon mainnet and Amoy testnet,
+//       then replace these zero addresses with the real deployed addresses.
+//       Deployment requires a funded wallet on the target network.
 export const NFT_CONTRACT_ADDRESSES = {
-  [POLYGON_MAINNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // Replace with mainnet address
-  [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // Replace with testnet address
+  [POLYGON_MAINNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: Polygon mainnet PerformerNFT address
+  [POLYGON_TESTNET_CHAIN_ID]: '0x0000000000000000000000000000000000000000', // TODO: Polygon Amoy PerformerNFT address
 };
 
 // TournamentEscrow contract ABI (see contracts/TournamentEscrow.sol)

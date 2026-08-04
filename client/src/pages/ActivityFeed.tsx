@@ -8,7 +8,7 @@ import { Bell, Trophy, Film, Sparkles, Star, TrendingUp, Clock, Users } from "lu
 
 type ActivityItem = {
   id: string;
-  type: "tournament_new" | "tournament_ended" | "scene_logged" | "nft_trade" | "badge_assigned";
+  type: "tournament_new" | "tournament_active" | "tournament_ended" | "scene_logged" | "nft_trade" | "badge_assigned";
   title: string;
   description: string;
   timestamp: Date;
@@ -19,6 +19,7 @@ type ActivityItem = {
 function ActivityIcon({ type }: { type: ActivityItem["type"] }) {
   const icons: Record<ActivityItem["type"], React.ReactNode> = {
     tournament_new: <Trophy className="h-4 w-4 text-yellow-500" />,
+    tournament_active: <Trophy className="h-4 w-4 text-green-500" />,
     tournament_ended: <Trophy className="h-4 w-4 text-muted-foreground" />,
     scene_logged: <Film className="h-4 w-4 text-blue-500" />,
     nft_trade: <Sparkles className="h-4 w-4 text-purple-500" />,
@@ -39,37 +40,53 @@ function timeAgo(date: Date): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
 }
 
 export default function ActivityFeed() {
+  const { data: stats, isLoading: statsLoading } = trpc.stats.public.useQuery();
   const { data: tournaments } = trpc.tournaments.list.useQuery();
   const { data: performers } = trpc.performers.list.useQuery();
+  const { data: performerRankings } = trpc.leaderboard.performers.useQuery();
 
   // Build activity feed from real data
   const activities: ActivityItem[] = [];
 
+  // Tournament events
   if (tournaments) {
     tournaments.forEach((t: any) => {
       const start = new Date(t.startDate);
       const end = new Date(t.endDate);
       const now = new Date();
+      const createdAt = t.createdAt ? new Date(t.createdAt) : start;
 
-      if (start > now) {
+      if (t.status === "upcoming" && start > now) {
+        // Upcoming tournament — show when it was created
         activities.push({
           id: `t-new-${t.id}`,
           type: "tournament_new",
-          title: "New Tournament Open",
-          description: `"${t.name}" is now accepting entries. Entry fee: ${t.entryFee ?? "Free"}`,
+          title: "New Tournament Announced",
+          description: `"${t.name}" opens for entries soon. Starts ${start.toLocaleDateString()}.`,
+          timestamp: createdAt,
+          link: `/tournaments/${t.id}`,
+        });
+      } else if (t.status === "active" && start <= now && end >= now) {
+        // Active tournament
+        activities.push({
+          id: `t-active-${t.id}`,
+          type: "tournament_active",
+          title: "Tournament In Progress",
+          description: `"${t.name}" is live! Ends ${end.toLocaleDateString()}.`,
           timestamp: start,
           link: `/tournaments/${t.id}`,
         });
-      } else if (end < now) {
+      } else if (t.status === "completed" || end < now) {
         activities.push({
           id: `t-end-${t.id}`,
           type: "tournament_ended",
-          title: "Tournament Ended",
-          description: `"${t.name}" has concluded. Check the leaderboard for final standings.`,
+          title: "Tournament Completed",
+          description: `"${t.name}" has concluded. View the final leaderboard.`,
           timestamp: end,
           link: `/tournaments/${t.id}`,
         });
@@ -77,15 +94,31 @@ export default function ActivityFeed() {
     });
   }
 
+  // Top performer highlights (real data from leaderboard)
+  if (performerRankings && performerRankings.length > 0) {
+    // Top 3 performers get featured
+    performerRankings.slice(0, 3).forEach((p: any) => {
+      activities.push({
+        id: `top-perf-${p.id}`,
+        type: "scene_logged",
+        title: `${p.name} Leads Rankings`,
+        description: `${p.name} has ${p.totalPoints} points across ${p.sceneCount} scenes — ranked in the top performers.`,
+        timestamp: new Date(Date.now() - 3600000), // ~1 hour ago
+        link: `/performers/${p.id}`,
+      });
+    });
+  }
+
+  // Badge assignments for performers with types
   if (performers) {
-    performers.slice(0, 5).forEach((p: any) => {
+    performers.forEach((p: any) => {
       if (p.performerType) {
         activities.push({
           id: `badge-${p.id}`,
           type: "badge_assigned",
-          title: "Badge Assigned",
-          description: `${p.name} has been awarded the "${p.performerType}" badge.`,
-          timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
+          title: "Badge Awarded",
+          description: `${p.name} recognized as "${p.performerType}".`,
+          timestamp: p.createdAt ? new Date(p.createdAt) : new Date(Date.now() - 86400000),
           link: `/performers/${p.id}`,
           badge: p.performerType,
         });
@@ -93,8 +126,13 @@ export default function ActivityFeed() {
     });
   }
 
-  // Sort by most recent
+  // Sort by most recent, limit to 30 items
   activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  const recentActivities = activities.slice(0, 30);
+
+  const activeCount = tournaments?.filter(
+    (t: any) => t.status === "active"
+  ).length ?? 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,14 +159,18 @@ export default function ActivityFeed() {
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "Active Tournaments", value: tournaments?.filter((t: any) => new Date(t.startDate) <= new Date() && new Date(t.endDate) >= new Date()).length ?? 0, icon: Trophy },
-              { label: "Total Performers", value: performers?.length ?? 0, icon: Users },
-              { label: "Recent Events", value: activities.length, icon: Bell },
+              { label: "Active Tournaments", value: activeCount, icon: Trophy },
+              { label: "Performers", value: stats?.performerCount ?? (performers?.length ?? 0), icon: Users },
+              { label: "Recent Events", value: recentActivities.length, icon: Bell },
             ].map(({ label, value, icon: Icon }) => (
               <Card key={label}>
                 <CardContent className="pt-4 pb-3 text-center">
                   <Icon className="h-5 w-5 text-primary mx-auto mb-1" />
-                  <p className="text-xl font-bold">{value}</p>
+                  {statsLoading ? (
+                    <div className="h-7 w-12 bg-muted rounded animate-pulse mx-auto mb-0.5" />
+                  ) : (
+                    <p className="text-xl font-bold">{value}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">{label}</p>
                 </CardContent>
               </Card>
@@ -139,10 +181,10 @@ export default function ActivityFeed() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Platform events, tournament updates, and badge assignments</CardDescription>
+              <CardDescription>Platform events, tournament updates, and performer highlights</CardDescription>
             </CardHeader>
             <CardContent>
-              {activities.length === 0 ? (
+              {recentActivities.length === 0 ? (
                 <div className="text-center py-12 space-y-3">
                   <Bell className="h-12 w-12 text-muted-foreground mx-auto" />
                   <p className="text-muted-foreground">No activity yet. Check back after tournaments begin!</p>
@@ -155,7 +197,7 @@ export default function ActivityFeed() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {activities.map((item, idx) => (
+                  {recentActivities.map((item, idx) => (
                     <div key={item.id}>
                       {idx > 0 && <div className="border-t border-border/50 my-1" />}
                       <div className="flex gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors">

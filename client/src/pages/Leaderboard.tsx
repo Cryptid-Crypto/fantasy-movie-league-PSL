@@ -31,16 +31,42 @@ function RankBadge({ rank }: { rank: number }) {
   );
 }
 
+function PerformerRow({ p, rank }: { p: any; rank: number }) {
+  return (
+    <Link href={`/performers/${p.id}`}>
+      <div className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors ${RANK_STYLES[rank]?.bg ?? "border-border"}`}>
+        <RankBadge rank={rank} />
+        {(p.portraitUrl || p.imageUrl) ? (
+          <img src={(p.portraitUrl ?? p.imageUrl) as string} alt={p.name} className="w-10 h-10 rounded-full object-cover" />
+        ) : (
+          <Avatar className="w-10 h-10">
+            <AvatarFallback>{p.name.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold truncate">{p.name}</p>
+          {p.performerType && (
+            <Badge variant="outline" className="text-xs">{p.performerType}</Badge>
+          )}
+        </div>
+        <div className="text-right">
+          <p className={`font-bold ${RANK_STYLES[rank]?.text ?? "text-foreground"}`}>
+            {p.totalPoints ?? 0} pts
+          </p>
+          <p className="text-xs text-muted-foreground">{p.sceneCount ?? 0} scenes</p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function Leaderboard() {
   const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "alltime">("alltime");
-  const { data: performers, isLoading } = trpc.performers.list.useQuery();
+  const { data: performerRankings, isLoading } = trpc.leaderboard.performers.useQuery();
+  const { data: playerRankings, isLoading: playersLoading } = trpc.leaderboard.players.useQuery();
   const { data: tournaments } = trpc.tournaments.list.useQuery();
 
-  // Build a sorted performer leaderboard from available data
-  const performerRankings = (performers ?? [])
-    .map((p: any) => ({ ...p, totalPoints: p.totalPoints ?? 0 }))
-    .sort((a: any, b: any) => b.totalPoints - a.totalPoints)
-    .slice(0, 20);
+  const rankings = performerRankings ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,18 +99,18 @@ export default function Leaderboard() {
           </div>
 
           {/* Top 3 Podium */}
-          {performerRankings.length >= 3 && (
+          {rankings.length >= 3 && (
             <div className="grid grid-cols-3 gap-4">
               {[1, 0, 2].map((idx) => {
-                const p = performerRankings[idx];
+                const p = rankings[idx];
                 const rank = idx + 1;
                 const heights = ["h-32", "h-40", "h-28"];
                 return (
                   <Link key={p.id} href={`/performers/${p.id}`}>
                     <Card className={`cursor-pointer hover:border-primary/50 transition-colors text-center overflow-hidden ${RANK_STYLES[rank]?.bg ?? ""}`}>
                       <div className={`${heights[idx === 1 ? 1 : idx === 0 ? 0 : 2]} flex flex-col items-center justify-end pb-4 pt-4 gap-2`}>
-                        {p.portraitUrl || p.imageUrl ? (
-                          <img src={p.portraitUrl ?? p.imageUrl} alt={p.name} className="w-16 h-16 rounded-full object-cover border-2 border-border" />
+                        {(p.portraitUrl || p.imageUrl) ? (
+                          <img src={(p.portraitUrl ?? p.imageUrl) as string} alt={p.name} className="w-16 h-16 rounded-full object-cover border-2 border-border" />
                         ) : (
                           <Avatar className="w-16 h-16">
                             <AvatarFallback className="text-xl">{p.name.slice(0, 2)}</AvatarFallback>
@@ -106,14 +132,18 @@ export default function Leaderboard() {
 
           {/* Tabs */}
           <Tabs defaultValue="performers">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="performers" className="gap-2">
                 <Users className="h-4 w-4" />
                 Top Performers
               </TabsTrigger>
+              <TabsTrigger value="players" className="gap-2">
+                <Crown className="h-4 w-4" />
+                Top Players
+              </TabsTrigger>
               <TabsTrigger value="tournaments" className="gap-2">
                 <Trophy className="h-4 w-4" />
-                Tournament Results
+                Results
               </TabsTrigger>
             </TabsList>
 
@@ -131,40 +161,65 @@ export default function Leaderboard() {
                         <div key={i} className="h-16 bg-muted rounded-lg animate-pulse" />
                       ))}
                     </div>
-                  ) : performerRankings.length === 0 ? (
+                  ) : rankings.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
                       <TrendingUp className="h-12 w-12 mx-auto mb-3" />
                       <p>No ranking data available yet.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {performerRankings.map((p: any, idx: number) => {
+                      {rankings.map((p: any, idx: number) => (
+                        <PerformerRow key={p.id} p={p} rank={idx + 1} />
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Players Leaderboard */}
+            <TabsContent value="players" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Player Rankings</CardTitle>
+                  <CardDescription>Top players ranked by total tournament score</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {playersLoading ? (
+                    <div className="space-y-3">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="h-16 bg-muted rounded-lg animate-pulse" />
+                      ))}
+                    </div>
+                  ) : !playerRankings || playerRankings.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <Users className="h-12 w-12 mx-auto mb-3" />
+                      <p>No player rankings yet.</p>
+                      <Link href="/tournaments">
+                        <Button variant="outline" className="mt-4 gap-2">
+                          <Trophy className="h-4 w-4" />
+                          Enter a Tournament
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {playerRankings.map((p: any, idx: number) => {
                         const rank = idx + 1;
                         return (
-                          <Link key={p.id} href={`/performers/${p.id}`}>
-                            <div className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors ${RANK_STYLES[rank]?.bg ?? "border-border"}`}>
-                              <RankBadge rank={rank} />
-                              {p.portraitUrl || p.imageUrl ? (
-                                <img src={p.portraitUrl ?? p.imageUrl} alt={p.name} className="w-10 h-10 rounded-full object-cover" />
-                              ) : (
-                                <Avatar className="w-10 h-10">
-                                  <AvatarFallback>{p.name.slice(0, 2)}</AvatarFallback>
-                                </Avatar>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold truncate">{p.name}</p>
-                                {p.performerType && (
-                                  <Badge variant="outline" className="text-xs">{p.performerType}</Badge>
-                                )}
-                              </div>
-                              <div className="text-right">
-                                <p className={`font-bold ${RANK_STYLES[rank]?.text ?? "text-foreground"}`}>
-                                  {p.totalPoints ?? 0} pts
-                                </p>
-                                <p className="text-xs text-muted-foreground">Total Points</p>
-                              </div>
+                          <div key={p.userId} className={`flex items-center gap-4 p-3 rounded-lg border ${RANK_STYLES[rank]?.bg ?? "border-border"}`}>
+                            <RankBadge rank={rank} />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold truncate">{p.playerName || `Player #${p.userId}`}</p>
+                              <p className="text-xs text-muted-foreground">{p.tournamentCount} tournaments</p>
                             </div>
-                          </Link>
+                            <div className="text-right">
+                              <p className={`font-bold ${RANK_STYLES[rank]?.text ?? "text-foreground"}`}>
+                                {p.totalScore ?? 0} pts
+                              </p>
+                              <p className="text-xs text-muted-foreground">Total Score</p>
+                            </div>
+                          </div>
                         );
                       })}
                     </div>

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import { toast } from "sonner";
 import {
   ShoppingBag, Search, Filter, RefreshCw, Sparkles,
@@ -200,13 +200,12 @@ export default function Marketplace() {
                           )}
                         </Button>
                       ) : (
-                        <Button
+                        <LoginButton
                           size="sm"
                           className="w-full h-8 text-xs"
-                          onClick={() => (window.location.href = getLoginUrl())}
                         >
                           Sign In to Buy
-                        </Button>
+                        </LoginButton>
                       )}
                       <Link href={`/performers/${listing.performerId}`}>
                         <Button size="sm" variant="secondary" className="w-full h-8 text-xs gap-1">

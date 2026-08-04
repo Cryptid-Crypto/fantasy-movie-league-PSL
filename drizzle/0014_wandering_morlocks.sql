@@ -1,0 +1,1 @@
+ALTER TABLE `performers` ADD `nationality` varchar(100);

@@ -1,13 +1,15 @@
 import "dotenv/config";
-import express from "express";
+import express, { type Request, type Response } from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { startAutoPayoutScheduler } from "../autoPayoutScheduler";
+import { walletSdk } from "./walletAuth";
+import { getSessionCookieOptions } from "./cookies";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -34,9 +36,33 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
-  // tRPC API
+  // Dev-only auto-login endpoint (creates session for owner wallet)
+  if (process.env.NODE_ENV === "development") {
+    app.get("/api/dev-login", async (req: Request, res: Response) => {
+      try {
+        const ownerOpenId = process.env.OWNER_OPEN_ID;
+        if (!ownerOpenId) {
+          res.status(500).json({ error: "OWNER_OPEN_ID not configured" });
+          return;
+        }
+
+        const sessionToken = await walletSdk.createSessionToken(ownerOpenId, {
+          name: process.env.OWNER_NAME || "Owner",
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(req);
+        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        res.redirect(302, "/");
+      } catch (error) {
+        console.error("[Dev Login] Failed:", error);
+        res.status(500).json({ error: "Dev login failed" });
+      }
+    });
+  }
+
+  // tRPC API (auth routes now handled via TRPC: auth.nonce, auth.verify)
   app.use(
     "/api/trpc",
     createExpressMiddleware({

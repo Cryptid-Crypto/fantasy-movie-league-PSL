@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
-import { getLoginUrl } from "@/const";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import {
@@ -109,7 +108,7 @@ export default function AdminDashboard() {
   }
 
   if (!user) {
-    window.location.href = getLoginUrl();
+    setLocation("/signup");
     return null;
   }
 

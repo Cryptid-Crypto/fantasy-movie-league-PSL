@@ -11,7 +11,7 @@ function createAdminContext(): TrpcContext {
     openId: "admin-user",
     email: "admin@example.com",
     name: "Admin User",
-    loginMethod: "manus",
+    loginMethod: "wallet",
     role: "admin",
     walletAddress: "0x0000000000000000000000000000000000000000",
     createdAt: new Date(),

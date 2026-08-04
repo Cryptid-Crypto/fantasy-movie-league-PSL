@@ -97,6 +97,12 @@ export function PerformersManager() {
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
       performerType: (performerType || undefined) as any,
+      measurements: formData.get("measurements") as string || undefined,
+      hairColor: formData.get("hairColor") as string || undefined,
+      eyeColor: formData.get("eyeColor") as string || undefined,
+      height: formData.get("height") as string || undefined,
+      sex: formData.get("sex") as string || undefined,
+      nationality: formData.get("nationality") as string || undefined,
     });
   };
 
@@ -110,6 +116,12 @@ export function PerformersManager() {
       imageUrl: formData.get("imageUrl") as string || undefined,
       nftContractAddress: formData.get("nftContractAddress") as string || undefined,
       performerType: (editPerformerType || undefined) as any,
+      measurements: formData.get("measurements") as string || undefined,
+      hairColor: formData.get("hairColor") as string || undefined,
+      eyeColor: formData.get("eyeColor") as string || undefined,
+      height: formData.get("height") as string || undefined,
+      sex: formData.get("sex") as string || undefined,
+      nationality: formData.get("nationality") as string || undefined,
     });
   };
 
@@ -187,6 +199,58 @@ export function PerformersManager() {
                     id="nftContractAddress"
                     name="nftContractAddress"
                     placeholder="0x..."
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="measurements">Measurements</Label>
+                    <Input
+                      id="measurements"
+                      name="measurements"
+                      placeholder='e.g. 34DD-26-36'
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="height">Height</Label>
+                    <Input
+                      id="height"
+                      name="height"
+                      placeholder="e.g. 5'7&quot;"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="hairColor">Hair Color</Label>
+                    <Input
+                      id="hairColor"
+                      name="hairColor"
+                      placeholder="e.g. Blonde"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="eyeColor">Eye Color</Label>
+                    <Input
+                      id="eyeColor"
+                      name="eyeColor"
+                      placeholder="e.g. Brown"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sex">Sex</Label>
+                    <Input
+                      id="sex"
+                      name="sex"
+                      placeholder="e.g. Female"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nationality">Nationality</Label>
+                  <Input
+                    id="nationality"
+                    name="nationality"
+                    placeholder="e.g. American, Australian, Brazilian"
                   />
                 </div>
               </div>
@@ -332,6 +396,64 @@ export function PerformersManager() {
                                 id="edit-nftContractAddress"
                                 name="nftContractAddress"
                                 defaultValue={performer.nftContractAddress || ""}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-measurements">Measurements</Label>
+                                <Input
+                                  id="edit-measurements"
+                                  name="measurements"
+                                  defaultValue={performer.measurements || ""}
+                                  placeholder="e.g. 34DD-26-36"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-height">Height</Label>
+                                <Input
+                                  id="edit-height"
+                                  name="height"
+                                  defaultValue={performer.height || ""}
+                                  placeholder="e.g. 5'7&quot;"
+                                />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-hairColor">Hair Color</Label>
+                                <Input
+                                  id="edit-hairColor"
+                                  name="hairColor"
+                                  defaultValue={performer.hairColor || ""}
+                                  placeholder="e.g. Blonde"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-eyeColor">Eye Color</Label>
+                                <Input
+                                  id="edit-eyeColor"
+                                  name="eyeColor"
+                                  defaultValue={performer.eyeColor || ""}
+                                  placeholder="e.g. Brown"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-sex">Sex</Label>
+                                <Input
+                                  id="edit-sex"
+                                  name="sex"
+                                  defaultValue={performer.sex || ""}
+                                  placeholder="e.g. Female"
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-nationality">Nationality</Label>
+                              <Input
+                                id="edit-nationality"
+                                name="nationality"
+                                defaultValue={performer.nationality || ""}
+                                placeholder="e.g. American, Australian, Brazilian"
                               />
                             </div>
                           </div>

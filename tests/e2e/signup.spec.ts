@@ -105,21 +105,21 @@ test.describe('Signup Page - Mobile Responsive', () => {
     }
   });
 
-  test('should have social login buttons on mobile', async ({ page }) => {
+  test('should have wallet/email login buttons on mobile', async ({ page }) => {
     await page.goto('/signup');
     await page.waitForLoadState('networkidle');
     
-    // Look for OAuth/social login buttons
-    const socialButtons = page.locator('button:has-text("Google"), button:has-text("MetaMask"), button:has-text("WalletConnect"), [data-testid*="oauth"]');
-    const socialCount = await socialButtons.count();
+    // Look for the wallet/email login entry point
+    const loginButtons = page.locator('button:has-text("Wallet"), button:has-text("Email"), button:has-text("Sign In"), button:has-text("Continue with")');
+    const loginCount = await loginButtons.count();
     
-    if (socialCount > 0) {
-      // At least one social button should be visible
-      await expect(socialButtons.first()).toBeVisible();
+    if (loginCount > 0) {
+      // At least one login button should be visible
+      await expect(loginButtons.first()).toBeVisible();
       
       // Check touch targets
-      for (let i = 0; i < Math.min(socialCount, 3); i++) {
-        const button = socialButtons.nth(i);
+      for (let i = 0; i < Math.min(loginCount, 3); i++) {
+        const button = loginButtons.nth(i);
         const box = await button.boundingBox();
         
         if (box) {

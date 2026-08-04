@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import {
@@ -45,7 +45,7 @@ export default function PlayerProfile() {
               <Link href="/signup">
                 <Button variant="outline">Sign Up</Button>
               </Link>
-              <Button onClick={() => (window.location.href = getLoginUrl())}>Sign In</Button>
+              <LoginButton>Sign In</LoginButton>
             </div>
           </div>
         </div>
@@ -54,6 +54,7 @@ export default function PlayerProfile() {
   }
 
   const nftCount = nfts?.length ?? 0;
+  const tournamentCount = 0;
   const initials = user.name?.slice(0, 2).toUpperCase() ?? "??";
 
   const copyWallet = () => {
@@ -226,7 +227,7 @@ export default function PlayerProfile() {
                       { name: "First NFT", desc: "Acquired your first performer NFT", earned: nftCount > 0 },
                       { name: "Collector", desc: "Own 5 or more NFTs", earned: nftCount >= 5 },
                       { name: "High Roller", desc: "Own 20 or more NFTs", earned: nftCount >= 20 },
-                      { name: "Tournament Rookie", desc: "Enter your first tournament", earned: false },
+                      { name: "Tournament Rookie", desc: "Enter your first tournament", earned: tournamentCount > 0 },
                       { name: "Podium Finish", desc: "Finish in the top 3", earned: false },
                       { name: "Champion", desc: "Win a tournament", earned: false },
                     ].map(({ name, desc, earned }) => (

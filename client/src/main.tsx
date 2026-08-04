@@ -7,7 +7,6 @@ import superjson from "superjson";
 import { WagmiProvider } from 'wagmi';
 import { config } from '@/lib/web3';
 import App from "./App";
-import { getLoginUrl } from "./const";
 import "./index.css";
 import "./mobile-touch.css";
 import { registerServiceWorker } from "@/lib/registerSW";
@@ -22,7 +21,11 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
-  window.location.href = getLoginUrl();
+  // Don't hard-redirect to an external OAuth portal anymore — send the user
+  // to the signup page, which hosts the wallet/email login dialog.
+  if (window.location.pathname !== "/signup") {
+    window.location.href = "/signup";
+  }
 };
 
 queryClient.getQueryCache().subscribe(event => {

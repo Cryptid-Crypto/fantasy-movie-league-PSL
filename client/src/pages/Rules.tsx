@@ -6,7 +6,9 @@ import { trpc } from "@/lib/trpc";
 import { BookOpen, Zap, Trophy, Star, Shield, Users, Sparkles, Info } from "lucide-react";
 
 export default function Rules() {
-  const { data: actions } = trpc.admin.actions.list.useQuery();
+  // Public endpoint — no admin auth required (fixes the issue where
+  // the public Rules page called admin.actions.list).
+  const { data: actions } = trpc.actions.list.useQuery();
 
   return (
     <div className="min-h-screen bg-background">

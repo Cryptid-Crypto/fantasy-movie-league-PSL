@@ -1,5 +1,6 @@
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { getFlagEmoji } from "@/lib/flags";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -105,6 +106,53 @@ export default function PerformerProfile() {
                       Bio
                     </h3>
                     <p className="text-foreground leading-relaxed">{performer.bio}</p>
+                  </div>
+                )}
+                {(performer.measurements || performer.height || performer.hairColor || performer.eyeColor || performer.sex || performer.nationality) && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                      Details
+                    </h3>
+                    <div className="space-y-2">
+                      {performer.nationality && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Nationality</span>
+                          <span className="text-sm font-medium">
+                            {getFlagEmoji(performer.nationality)} {performer.nationality}
+                          </span>
+                        </div>
+                      )}
+                      {performer.measurements && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Measurements</span>
+                          <span className="text-sm font-medium">{performer.measurements}</span>
+                        </div>
+                      )}
+                      {performer.height && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Height</span>
+                          <span className="text-sm font-medium">{performer.height}</span>
+                        </div>
+                      )}
+                      {performer.hairColor && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Hair Color</span>
+                          <span className="text-sm font-medium">{performer.hairColor}</span>
+                        </div>
+                      )}
+                      {performer.eyeColor && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Eye Color</span>
+                          <span className="text-sm font-medium">{performer.eyeColor}</span>
+                        </div>
+                      )}
+                      {performer.sex && (
+                        <div className="flex justify-between py-1.5 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Sex</span>
+                          <span className="text-sm font-medium">{performer.sex}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 <Link href={`/performers/${performerId}/statistics`}>

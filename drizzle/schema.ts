@@ -40,6 +40,12 @@ export const performers = mysqlTable("performers", {
     "Specialist",
     "MILF",
   ]),
+  measurements: varchar("measurements", { length: 50 }), // e.g. "34DD-26-36"
+  hairColor: varchar("hairColor", { length: 50 }), // e.g. "Blonde", "Brunette"
+  eyeColor: varchar("eyeColor", { length: 50 }), // e.g. "Brown", "Blue"
+  height: varchar("height", { length: 20 }), // e.g. "5'7\"" or "170cm"
+  sex: varchar("sex", { length: 20 }), // e.g. "Female", "Male", "Trans"
+  nationality: varchar("nationality", { length: 100 }), // e.g. "American", "Australian"
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -53,7 +59,7 @@ export type InsertPerformer = typeof performers.$inferInsert;
 export const badges = mysqlTable("badges", {
   id: int("id").autoincrement().primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
-  category: mysqlEnum("category", ["performer_type", "country"]).notNull().default("performer_type"),
+  category: mysqlEnum("category", ["performer_type", "country", "gameplay"]).notNull().default("performer_type"),
   icon: text("icon"), // URL to badge icon image
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

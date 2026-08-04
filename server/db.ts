@@ -1190,6 +1190,41 @@ export async function assignNftCardToUser(cardId: number, toUserId: number, admi
   });
 }
 
+// ============ TREASURY ACCOUNT ============
+
+/** Reserved openId for the platform Treasury system account. */
+export const TREASURY_OPENID = "system-treasury";
+
+/**
+ * Get (or lazily create) the platform Treasury account.
+ * The Treasury is a real user row so cards assigned to it can be listed
+ * on the marketplace (listings require a sellerId). It can never log in —
+ * it has no password and its openId is not reachable via any auth flow.
+ */
+export async function getOrCreateTreasuryUser() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await getUserByOpenId(TREASURY_OPENID);
+  if (existing) return existing;
+
+  await db.insert(users).values({
+    openId: TREASURY_OPENID,
+    name: "Treasury",
+    loginMethod: "system",
+    role: "user",
+  });
+
+  const created = await getUserByOpenId(TREASURY_OPENID);
+  if (!created) throw new Error("Failed to create Treasury account");
+  return created;
+}
+
+/** Get the Treasury account if it exists (null if not yet created). */
+export async function getTreasuryUser() {
+  return getUserByOpenId(TREASURY_OPENID);
+}
+
 // ============ CREDIT LEDGER FUNCTIONS ============
 
 /** Get a user's current PSL credit balance */
@@ -1240,6 +1275,73 @@ export async function getUserCreditHistory(userId: number) {
     .where(eq(creditLedger.userId, userId))
     .orderBy(desc(creditLedger.createdAt))
     .limit(50);
+}
+
+// ============ ONBOARDING / STARTER PACK ============
+
+/**
+ * Returns true if a user has already claimed their one-time starter pack.
+ * Tracked via a sentinel creditLedger row with description = 'starter_pack'.
+ */
+export async function hasUserClaimedStarterPack(userId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  // Use description as the tag — no schema migration required.
+  const all = await db
+    .select({ description: creditLedger.description })
+    .from(creditLedger)
+    .where(eq(creditLedger.userId, userId));
+
+  return all.some((r) => r.description === "starter_pack");
+}
+
+/**
+ * Grant the new-user starter pack: 100 PSL credits + 3 random NFT cards
+ * taken from the treasury (unowned cards). Idempotent via description tag.
+ *
+ * Returns the ids of the cards assigned (or [] if already claimed).
+ */
+export async function claimStarterPack(userId: number): Promise<{
+  alreadyClaimed: boolean;
+  creditsAwarded: number;
+  cardIdsAwarded: number[];
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Idempotency: if the user already claimed, short-circuit.
+  if (await hasUserClaimedStarterPack(userId)) {
+    return { alreadyClaimed: true, creditsAwarded: 0, cardIdsAwarded: [] };
+  }
+
+  // 1. Award 100 credits
+  const STARTER_CREDITS = 100;
+  await adjustUserCredits({
+    userId,
+    amount: STARTER_CREDITS,
+    type: "admin_grant" as const,
+    description: "starter_pack",
+  });
+
+  // 2. Pick 3 random unowned (treasury) cards and assign them
+  const treasury = await getTreasuryNftCards();
+  const ids: number[] = [];
+  if (treasury.length > 0) {
+    // Fisher-Yates-ish shuffle then take first 3
+    const pool = [...treasury];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const picks = pool.slice(0, Math.min(3, pool.length));
+    for (const card of picks) {
+      await assignNftCardToUser(card.id, userId, userId);
+      ids.push(card.id);
+    }
+  }
+
+  return { alreadyClaimed: false, creditsAwarded: STARTER_CREDITS, cardIdsAwarded: ids };
 }
 
 // ============ NFT MARKETPLACE FUNCTIONS ============
@@ -1465,4 +1567,73 @@ export async function getAllNftCards() {
     .leftJoin(performers, eq(nftCards.performerId, performers.id))
     .leftJoin(users, eq(nftCards.ownerId, users.id))
     .orderBy(desc(nftCards.mintedAt));
+}
+
+// ============ STATS & LEADERBOARD ============
+
+/** Get platform stats: counts of performers, movies, active tournaments */
+export async function getPlatformStats() {
+  const db = await getDb();
+  if (!db) return { performerCount: 0, movieCount: 0, activeTournamentCount: 0 };
+
+  const [[performerRow], [movieRow], [tournamentRow]] = await Promise.all([
+    db.select({ count: sql<number>`COUNT(*)` }).from(performers),
+    db.select({ count: sql<number>`COUNT(*)` }).from(movies),
+    db.select({ count: sql<number>`COUNT(*)` })
+      .from(tournaments)
+      .where(eq(tournaments.status, "active")),
+  ]);
+
+  return {
+    performerCount: performerRow?.count ?? 0,
+    movieCount: movieRow?.count ?? 0,
+    activeTournamentCount: tournamentRow?.count ?? 0,
+  };
+}
+
+/** Get performer leaderboard with total points computed from scene actions */
+export async function getPerformerLeaderboard(limit = 20) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({
+      id: performers.id,
+      name: performers.name,
+      performerType: performers.performerType,
+      portraitUrl: performers.portraitUrl,
+      imageUrl: performers.imageUrl,
+      totalPoints: sql<number>`COALESCE(SUM(${actions.points}), 0)`,
+      sceneCount: sql<number>`COUNT(DISTINCT ${scenePerformerActions.sceneId})`,
+    })
+    .from(performers)
+    .leftJoin(scenePerformerActions, eq(performers.id, scenePerformerActions.performerId))
+    .leftJoin(actions, eq(scenePerformerActions.actionId, actions.id))
+    .groupBy(performers.id)
+    .orderBy(desc(sql`COALESCE(SUM(${actions.points}), 0)`))
+    .limit(limit);
+
+  return rows;
+}
+
+/** Get player leaderboard sorted by total tournament score */
+export async function getPlayerLeaderboard(limit = 20) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({
+      userId: users.id,
+      playerName: users.name,
+      walletAddress: users.walletAddress,
+      totalScore: sql<number>`COALESCE(SUM(${tournamentEntries.totalScore}), 0)`,
+      tournamentCount: sql<number>`COUNT(DISTINCT ${tournamentEntries.tournamentId})`,
+    })
+    .from(users)
+    .innerJoin(tournamentEntries, eq(users.id, tournamentEntries.userId))
+    .groupBy(users.id)
+    .orderBy(desc(sql`COALESCE(SUM(${tournamentEntries.totalScore}), 0)`))
+    .limit(limit);
+
+  return rows;
 }

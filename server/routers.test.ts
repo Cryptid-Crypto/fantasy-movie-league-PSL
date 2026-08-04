@@ -118,7 +118,7 @@ function createUserContext(role: "user" | "admin" = "user", userId = 42): TrpcCo
     openId: `${role}-test-user`,
     email: `${role}@example.com`,
     name: `${role} User`,
-    loginMethod: "manus",
+    loginMethod: "wallet",
     role,
     walletAddress: "0x0000000000000000000000000000000000000001",
     createdAt: new Date(),

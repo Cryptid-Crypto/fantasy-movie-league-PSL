@@ -1,10 +1,13 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
+import { generateNonce, validateNonce, buildSiweMessage, verifySiweSignature } from "./_core/siwe";
+import { generateEmailCode, verifyEmailCode, sendEmailCode } from "./_core/emailAuth";
+import { walletSdk } from "./_core/walletAuth";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -29,11 +32,95 @@ export const appRouter = router({
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    nonce: publicProcedure.query(() => {
+      const nonce = generateNonce();
+      return { nonce };
+    }),
+    verify: publicProcedure
+      .input(z.object({
+        message: z.string().min(1),
+        signature: z.string().min(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Validate that the nonce embedded in the message is fresh
+        const nonceMatch = input.message.match(/Nonce: ([a-f0-9]+)/);
+        const nonce = nonceMatch ? nonceMatch[1] : null;
+        if (!nonce || !validateNonce(nonce)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid or expired nonce" });
+        }
+
+        const result = await verifySiweSignature(input.message, input.signature);
+        if (!result) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid signature" });
+        }
+
+        const walletAddress = result.address.toLowerCase();
+
+        // Upsert user by wallet address (stored in openId for compatibility)
+        await db.upsertUser({
+          openId: walletAddress,
+          walletAddress: walletAddress,
+          loginMethod: "wallet",
+          lastSignedIn: new Date(),
+        });
+
+        // Create session token
+        const sessionToken = await walletSdk.createSessionToken(walletAddress, {
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        return { success: true, address: walletAddress } as const;
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    requestEmailCode: publicProcedure
+      .input(z.object({ email: z.string().email().max(320) }))
+      .mutation(async ({ input }) => {
+        const code = generateEmailCode(input.email);
+        const { delivered } = await sendEmailCode(input.email, code);
+        return { success: true, delivered } as const;
+      }),
+    verifyEmail: publicProcedure
+      .input(z.object({
+        email: z.string().email().max(320),
+        code: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = verifyEmailCode(input.email, input.code);
+        if (!result.ok) {
+          const message =
+            result.reason === "too_many_attempts"
+              ? "Too many attempts — request a new code"
+              : "Invalid or expired code";
+          throw new TRPCError({ code: "UNAUTHORIZED", message });
+        }
+
+        const email = result.email;
+        const openId = `email:${email}`;
+
+        await db.upsertUser({
+          openId,
+          email,
+          loginMethod: "email",
+          lastSignedIn: new Date(),
+        });
+
+        const sessionToken = await walletSdk.createSessionToken(openId, {
+          name: email,
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        return { success: true, email } as const;
+      }),
     updateWallet: protectedProcedure
       .input(z.object({ walletAddress: z.string().min(1) }))
       .mutation(async ({ ctx, input }) => {
@@ -66,6 +153,12 @@ export const appRouter = router({
           imageUrl: z.string().optional(),
           nftContractAddress: z.string().optional(),
           performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist", "MILF"]).optional(),
+          measurements: z.string().optional(),
+          hairColor: z.string().optional(),
+          eyeColor: z.string().optional(),
+          height: z.string().optional(),
+          sex: z.string().optional(),
+          nationality: z.string().optional(),
         }))
         .mutation(async ({ input }) => {
           const id = await db.createPerformer(input);
@@ -83,6 +176,12 @@ export const appRouter = router({
           imageUrl: z.string().optional(),
           nftContractAddress: z.string().optional(),
           performerType: z.enum(["Legend", "Anal Queen", "Super Slut", "Extreme", "Girl Next Door", "Rising Star", "Hall of Fame", "Specialist", "MILF"]).optional(),
+          measurements: z.string().optional(),
+          hairColor: z.string().optional(),
+          eyeColor: z.string().optional(),
+          height: z.string().optional(),
+          sex: z.string().optional(),
+          nationality: z.string().optional(),
         }))
         .mutation(async ({ input }) => {
           const { id, ...data } = input;
@@ -391,6 +490,52 @@ export const appRouter = router({
   }),
 
   // Public routers
+  // Public scoring actions — used by the public Rules page; no auth required.
+  // Returns only name + pointValue + description (never admin-only internals).
+  actions: router({
+    list: publicProcedure.query(async () => {
+      const rows = await db.getAllActions();
+      return (rows ?? []).map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        description: a.description ?? null,
+        pointValue: a.points ?? a.pointValue ?? 0,
+      }));
+    }),
+  }),
+
+  // === PLATFORM STATS & LEADERBOARD (public, no auth) ===
+
+  stats: router({
+    /** Get public platform stats: counts of performers, movies, active tournaments */
+    public: publicProcedure.query(async () => {
+      return db.getPlatformStats();
+    }),
+  }),
+
+  leaderboard: router({
+    /** Performer ranking by total scene action points */
+    performers: publicProcedure.query(async () => {
+      return db.getPerformerLeaderboard();
+    }),
+    /** Player ranking by total tournament score */
+    players: publicProcedure.query(async () => {
+      return db.getPlayerLeaderboard();
+    }),
+  }),
+
+  // Onboarding router — new-user starter pack. Protected (auth required)
+  // but not admin-gated, so any logged-in player can claim once.
+  onboarding: router({
+    status: protectedProcedure.query(async ({ ctx }) => {
+      const claimed = await db.hasUserClaimedStarterPack(ctx.user.id);
+      return { starterPackClaimed: claimed };
+    }),
+    claimStarterPack: protectedProcedure.mutation(async ({ ctx }) => {
+      return db.claimStarterPack(ctx.user.id);
+    }),
+  }),
+
   performers: router({
     list: publicProcedure.query(async () => {
       return db.getAllPerformers();
@@ -422,6 +567,11 @@ export const appRouter = router({
       .input(z.object({ performerId: z.number() }))
       .query(async ({ input }) => {
         return db.getMoviesByPerformerId(input.performerId);
+      }),
+    getBadges: publicProcedure
+      .input(z.object({ performerId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getPerformerBadges(input.performerId);
       }),
   }),
 
@@ -496,8 +646,9 @@ export const appRouter = router({
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Tournament not found' });
         }
         
-        // 2. Check tournament is accepting entries (only upcoming status)
-        if (tournament.status !== 'upcoming') {
+        // 2. Check tournament is accepting entries (upcoming or active — the
+        //    UI allows "Enter" on both, so the server must match).
+        if (tournament.status !== 'upcoming' && tournament.status !== 'active') {
           throw new TRPCError({ 
             code: 'BAD_REQUEST', 
             message: `Tournament is not accepting entries (status: ${tournament.status})` 
@@ -670,17 +821,17 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Roster cannot be empty' });
         }
         
-        // Get user's NFTs to verify ownership
-        const userNfts = await db.getUserNfts(ctx.user.id);
-        const userNftMap = new Map(userNfts.map(nft => [`${nft.performerId}-${nft.tokenId}`, nft]));
+        // Get user's platform NFT cards to verify ownership
+        const userNfts = await db.getUserOwnedNftCards(ctx.user.id);
+        const userNftMap = new Map(userNfts.map(card => [`${card.performerId}-${card.id}`, card]));
         
-        // Verify NFT ownership for all performers in roster
+        // Verify platform NFT card ownership for all performers in roster
         for (const performer of input.roster) {
           const key = `${performer.performerId}-${performer.nftTokenId}`;
           if (!userNftMap.has(key)) {
             throw new TRPCError({ 
               code: 'FORBIDDEN', 
-              message: `You do not own NFT #${performer.nftTokenId} for performer ID ${performer.performerId}` 
+              message: `You do not own NFT card #${performer.nftTokenId} for performer ID ${performer.performerId}` 
             });
           }
         }
@@ -837,6 +988,32 @@ export const appRouter = router({
       if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
       return db.getTreasuryNftCards();
     }),
+
+    /** Admin: get the Treasury account info + how many cards it holds */
+    getTreasuryAccount: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const treasury = await db.getTreasuryUser();
+      if (!treasury) return { exists: false as const, user: null, cardCount: 0 };
+      const cards = await db.getUserOwnedNftCards(treasury.id);
+      return { exists: true as const, user: treasury, cardCount: cards.length };
+    }),
+
+    /** Admin: create the Treasury account (idempotent) */
+    createTreasuryAccount: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const treasury = await db.getOrCreateTreasuryUser();
+      return { success: true, user: treasury };
+    }),
+
+    /** Admin: assign a card to the Treasury account (one click, no user ID needed) */
+    assignToTreasury: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        const treasury = await db.getOrCreateTreasuryUser();
+        await db.assignNftCardToUser(input.cardId, treasury.id, ctx.user.id);
+        return { success: true, treasuryUserId: treasury.id };
+      }),
 
     /** Get cards for a specific performer */
     getByPerformer: protectedProcedure

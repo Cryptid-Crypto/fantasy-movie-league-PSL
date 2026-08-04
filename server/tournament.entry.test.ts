@@ -40,7 +40,7 @@ function createTestContext(): TrpcContext {
     openId: 'roster-test-user',
     email: 'roster@example.com',
     name: 'Roster Test User',
-    loginMethod: 'manus',
+    loginMethod: "wallet",
     role: 'user',
     walletAddress: '0x0000000000000000000000000000000000000001',
     createdAt: new Date(),

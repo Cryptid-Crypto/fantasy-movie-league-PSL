@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import MobileNav from "@/components/MobileNav";
 import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle } from "lucide-react";
 
@@ -78,9 +78,7 @@ export default function Navbar() {
                 <Link href="/signup">
                   <Button variant="outline">Sign Up</Button>
                 </Link>
-                <Button onClick={() => (window.location.href = getLoginUrl())}>
-                  Sign In
-                </Button>
+                <LoginButton>Sign In</LoginButton>
               </>
             )}
           </div>

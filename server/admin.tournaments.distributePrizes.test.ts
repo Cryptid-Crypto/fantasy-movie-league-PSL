@@ -22,6 +22,9 @@ const markTournamentPayoutFailed = vi.fn(async (_tournamentId: number) => {});
 const updateTournament = vi.fn(
   async (_id: number, _data: Record<string, unknown>) => {}
 );
+const unlockTournamentCards = vi.fn(
+  async (_tournamentId: number) => {}
+);
 
 vi.mock("./db", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./db")>()),
@@ -30,6 +33,8 @@ vi.mock("./db", async (importOriginal) => ({
     markTournamentPayoutFailed(...args),
   updateTournament: (...args: [number, Record<string, unknown>]) =>
     updateTournament(...args),
+  unlockTournamentCards: (...args: [number]) =>
+    unlockTournamentCards(...args),
 }));
 
 function createContext(role: "user" | "admin"): TrpcContext {
@@ -38,7 +43,7 @@ function createContext(role: "user" | "admin"): TrpcContext {
     openId: `${role}-user`,
     email: `${role}@example.com`,
     name: `${role} User`,
-    loginMethod: "manus",
+    loginMethod: "wallet",
     role,
     createdAt: new Date(),
     updatedAt: new Date(),

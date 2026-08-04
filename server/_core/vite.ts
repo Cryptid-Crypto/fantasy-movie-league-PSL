@@ -4,7 +4,6 @@ import { type Server } from "http";
 import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import viteConfig from "../../vite.config";
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -12,6 +11,10 @@ export async function setupVite(app: Express, server: Server) {
     hmr: { server },
     allowedHosts: true as const,
   };
+
+  // Lazy-load vite config — only needed in dev, so production bundles
+  // don't pull in dev-only vite plugins.
+  const { default: viteConfig } = await import("../../vite.config");
 
   const vite = await createViteServer({
     ...viteConfig,

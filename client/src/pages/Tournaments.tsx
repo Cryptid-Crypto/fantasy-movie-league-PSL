@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trophy, Calendar, Users, ArrowLeft, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import { TournamentRosterRequirements } from "@/components/TournamentRosterRequirements";
 
 export default function Tournaments() {
@@ -17,7 +17,7 @@ export default function Tournaments() {
 
   const utils = trpc.useUtils();
   const { data: tournaments, isLoading } = trpc.tournaments.list.useQuery();
-  const { data: userNfts } = trpc.nfts.list.useQuery(undefined, { enabled: !!user });
+  const { data: userNfts } = trpc.nftPlatform.myCards.useQuery(undefined, { enabled: !!user });
   
   // Fetch all user entries at once
   const { data: userEntries } = trpc.tournaments.getAllUserEntries.useQuery(undefined, { enabled: !!user });
@@ -42,15 +42,9 @@ export default function Tournaments() {
   const getAvailableNFTs = (tournament: any) => {
     if (!userNfts) return [];
     
-    // If tournament requires specific contract, filter by that
-    if (tournament.requiredNftContractAddress) {
-      return userNfts.filter(
-        (nft) => nft.contractAddress.toLowerCase() === tournament.requiredNftContractAddress.toLowerCase()
-      );
-    }
-    
-    // Otherwise, all NFTs are valid
-    return userNfts;
+    // Platform cards don't have contract address requirement - just return unlocked cards
+    // that aren't already locked in other tournaments
+    return userNfts.filter((card) => !card.isLocked);
   };
 
   return (
@@ -151,12 +145,9 @@ export default function Tournaments() {
                             </Button>
                           )
                         ) : (
-                          <Button
-                            onClick={() => (window.location.href = getLoginUrl())}
-                            className="w-full"
-                          >
+                          <LoginButton className="w-full">
                             Sign In to Enter
-                          </Button>
+                          </LoginButton>
                         )
                       )}
                     </div>

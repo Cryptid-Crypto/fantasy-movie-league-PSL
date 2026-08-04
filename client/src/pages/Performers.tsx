@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { getFlagEmoji } from "@/lib/flags";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,12 +68,52 @@ export default function Performers() {
                       </div>
                     )}
                   </div>
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 space-y-2">
                     <h3 className="font-semibold text-foreground truncate">
                       {performer.name}
                     </h3>
+                    <div className="space-y-1">
+                      {performer.measurements && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground/70">Measurements:</span>{" "}
+                          {performer.measurements}
+                        </p>
+                      )}
+                      {performer.height && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground/70">Height:</span>{" "}
+                          {performer.height}
+                        </p>
+                      )}
+                      <div className="flex gap-3">
+                        {performer.hairColor && (
+                          <p className="text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground/70">Hair:</span>{" "}
+                            {performer.hairColor}
+                          </p>
+                        )}
+                        {performer.eyeColor && (
+                          <p className="text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground/70">Eyes:</span>{" "}
+                            {performer.eyeColor}
+                          </p>
+                        )}
+                      </div>
+                      {performer.sex && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground/70">Sex:</span>{" "}
+                          {performer.sex}
+                        </p>
+                      )}
+                      {performer.nationality && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground/70">Nationality:</span>{" "}
+                          {getFlagEmoji(performer.nationality)} {performer.nationality}
+                        </p>
+                      )}
+                    </div>
                     {performer.nftContractAddress && (
-                      <p className="text-xs text-accent font-mono mt-1 truncate">
+                      <p className="text-xs text-accent font-mono truncate">
                         NFT: {performer.nftContractAddress.slice(0, 6)}...
                       </p>
                     )}

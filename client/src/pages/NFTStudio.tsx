@@ -42,6 +42,7 @@ export default function NFTStudio() {
   const { data: performers, isLoading: performersLoading } = trpc.performers.list.useQuery();
   const { data: allCards, isLoading: cardsLoading } = trpc.nftPlatform.getAllCards.useQuery();
   const { data: treasury } = trpc.nftPlatform.getTreasury.useQuery();
+  const { data: treasuryAccount } = trpc.nftPlatform.getTreasuryAccount.useQuery();
 
   const mintMutation = trpc.nftPlatform.mint.useMutation({
     onSuccess: (data) => {
@@ -58,6 +59,27 @@ export default function NFTStudio() {
       toast.success("Card assigned to user successfully!");
       utils.nftPlatform.getAllCards.invalidate();
       utils.nftPlatform.getTreasury.invalidate();
+      utils.nftPlatform.getTreasuryAccount.invalidate();
+      setAssignDialog({ open: false });
+      setAssignUserId("");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const createTreasuryMutation = trpc.nftPlatform.createTreasuryAccount.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Treasury account ready (user #${data.user.id})`);
+      utils.nftPlatform.getTreasuryAccount.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const assignToTreasuryMutation = trpc.nftPlatform.assignToTreasury.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Card assigned to Treasury (user #${data.treasuryUserId})`);
+      utils.nftPlatform.getAllCards.invalidate();
+      utils.nftPlatform.getTreasury.invalidate();
+      utils.nftPlatform.getTreasuryAccount.invalidate();
       setAssignDialog({ open: false });
       setAssignUserId("");
     },
@@ -257,6 +279,43 @@ export default function NFTStudio() {
 
             {/* TREASURY TAB */}
             <TabsContent value="treasury" className="space-y-6 mt-6">
+              {/* Treasury Account card */}
+              <Card className="border-yellow-500/30">
+                <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-yellow-500/15 flex items-center justify-center">
+                      <Package className="h-5 w-5 text-yellow-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">Treasury Account</p>
+                      {treasuryAccount?.exists ? (
+                        <p className="text-xs text-muted-foreground">
+                          Active · user #{treasuryAccount.user?.id} · holds {treasuryAccount.cardCount} card{treasuryAccount.cardCount === 1 ? "" : "s"}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          Not created yet — create it to assign NFTs to the platform treasury
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {!treasuryAccount?.exists && (
+                    <Button
+                      variant="outline"
+                      className="gap-2 border-yellow-500/40 text-yellow-300"
+                      disabled={createTreasuryMutation.isPending}
+                      onClick={() => createTreasuryMutation.mutate()}
+                    >
+                      {createTreasuryMutation.isPending ? (
+                        <><RefreshCw className="h-4 w-4 animate-spin" /> Creating...</>
+                      ) : (
+                        <><Plus className="h-4 w-4" /> Create Treasury Account</>
+                      )}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
               <p className="text-muted-foreground text-sm">
                 {treasury?.length ?? 0} unassigned cards in treasury — assign them to players
               </p>
@@ -451,6 +510,26 @@ export default function NFTStudio() {
               <Input placeholder="Enter user ID..." value={assignUserId} onChange={(e) => setAssignUserId(e.target.value)} />
               <p className="text-xs text-muted-foreground">Find user IDs in the Admin → Users section.</p>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <Button
+              variant="outline"
+              className="w-full gap-2 border-yellow-500/40 text-yellow-300"
+              disabled={assignToTreasuryMutation.isPending}
+              onClick={() => {
+                if (!assignDialog.card) return;
+                assignToTreasuryMutation.mutate({ cardId: assignDialog.card.id });
+              }}
+            >
+              {assignToTreasuryMutation.isPending ? (
+                <><RefreshCw className="h-4 w-4 animate-spin" /> Assigning...</>
+              ) : (
+                <><Package className="h-4 w-4" /> Assign to Treasury Account</>
+              )}
+            </Button>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAssignDialog({ open: false })}>Cancel</Button>

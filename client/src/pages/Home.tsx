@@ -1,10 +1,54 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Trophy, Users, Wallet, Zap, Film, Crown, ShoppingBag, BarChart2, BookOpen } from "lucide-react";
 import { Link } from "wouter";
-import { getLoginUrl } from "@/const";
+import { LoginButton } from "@/components/LoginDialog";
 import Navbar from "@/components/Navbar";
+import { trpc } from "@/lib/trpc";
+
+function StatsSection() {
+  const { data: stats, isLoading } = trpc.stats.public.useQuery();
+
+  return (
+    <section className="container py-20">
+      <Card className="card-elevated">
+        <CardContent className="p-12">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <Film className="h-12 w-12 text-primary mx-auto mb-4" />
+              {isLoading ? (
+                <Skeleton className="h-10 w-20 mx-auto mb-2" />
+              ) : (
+                <p className="text-4xl font-bold mb-2">{stats?.movieCount ?? 0}+</p>
+              )}
+              <p className="text-muted-foreground">Movies Tracked</p>
+            </div>
+            <div>
+              <Users className="h-12 w-12 text-accent mx-auto mb-4" />
+              {isLoading ? (
+                <Skeleton className="h-10 w-20 mx-auto mb-2" />
+              ) : (
+                <p className="text-4xl font-bold mb-2">{stats?.performerCount ?? 0}+</p>
+              )}
+              <p className="text-muted-foreground">Performers</p>
+            </div>
+            <div>
+              <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
+              {isLoading ? (
+                <Skeleton className="h-10 w-20 mx-auto mb-2" />
+              ) : (
+                <p className="text-4xl font-bold mb-2">{stats?.activeTournamentCount ?? 0}</p>
+              )}
+              <p className="text-muted-foreground">Active Tournaments</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -46,13 +90,9 @@ export default function Home() {
               </>
             ) : (
               <>
-                <Button
-                  size="lg"
-                  onClick={() => (window.location.href = getLoginUrl())}
-                  className="gap-2 w-full sm:w-auto"
-                >
+                <LoginButton size="lg" className="gap-2 w-full sm:w-auto">
                   Get Started
-                </Button>
+                </LoginButton>
                 <Link href="/performers">
                   <Button size="lg" variant="outline" className="w-full sm:w-auto">
                     Explore Performers
@@ -63,6 +103,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Stats Section */}
+      <StatsSection />
 
       {/* Features */}
       <section className="container py-20">
@@ -123,31 +166,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="container py-20">
-        <Card className="card-elevated">
-          <CardContent className="p-12">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div>
-                <Film className="h-12 w-12 text-primary mx-auto mb-4" />
-                <p className="text-4xl font-bold mb-2">100+</p>
-                <p className="text-muted-foreground">Movies Tracked</p>
-              </div>
-              <div>
-                <Users className="h-12 w-12 text-accent mx-auto mb-4" />
-                <p className="text-4xl font-bold mb-2">50+</p>
-                <p className="text-muted-foreground">Performers</p>
-              </div>
-              <div>
-                <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
-                <p className="text-4xl font-bold mb-2">24/7</p>
-                <p className="text-muted-foreground">Active Tournaments</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
       {/* Explore Section */}
       <section className="container py-16">
         <div className="text-center mb-10">
@@ -196,9 +214,9 @@ export default function Home() {
                 </Button>
               </Link>
             ) : (
-              <Button size="lg" onClick={() => (window.location.href = getLoginUrl())}>
+              <LoginButton size="lg">
                 Get Started Now
-              </Button>
+              </LoginButton>
             )}
           </CardContent>
         </Card>
