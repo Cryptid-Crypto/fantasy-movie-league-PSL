@@ -95,7 +95,7 @@ export async function sendEmailCode(email: string, code: string): Promise<{ deli
       to: [email],
       subject: "Your Porn Star League login code",
       text: `Your login code is: ${code}\n\nIt expires in 10 minutes. If you didn't request this, you can ignore this email.`,
-      html: `<p>Your login code is:</p><p style="font-size:32px;font-weight:bold;letter-spacing:6px;">${code}</p><p>It expires in 10 minutes. If you didn't request this, you can ignore this email.</p>`,
+      html: `<div style="font-family:system-ui,-apple-system,sans-serif;background:#000;color:#fff;padding:32px 24px;max-width:480px;margin:0 auto;text-align:center;"><img src="https://pornstarleague.com/psl-logo-official.png" alt="Porn Star League" width="96" height="96" style="display:block;margin:0 auto 24px;" /><p style="font-size:16px;margin:0 0 8px;">Your login code is:</p><p style="font-size:32px;font-weight:bold;letter-spacing:6px;margin:0 0 24px;">${code}</p><p style="font-size:13px;color:#999;margin:0;">It expires in 10 minutes. If you didn't request this, you can ignore this email.</p></div>`,
     }),
   });
 
