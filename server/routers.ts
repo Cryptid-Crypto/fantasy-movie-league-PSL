@@ -1015,6 +1015,29 @@ export const appRouter = router({
         return { success: true, treasuryUserId: treasury.id };
       }),
 
+    /** Admin: list a Treasury-held card for sale on the marketplace */
+    listFromTreasury: protectedProcedure
+      .input(z.object({ cardId: z.number(), priceCredits: z.number().min(1) }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        const treasury = await db.getTreasuryUser();
+        if (!treasury) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Treasury account does not exist yet" });
+        const listingId = await db.createNftListing({
+          nftCardId: input.cardId,
+          sellerId: treasury.id,
+          priceCredits: input.priceCredits,
+        });
+        return { success: true, listingId };
+      }),
+
+    /** Admin: cards held by the Treasury account (for the List-for-Sale UI) */
+    getTreasuryHoldings: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const treasury = await db.getTreasuryUser();
+      if (!treasury) return [];
+      return db.getUserOwnedNftCards(treasury.id);
+    }),
+
     /** Get cards for a specific performer */
     getByPerformer: protectedProcedure
       .input(z.object({ performerId: z.number() }))

@@ -7,7 +7,11 @@ export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
+  // Legacy bcrypt-auth columns — kept for DB compatibility with existing rows;
+  // no longer used by the email-code + SIWE auth flow.
+  username: varchar("username", { length: 64 }).unique(),
   email: varchar("email", { length: 320 }),
+  passwordHash: varchar("passwordHash", { length: 255 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   walletAddress: varchar("walletAddress", { length: 42 }), // Ethereum address
