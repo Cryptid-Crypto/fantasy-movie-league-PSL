@@ -3,10 +3,19 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { LoginButton } from "@/components/LoginDialog";
 import MobileNav from "@/components/MobileNav";
-import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Trophy, Users, BarChart2, ShoppingBag, BookOpen, Bell, Wallet, LayoutDashboard, UserCircle, LogOut } from "lucide-react";
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [location] = useLocation();
 
   const navLinks = [
@@ -59,12 +68,6 @@ export default function Navbar() {
                     My NFTs
                   </Button>
                 </Link>
-                <Link href="/profile">
-                  <Button className="gap-2">
-                    <UserCircle className="h-4 w-4" />
-                    My Profile
-                  </Button>
-                </Link>
                 {user.role === "admin" && (
                   <Link href="/admin">
                     <Button variant="ghost" size="icon" title="Admin">
@@ -72,6 +75,55 @@ export default function Navbar() {
                     </Button>
                   </Link>
                 )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="flex items-center gap-2 rounded-full hover:ring-2 hover:ring-ring transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label="Account menu"
+                    >
+                      <Avatar className="h-9 w-9 border">
+                        <AvatarFallback className="text-sm font-medium">
+                          {user.name?.charAt(0).toUpperCase() ?? "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm font-medium leading-none truncate">
+                          {user.name || "Account"}
+                        </p>
+                        {user.email && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <UserCircle className="mr-2 h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => void logout()}
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <>
